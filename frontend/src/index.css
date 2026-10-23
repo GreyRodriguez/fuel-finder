@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* Tailwind v4 @theme below generates all CSS vars on :root automatically — no separate :root block needed */
+
+/* Tailwind v4 theme — maps CSS vars to utility classes (bg-dark-900, text-primary, etc.) */
+@theme {
+  --color-dark-900: #0d0d1a;
+  --color-dark-800: #13131f;
+  --color-dark-700: #1a1a2e;
+  --color-dark-600: #22223b;
+  --color-dark-500: #2d2d44;
+  --color-primary: #f97316;
+  --color-primary-hover: #ea6d0a;
+  --color-primary-light: #fed7aa;
+  --color-accent: #06b6d4;
+  --color-danger: #ef4444;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0d0d1a;
+  color: #f1f5f9;
+  font-family: "Inter", system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #13131f; }
+::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 9999px; }
+
+/* Glass card */
+.glass-card {
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #f97316;
+  color: white;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+}
+.btn-primary:hover { background: #ea6d0a; box-shadow: 0 8px 20px rgba(249,115,22,0.25); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  background: #22223b;
+  color: #e2e8f0;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+}
+.btn-secondary:hover { background: #2d2d44; }
+
+.btn-danger {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(239,68,68,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+/* Input */
+.input-field {
+  background: #22223b;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #f1f5f9;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.input-field::placeholder { color: #64748b; }
+.input-field:focus { border-color: #f97316; box-shadow: 0 0 0 1px #f97316; }
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* Animations */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.glow-primary { animation: glow-pulse 2s ease-in-out infinite; }
+
+/* Leaflet overrides */
+.leaflet-container {
+  font-family: "Inter", sans-serif !important;
+  border-radius: 1rem;
+}
+.leaflet-popup-content-wrapper {
+  background: #1a1a2e !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #f1f5f9 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+}
+.leaflet-popup-tip { background: #1a1a2e !important; }
+.leaflet-popup-close-button { color: #94a3b8 !important; }
