@@ -259,19 +259,48 @@ def apply_database_adjustments(gas_shift: float, diesel_shift: float, kerosene_s
             cur.execute(upsert_query, (gas_shift, diesel_shift, kerosene_shift))
             logger.info("Tracked adjustment recorded in 'price_adjustments' at ID = 1.")
 
-            # Step 3: Execute single mass calculation query over existing Taguig stations
-            # Note: Adding the scalar shift preserves neighborhood base price deltas
-            # (e.g. BGC vs Bicutan relative spread remains mathematically identical).
-            mass_update_query = """
-                UPDATE stations 
-                SET gasoline_price = gasoline_price + (SELECT gasoline_shift FROM price_adjustments WHERE id = 1),
-                    diesel_price = diesel_price + (SELECT diesel_shift FROM price_adjustments WHERE id = 1),
-                    kerosene_price = kerosene_price + (SELECT kerosene_shift FROM price_adjustments WHERE id = 1),
-                    updated_at = NOW();
-            """
-            cur.execute(mass_update_query)
-            affected_rows = cur.rowcount
-            logger.info("Mass calculation query executed successfully. Stations updated: %d", affected_rows)
+            # Step 3: Execute mass calculation query over Taguig stations
+            # Updates fuel_prices (your active schema) and stations (if present)
+            # Preserves neighborhood base price deltas (e.g., BGC vs Bicutan relative spread remains identical).
+            
+            # Check if fuel_prices table exists
+            cur.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'fuel_prices');")
+            has_fuel_prices = cur.fetchone()[0]
+
+            if has_fuel_prices:
+                fuel_prices_query = """
+                    UPDATE fuel_prices fp
+                    SET price_per_liter = ROUND(fp.price_per_liter + CASE 
+                            WHEN fp.fuel_type ILIKE '%gasoline%' THEN (SELECT gasoline_shift FROM price_adjustments WHERE id = 1)
+                            WHEN fp.fuel_type ILIKE '%diesel%' THEN (SELECT diesel_shift FROM price_adjustments WHERE id = 1)
+                            WHEN fp.fuel_type ILIKE '%kerosene%' THEN (SELECT kerosene_shift FROM price_adjustments WHERE id = 1)
+                            ELSE 0.00
+                        END, 2),
+                        date_updated = CURRENT_DATE,
+                        time_updated = CURRENT_TIME
+                    FROM gas_stations gs
+                    WHERE fp.station_id = gs.station_id
+                      AND fp.status = 'active';
+                """
+                cur.execute(fuel_prices_query)
+                prices_updated = cur.rowcount
+                logger.info("Updated active prices in 'fuel_prices': %d price records updated.", prices_updated)
+
+            # Check if stations table exists as well
+            cur.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'stations');")
+            has_stations = cur.fetchone()[0]
+
+            if has_stations:
+                mass_update_query = """
+                    UPDATE stations 
+                    SET gasoline_price = gasoline_price + (SELECT gasoline_shift FROM price_adjustments WHERE id = 1),
+                        diesel_price = diesel_price + (SELECT diesel_shift FROM price_adjustments WHERE id = 1),
+                        kerosene_price = kerosene_price + (SELECT kerosene_shift FROM price_adjustments WHERE id = 1),
+                        updated_at = NOW();
+                """
+                cur.execute(mass_update_query)
+                stations_updated = cur.rowcount
+                logger.info("Updated 'stations' table: %d records updated.", stations_updated)
 
             # Atomic commit
             conn.commit()
