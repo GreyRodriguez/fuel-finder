@@ -14,7 +14,7 @@ export default function Reports() {
     <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
       <AdminNav />
       <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="sticky top-0 z-20 -mt-8 pt-8 pb-4 mb-6 bg-dark-900/95 backdrop-blur-md border-b border-white/5">
+        <div className="mb-8">
           <h1 className="text-2xl font-black text-white">Reports</h1>
         </div>
         {loading ? <p className="text-slate-400">Loading…</p> : (

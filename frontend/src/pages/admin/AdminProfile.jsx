@@ -22,7 +22,7 @@ export default function AdminProfile() {
     <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
       <AdminNav />
       <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="sticky top-0 z-20 -mt-8 pt-8 pb-4 mb-6 bg-dark-900/95 backdrop-blur-md border-b border-white/5">
+        <div className="mb-8">
           <h1 className="text-2xl font-black text-white">Admin Profile</h1>
         </div>
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 mb-4 text-sm">{msg}</div>}

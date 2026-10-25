@@ -27,8 +27,7 @@ export default function AdminDashboard() {
 
       {/* Main Center Dashboard */}
       <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-20 -mt-8 pt-8 pb-4 mb-6 bg-dark-900/95 backdrop-blur-md border-b border-white/5 flex items-center justify-between">
+        <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-black text-white">Dashboard Overview</h1>
         </div>
 
