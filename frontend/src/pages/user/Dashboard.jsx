@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useAuth } from "../../context/AuthContext";
@@ -15,8 +15,6 @@ L.Icon.Default.mergeOptions({
 });
 
 const TAGUIG_CENTER = [14.5243, 121.0792];
-
-const fuelColors = { Gasoline: "#f97316", Diesel: "#06b6d4", "Premium Gasoline": "#a855f7" };
 
 const createStationIcon = (isSelected) =>
   L.divIcon({
@@ -54,6 +52,17 @@ export default function Dashboard() {
   const [compareList, setCompareList] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
 
+  const fetchStations = useCallback(async (lat, lng) => {
+    try {
+      const res = await api.get(`/api/stations/?lat=${lat}&lng=${lng}&radius=15`);
+      setStations(res.data);
+    } catch {
+      console.error("Failed to load stations");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -63,18 +72,7 @@ export default function Dashboard() {
       },
       () => fetchStations(TAGUIG_CENTER[0], TAGUIG_CENTER[1])
     );
-  }, []);
-
-  const fetchStations = async (lat, lng) => {
-    try {
-      const res = await api.get(`/api/stations/?lat=${lat}&lng=${lng}&radius=15`);
-      setStations(res.data);
-    } catch {
-      console.error("Failed to load stations");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchStations]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -98,9 +96,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 flex flex-col">
+    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex flex-col">
       {/* Navbar */}
-      <nav className="bg-dark-800 border-b border-white/10 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+      <nav className="flex-shrink-0 bg-dark-800 border-b border-white/10 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
         <Link to="/" className="text-xl font-black text-white">
           Fuel<span className="text-primary">Finder</span>
         </Link>
@@ -122,11 +120,11 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Sidebar */}
-        <div className="w-96 flex-shrink-0 bg-dark-800 border-r border-white/10 flex flex-col overflow-hidden">
+        <div className="w-96 flex-shrink-0 bg-dark-800 border-r border-white/10 flex flex-col overflow-hidden min-h-0 h-full">
           {/* Search & Filters */}
-          <div className="p-4 border-b border-white/10 space-y-3">
+          <div className="flex-shrink-0 p-4 border-b border-white/10 space-y-3 bg-dark-800 z-10">
             <form onSubmit={handleSearch} className="flex gap-2">
               <input
                 id="station-search"
@@ -153,7 +151,7 @@ export default function Dashboard() {
           </div>
 
           {/* Station List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 overscroll-contain">
             {loading && <p className="text-slate-400 text-center py-8">Loading stations…</p>}
             {!loading && sorted.length === 0 && (
               <p className="text-slate-500 text-center py-8">No stations found.</p>
@@ -207,13 +205,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Map */}
-        <div className="flex-1 relative">
+        {/* Map - Sticky & fills center dashboard */}
+        <div className="flex-1 relative h-full min-h-0 sticky top-0 overflow-hidden">
           <MapContainer
             center={userLocation ? [userLocation.lat, userLocation.lng] : TAGUIG_CENTER}
             zoom={14}
             className="w-full h-full"
-            style={{ minHeight: "100%" }}
+            style={{ width: "100%", height: "100%" }}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
