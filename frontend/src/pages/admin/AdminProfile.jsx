@@ -1,24 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
-
-function AdminNav() {
-  return (
-    <aside className="w-64 flex-shrink-0 bg-dark-800 border-r border-white/10">
-      <div className="p-6 border-b border-white/10"><Link to="/admin" className="text-xl font-black text-white">Fuel<span className="text-primary">Finder</span> <span className="text-xs text-primary">Admin</span></Link></div>
-      <nav className="p-4 space-y-1">
-        {[{to:"/admin",l:"📊 Dashboard"},{to:"/admin/stations",l:"⛽ Stations"},{to:"/admin/prices",l:"💰 Prices"},{to:"/admin/users",l:"👥 Users"},{to:"/admin/reports",l:"📈 Reports"},{to:"/admin/profile",l:"👤 Profile"}].map(n=>(
-          <Link key={n.to} to={n.to} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-dark-700 transition-all font-medium text-sm">{n.l}</Link>
-        ))}
-      </nav>
-    </aside>
-  );
-}
+import AdminNav from "../../components/AdminNav";
 
 export default function AdminProfile() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_new_password: "" });
   const [msg, setMsg] = useState(""); const [err, setErr] = useState("");
@@ -35,10 +19,12 @@ export default function AdminProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
       <AdminNav />
-      <main className="flex-1 p-8 overflow-auto">
-        <h1 className="text-2xl font-black text-white mb-6">Admin Profile</h1>
+      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
+        <div className="mb-8">
+          <h1 className="text-2xl font-black text-white">Admin Profile</h1>
+        </div>
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 mb-4 text-sm">{msg}</div>}
         {err && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 mb-4 text-sm">{err}</div>}
 

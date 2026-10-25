@@ -1,23 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../../services/api";
+import AdminNav from "../../components/AdminNav";
 
 const EMPTY = { name: "", brand: "", address: "", barangay: "", city: "Taguig City", latitude: "", longitude: "", contact_info: "", status: "active" };
-
-function AdminNav() {
-  return (
-    <aside className="w-64 flex-shrink-0 bg-dark-800 border-r border-white/10">
-      <div className="p-6 border-b border-white/10">
-        <Link to="/admin" className="text-xl font-black text-white">Fuel<span className="text-primary">Finder</span> <span className="text-xs text-primary">Admin</span></Link>
-      </div>
-      <nav className="p-4 space-y-1">
-        {[{to:"/admin",l:"📊 Dashboard"},{to:"/admin/stations",l:"⛽ Stations"},{to:"/admin/prices",l:"💰 Prices"},{to:"/admin/users",l:"👥 Users"},{to:"/admin/reports",l:"📈 Reports"},{to:"/admin/profile",l:"👤 Profile"}].map(n=>(
-          <Link key={n.to} to={n.to} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-dark-700 transition-all font-medium text-sm">{n.l}</Link>
-        ))}
-      </nav>
-    </aside>
-  );
-}
 
 export default function Stations() {
   const [stations, setStations] = useState([]);
@@ -56,10 +41,10 @@ export default function Stations() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
       <AdminNav />
-      <main className="flex-1 p-8 overflow-auto">
-        <div className="flex items-center justify-between mb-6">
+      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
+        <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-black text-white">Gas Stations</h1>
           <button onClick={() => { setForm(EMPTY); setEditing(null); setShowForm(!showForm); setErr(""); setMsg(""); }} className="btn-primary text-sm px-5 py-2.5">
             {showForm ? "Cancel" : "+ Add Station"}

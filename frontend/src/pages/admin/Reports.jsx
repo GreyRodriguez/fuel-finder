@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../../services/api";
-
-function AdminNav() {
-  return (
-    <aside className="w-64 flex-shrink-0 bg-dark-800 border-r border-white/10">
-      <div className="p-6 border-b border-white/10"><Link to="/admin" className="text-xl font-black text-white">Fuel<span className="text-primary">Finder</span> <span className="text-xs text-primary">Admin</span></Link></div>
-      <nav className="p-4 space-y-1">
-        {[{to:"/admin",l:"📊 Dashboard"},{to:"/admin/stations",l:"⛽ Stations"},{to:"/admin/prices",l:"💰 Prices"},{to:"/admin/users",l:"👥 Users"},{to:"/admin/reports",l:"📈 Reports"},{to:"/admin/profile",l:"👤 Profile"}].map(n=>(
-          <Link key={n.to} to={n.to} className="flex items-center gap-2 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-dark-700 transition-all font-medium text-sm">{n.l}</Link>
-        ))}
-      </nav>
-    </aside>
-  );
-}
+import AdminNav from "../../components/AdminNav";
 
 export default function Reports() {
   const [reports, setReports] = useState(null);
@@ -24,10 +11,12 @@ export default function Reports() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
       <AdminNav />
-      <main className="flex-1 p-8 overflow-auto">
-        <h1 className="text-2xl font-black text-white mb-6">Reports</h1>
+      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
+        <div className="mb-8">
+          <h1 className="text-2xl font-black text-white">Reports</h1>
+        </div>
         {loading ? <p className="text-slate-400">Loading…</p> : (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
