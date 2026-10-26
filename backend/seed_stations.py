@@ -1,14 +1,32 @@
 """
-Seed sample gas station data for Taguig City.
+Gas station and fuel price database seeder and manager for FuelFinder.
+
+Reads data from an external JSON file (default: backend/data/stations.json)
+so stations and coordinates are never hardcoded in application logic.
 
 Usage:
-    cd backend
-    .\\venv\\Scripts\\python.exe seed_stations.py
+    python seed_stations.py --help
+    python seed_stations.py --stats
+    python seed_stations.py --backup
+    python seed_stations.py --clear
+    python seed_stations.py --seed
+    python seed_stations.py --force
 """
 
 import sys
 import os
-from datetime import date, time
+import json
+import argparse
+from datetime import date, datetime
+from decimal import Decimal
+
+# Configure UTF-8 encoding for standard output (critical on Windows consoles)
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except AttributeError:
+        pass
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -16,145 +34,93 @@ from app.db.session import init_db, SessionLocal
 from app.models.station import GasStation
 from app.models.price import FuelPrice
 
-STATIONS = [
-    {
-        "name": "Petron BGC",
-        "brand": "Petron",
-        "address": "9th Avenue, Bonifacio Global City",
-        "barangay": "BGC",
-        "city": "Taguig City",
-        "latitude": 14.5500,
-        "longitude": 121.0494,
-        "contact_info": "02-8818-5555",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 62.50},
-            {"fuel_type": "Diesel", "price_per_liter": 57.80},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 68.75},
-        ],
-    },
-    {
-        "name": "Shell BGC Station",
-        "brand": "Shell",
-        "address": "5th Avenue corner 26th St, BGC",
-        "barangay": "BGC",
-        "city": "Taguig City",
-        "latitude": 14.5485,
-        "longitude": 121.0520,
-        "contact_info": "02-8819-1234",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 63.10},
-            {"fuel_type": "Diesel", "price_per_liter": 58.20},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 69.50},
-        ],
-    },
-    {
-        "name": "Caltex Taguig Central",
-        "brand": "Caltex",
-        "address": "Hagonoy Road, Taguig",
-        "barangay": "Hagonoy",
-        "city": "Taguig City",
-        "latitude": 14.5243,
-        "longitude": 121.0792,
-        "contact_info": "02-8555-7890",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 61.90},
-            {"fuel_type": "Diesel", "price_per_liter": 56.95},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 67.80},
-        ],
-    },
-    {
-        "name": "Petron Fort Bonifacio",
-        "brand": "Petron",
-        "address": "Lawton Avenue, Fort Bonifacio",
-        "barangay": "Western Bicutan",
-        "city": "Taguig City",
-        "latitude": 14.5100,
-        "longitude": 121.0590,
-        "contact_info": "02-8817-4321",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 62.75},
-            {"fuel_type": "Diesel", "price_per_liter": 57.50},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 68.90},
-        ],
-    },
-    {
-        "name": "Shell McKinley",
-        "brand": "Shell",
-        "address": "McKinley Road, McKinley Hill",
-        "barangay": "McKinley Hill",
-        "city": "Taguig City",
-        "latitude": 14.5380,
-        "longitude": 121.0560,
-        "contact_info": "02-8850-1122",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 63.40},
-            {"fuel_type": "Diesel", "price_per_liter": 58.50},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 70.00},
-        ],
-    },
-    {
-        "name": "Unioil Taguig",
-        "brand": "Unioil",
-        "address": "Bayani Road, Western Bicutan",
-        "barangay": "Western Bicutan",
-        "city": "Taguig City",
-        "latitude": 14.5060,
-        "longitude": 121.0500,
-        "contact_info": "02-8551-9900",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 61.50},
-            {"fuel_type": "Diesel", "price_per_liter": 56.75},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 67.25},
-        ],
-    },
-    {
-        "name": "Phoenix Taguig",
-        "brand": "Phoenix",
-        "address": "Signal Village, Taguig",
-        "barangay": "Signal Village",
-        "city": "Taguig City",
-        "latitude": 14.5170,
-        "longitude": 121.0700,
-        "contact_info": "02-8556-3344",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 61.20},
-            {"fuel_type": "Diesel", "price_per_liter": 56.50},
-        ],
-    },
-    {
-        "name": "Caltex BGC North",
-        "brand": "Caltex",
-        "address": "28th Street, Bonifacio Global City",
-        "barangay": "BGC",
-        "city": "Taguig City",
-        "latitude": 14.5530,
-        "longitude": 121.0510,
-        "contact_info": "02-8818-6677",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 62.00},
-            {"fuel_type": "Diesel", "price_per_liter": 57.25},
-            {"fuel_type": "Premium Gasoline", "price_per_liter": 68.00},
-        ],
-    },
-    {
-        "name": "Petron Upper Bicutan",
-        "brand": "Petron",
-        "address": "Katuparan Road, Upper Bicutan",
-        "barangay": "Upper Bicutan",
-        "city": "Taguig City",
-        "latitude": 14.5010,
-        "longitude": 121.0650,
-        "contact_info": "02-8552-8877",
-        "prices": [
-            {"fuel_type": "Gasoline", "price_per_liter": 62.30},
-            {"fuel_type": "Diesel", "price_per_liter": 57.10},
-        ],
-    },
-]
+DEFAULT_DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "stations.json")
+BACKUP_DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "backup_stations_and_prices.json")
 
 
-def seed_stations():
-    print("[*] Initializing tables...")
+def backup_database(output_path: str = BACKUP_DATA_PATH):
+    """Back up all existing stations and fuel prices to a JSON file."""
+    db = SessionLocal()
+    try:
+        stations = db.query(GasStation).all()
+        backup_data = []
+        for s in stations:
+            s_dict = {
+                "station_id": s.station_id,
+                "name": s.name,
+                "brand": s.brand,
+                "address": s.address,
+                "barangay": s.barangay,
+                "city": s.city,
+                "latitude": float(s.latitude),
+                "longitude": float(s.longitude),
+                "contact_info": s.contact_info,
+                "status": s.status,
+                "prices": [
+                    {
+                        "price_id": p.price_id,
+                        "fuel_type": p.fuel_type,
+                        "price_per_liter": float(p.price_per_liter),
+                        "date_updated": str(p.date_updated),
+                        "time_updated": str(p.time_updated),
+                        "status": p.status,
+                    }
+                    for p in s.fuel_prices
+                ],
+            }
+            backup_data.append(s_dict)
+
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(backup_data, f, indent=2)
+
+        print(f"[OK] Backed up {len(backup_data)} stations to '{output_path}'.")
+        return len(backup_data)
+    finally:
+        db.close()
+
+
+def clear_database():
+    """Delete all current gas stations and fuel prices from the database."""
+    db = SessionLocal()
+    try:
+        price_count = db.query(FuelPrice).count()
+        station_count = db.query(GasStation).count()
+
+        print(f"[*] Deleting {price_count} price record(s) and {station_count} gas station(s)...")
+
+        # Due to cascade delete, deleting GasStation deletes FuelPrice,
+        # but we also explicitly delete FuelPrice first to ensure clean state
+        db.query(FuelPrice).delete()
+        db.query(GasStation).delete()
+        db.commit()
+
+        print(f"[OK] Successfully cleared database. 0 stations and 0 prices remaining.")
+    except Exception as err:
+        db.rollback()
+        print(f"[ERROR] Failed to clear database: {err}")
+        raise
+    finally:
+        db.close()
+
+
+def load_stations_from_file(file_path: str = DEFAULT_DATA_PATH):
+    """Load station list from external JSON file."""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Stations data file not found: {file_path}")
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        stations = json.load(f)
+
+    if not isinstance(stations, list):
+        raise ValueError("JSON root must be a list of station objects")
+
+    return stations
+
+
+def seed_stations(data_file: str = DEFAULT_DATA_PATH, force: bool = False):
+    """Seed stations and fuel prices from JSON file into database."""
+    print("[*] Initializing database tables...")
     init_db()
     print("[OK] Tables ready.\n")
 
@@ -162,37 +128,108 @@ def seed_stations():
     try:
         existing_count = db.query(GasStation).count()
         if existing_count > 0:
-            print(f"[INFO] {existing_count} station(s) already exist. Skipping seed.")
-            print("       Delete existing stations first if you want to re-seed.")
-            return
+            if not force:
+                print(f"[INFO] {existing_count} station(s) already exist in database.")
+                print("       Use --force to clear and re-seed, or run --clear first.")
+                return
+            else:
+                print(f"[*] --force flag set. Backing up and clearing existing {existing_count} station(s)...")
+                backup_database()
+                clear_database()
 
+        stations_data = load_stations_from_file(data_file)
         today = date.today()
-        now = date.today()
+        seeded_count = 0
+        total_prices_count = 0
 
-        for data in STATIONS:
-            prices_data = data.pop("prices")
-            station = GasStation(**data)
+        print(f"[*] Importing {len(stations_data)} station(s) from '{data_file}'...\n")
+
+        for item in stations_data:
+            item_copy = dict(item)
+            prices_data = item_copy.pop("prices", [])
+
+            # Create GasStation record
+            station = GasStation(**item_copy)
             db.add(station)
-            db.flush()  # get station_id
+            db.flush()  # populate station.station_id
 
+            # Add associated fuel prices
             for p in prices_data:
                 price = FuelPrice(
                     station_id=station.station_id,
                     fuel_type=p["fuel_type"],
-                    price_per_liter=p["price_per_liter"],
+                    price_per_liter=Decimal(str(p["price_per_liter"])),
                     date_updated=today,
-                    status="active",
+                    status=p.get("status", "active"),
                 )
                 db.add(price)
+                total_prices_count += 1
 
-            print(f"  [+] {station.name} ({station.brand}) — {len(prices_data)} fuel type(s)")
+            seeded_count += 1
+            print(f"  [+] #{station.station_id}: {station.name} ({station.brand}) — Lat: {station.latitude}, Lng: {station.longitude} | {len(prices_data)} fuel type(s)")
 
         db.commit()
-        print(f"\n[OK] {len(STATIONS)} gas stations seeded successfully!")
-        print("     Refresh your dashboard to see them on the map.")
+        print(f"\n[OK] Successfully seeded {seeded_count} gas stations and {total_prices_count} fuel prices!")
+        print("     All coordinates and station data have been updated from the external JSON file.")
+    except Exception as err:
+        db.rollback()
+        print(f"[ERROR] Seeding failed: {err}")
+        raise
     finally:
         db.close()
 
 
+def print_stats():
+    """Print current counts and overview of database records."""
+    db = SessionLocal()
+    try:
+        stations = db.query(GasStation).all()
+        prices_count = db.query(FuelPrice).count()
+
+        print(f"\n--- FuelFinder Database Overview ---")
+        print(f"Total Stations: {len(stations)}")
+        print(f"Total Prices:   {prices_count}")
+        print("\nCurrent Stations:")
+        for s in stations:
+            active_prices = [p for p in s.fuel_prices if p.status == "active"]
+            price_str = ", ".join(f"{p.fuel_type}: ₱{float(p.price_per_liter):.2f}" for p in active_prices)
+            print(f"  - [{s.station_id}] {s.name} ({s.brand}) @ ({float(s.latitude):.4f}, {float(s.longitude):.4f}) | {price_str}")
+        print("------------------------------------\n")
+    finally:
+        db.close()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Manage FuelFinder gas station data.")
+    parser.add_argument("--clear", action="store_true", help="Delete all gas stations and prices from database")
+    parser.add_argument("--backup", action="store_true", help="Backup existing stations and prices to JSON file")
+    parser.add_argument("--seed", action="store_true", help="Seed stations from JSON file (default behavior)")
+    parser.add_argument("--force", action="store_true", help="Clear existing records and re-seed from JSON file")
+    parser.add_argument("--stats", action="store_true", help="Print current database statistics")
+    parser.add_argument("--file", type=str, default=DEFAULT_DATA_PATH, help=f"Path to JSON file (default: {DEFAULT_DATA_PATH})")
+
+    args = parser.parse_args()
+
+    if args.stats:
+        print_stats()
+        return
+
+    if args.backup:
+        backup_database()
+        return
+
+    if args.clear:
+        backup_database()
+        clear_database()
+        return
+
+    if args.force:
+        seed_stations(data_file=args.file, force=True)
+        return
+
+    # Default action or --seed
+    seed_stations(data_file=args.file, force=False)
+
+
 if __name__ == "__main__":
-    seed_stations()
+    main()

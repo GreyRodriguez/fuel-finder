@@ -271,7 +271,7 @@ def apply_database_adjustments(gas_shift: float, diesel_shift: float, kerosene_s
                 fuel_prices_query = """
                     UPDATE fuel_prices fp
                     SET price_per_liter = ROUND(fp.price_per_liter + CASE 
-                            WHEN fp.fuel_type ILIKE '%gasoline%' THEN (SELECT gasoline_shift FROM price_adjustments WHERE id = 1)
+                            WHEN fp.fuel_type ILIKE '%gasoline%' OR fp.fuel_type ILIKE '%unleaded%' OR fp.fuel_type ILIKE '%u91%' OR fp.fuel_type ILIKE '%premium%' OR fp.fuel_type ILIKE '%p95%' THEN (SELECT gasoline_shift FROM price_adjustments WHERE id = 1)
                             WHEN fp.fuel_type ILIKE '%diesel%' THEN (SELECT diesel_shift FROM price_adjustments WHERE id = 1)
                             WHEN fp.fuel_type ILIKE '%kerosene%' THEN (SELECT kerosene_shift FROM price_adjustments WHERE id = 1)
                             ELSE 0.00

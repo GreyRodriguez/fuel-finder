@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import AdminNav from "../../components/AdminNav";
 
-const FUEL_TYPES = ["Gasoline", "Diesel", "Premium Gasoline"];
+const FUEL_TYPES = ["Unleaded 91", "Diesel", "Premium 95"];
 
 export default function Prices() {
   const [stations, setStations] = useState([]);
-  const [form, setForm] = useState({ station_id: "", fuel_type: "Gasoline", price_per_liter: "" });
+  const [form, setForm] = useState({ station_id: "", fuel_type: "Unleaded 91", price_per_liter: "" });
   const [msg, setMsg] = useState(""); const [err, setErr] = useState("");
 
   useEffect(() => { api.get("/api/admin/stations").then((r) => setStations(r.data)); }, []);
