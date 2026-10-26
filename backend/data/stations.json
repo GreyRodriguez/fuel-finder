@@ -1,0 +1,450 @@
+[
+  {
+    "name": "Flying V Gen. Santos Ave",
+    "brand": "Flying V",
+    "address": "General Santos Avenue corner Paraiso Street, Upper Bicutan",
+    "barangay": "Upper Bicutan",
+    "city": "Taguig City",
+    "latitude": 14.4897,
+    "longitude": 121.0634,
+    "contact_info": "02-8837-2244",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 82.93 },
+      { "fuel_type": "Diesel", "price_per_liter": 90.78 },
+      { "fuel_type": "Premium 95", "price_per_liter": 86.63 }
+    ]
+  },
+  {
+    "name": "Flying V Taguig",
+    "brand": "Flying V",
+    "address": "Marichu R. Tinga Avenue, Central Signal Village",
+    "barangay": "Central Signal Village",
+    "city": "Taguig City",
+    "latitude": 14.5116,
+    "longitude": 121.0566,
+    "contact_info": "02-8838-1122",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 83.25 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.00 },
+      { "fuel_type": "Premium 95", "price_per_liter": 86.95 }
+    ]
+  },
+  {
+    "name": "SEAOIL Taguig",
+    "brand": "SEAOIL",
+    "address": "Taguig Diversion Road, Diego Silang corridor",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5190,
+    "longitude": 121.0570,
+    "contact_info": "02-8397-1010",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.28 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.33 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.28 }
+    ]
+  },
+  {
+    "name": "SEAOIL Taguig - Branch Listing 2",
+    "brand": "SEAOIL",
+    "address": "Taguig Diversion Road (Branch 2), Diego Silang corridor",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5200,
+    "longitude": 121.0580,
+    "contact_info": "02-8397-1011",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.45 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.48 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.45 }
+    ]
+  },
+  {
+    "name": "SEAOIL Ususan Gen. Luna",
+    "brand": "SEAOIL",
+    "address": "21 General Luna Street, Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5303,
+    "longitude": 121.0769,
+    "contact_info": "02-8397-2020",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.60 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.72 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.60 }
+    ]
+  },
+  {
+    "name": "Petron Taguig",
+    "brand": "Petron",
+    "address": "C-5 Road, Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5280,
+    "longitude": 121.0610,
+    "contact_info": "02-8888-7711",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.33 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.00 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.33 }
+    ]
+  },
+  {
+    "name": "Petron Taguig - Branch Listing 2",
+    "brand": "Petron",
+    "address": "C-5 Road / Diego Silang Area (Branch 2), Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5250,
+    "longitude": 121.0660,
+    "contact_info": "02-8888-7712",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.55 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.20 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.55 }
+    ]
+  },
+  {
+    "name": "Petron Taguig - Branch Listing 3",
+    "brand": "Petron",
+    "address": "C-5 Road / Ususan Northbound (Branch 3), Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5290,
+    "longitude": 121.0600,
+    "contact_info": "02-8888-7713",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.70 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.35 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.70 }
+    ]
+  },
+  {
+    "name": "SEAOIL Cuasay, Signal Village",
+    "brand": "SEAOIL",
+    "address": "Cuasay Street corner MRT Avenue, North Signal Village",
+    "barangay": "North Signal Village",
+    "city": "Taguig City",
+    "latitude": 14.5160,
+    "longitude": 121.0560,
+    "contact_info": "02-8397-1010",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.75 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.85 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.75 }
+    ]
+  },
+  {
+    "name": "Phoenix Lawton Ave, Fort Bonifacio",
+    "brand": "Phoenix",
+    "address": "Lawton Avenue, Fort Bonifacio (near Philippine Army Compound)",
+    "barangay": "Fort Bonifacio",
+    "city": "Taguig City",
+    "latitude": 14.5350,
+    "longitude": 121.0430,
+    "contact_info": "02-8403-4013",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 87.93 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.40 },
+      { "fuel_type": "Premium 95", "price_per_liter": 89.93 }
+    ]
+  },
+  {
+    "name": "Petron Pasong Tamo Ext, BGC",
+    "brand": "Petron",
+    "address": "2331 Chino Roces Avenue Extension, Fort Bonifacio",
+    "barangay": "Fort Bonifacio",
+    "city": "Taguig City",
+    "latitude": 14.5261,
+    "longitude": 121.0271,
+    "contact_info": "02-8892-4545",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.10 },
+      { "fuel_type": "Diesel", "price_per_liter": 93.10 },
+      { "fuel_type": "Premium 95", "price_per_liter": 91.10 }
+    ]
+  },
+  {
+    "name": "Shell Cayetano Blvd 2",
+    "brand": "Shell",
+    "address": "Lot 12940 Levi Mariano Avenue corner Pedro Cayetano Blvd, Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5310,
+    "longitude": 121.0670,
+    "contact_info": "02-8876-1234",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.74 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.20 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.74 }
+    ]
+  },
+  {
+    "name": "Shell C5 Logcom Northbound",
+    "brand": "Shell",
+    "address": "C-5 Road Northbound, Logcom, Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5413,
+    "longitude": 121.0553,
+    "contact_info": "02-8876-5678",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.55 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.00 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.55 }
+    ]
+  },
+  {
+    "name": "Shell Taguig",
+    "brand": "Shell",
+    "address": "Cayetano Boulevard Area, Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5300,
+    "longitude": 121.0680,
+    "contact_info": "02-8876-9900",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.40 },
+      { "fuel_type": "Diesel", "price_per_liter": 93.85 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.40 }
+    ]
+  },
+  {
+    "name": "Caltex BGC",
+    "brand": "Caltex",
+    "address": "32nd Street, Crescent Park West, Bonifacio Global City",
+    "barangay": "Fort Bonifacio",
+    "city": "Taguig City",
+    "latitude": 14.5552,
+    "longitude": 121.0461,
+    "contact_info": "02-8818-4321",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.71 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.50 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.71 }
+    ]
+  },
+  {
+    "name": "Shell North, Signal Village",
+    "brand": "Shell",
+    "address": "North Signal Village Area, Taguig",
+    "barangay": "North Signal Village",
+    "city": "Taguig City",
+    "latitude": 14.5180,
+    "longitude": 121.0550,
+    "contact_info": "02-8876-7788",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.20 },
+      { "fuel_type": "Diesel", "price_per_liter": 93.60 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.20 }
+    ]
+  },
+  {
+    "name": "Shell Cayetano Blvd, Ususan",
+    "brand": "Shell",
+    "address": "Cayetano Avenue corner P. Mariano, Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5332,
+    "longitude": 121.0727,
+    "contact_info": "02-8876-9090",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.35 },
+      { "fuel_type": "Diesel", "price_per_liter": 93.75 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.35 }
+    ]
+  },
+  {
+    "name": "Shell Taguig - Branch Listing 2",
+    "brand": "Shell",
+    "address": "Pedro Cayetano Boulevard / Levi Mariano (Branch 2), Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5290,
+    "longitude": 121.0690,
+    "contact_info": "02-8876-9901",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.50 },
+      { "fuel_type": "Diesel", "price_per_liter": 93.95 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.50 }
+    ]
+  },
+  {
+    "name": "Caltex East Service Road, W. Bicutan",
+    "brand": "Caltex",
+    "address": "East Service Road corner Veterans Road (near FTI), Western Bicutan",
+    "barangay": "Western Bicutan",
+    "city": "Taguig City",
+    "latitude": 14.5000,
+    "longitude": 121.0550,
+    "contact_info": "02-8838-5566",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.45 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.35 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.45 }
+    ]
+  },
+  {
+    "name": "Caltex East Service Road, Taguig",
+    "brand": "Caltex",
+    "address": "East Service Road (Taguig Section), Western Bicutan",
+    "barangay": "Western Bicutan",
+    "city": "Taguig City",
+    "latitude": 14.5020,
+    "longitude": 121.0560,
+    "contact_info": "02-8838-5567",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.30 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.15 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.30 }
+    ]
+  },
+  {
+    "name": "Caltex Taguig",
+    "brand": "Caltex",
+    "address": "Taguig Central / C-5 corridor",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5200,
+    "longitude": 121.0650,
+    "contact_info": "02-8838-4411",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.60 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.40 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.60 }
+    ]
+  },
+  {
+    "name": "Caltex Taguig - Branch Listing 2",
+    "brand": "Caltex",
+    "address": "Taguig Central (Branch 2), Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.5220,
+    "longitude": 121.0670,
+    "contact_info": "02-8838-4412",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.65 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.55 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.65 }
+    ]
+  },
+  {
+    "name": "Nitro Gas Station",
+    "brand": "Nitro",
+    "address": "F. Manalo Street, Calzada-Tipas (near Vista Mall Taguig)",
+    "barangay": "Calzada",
+    "city": "Taguig City",
+    "latitude": 14.5350,
+    "longitude": 121.0805,
+    "contact_info": "02-8642-1234",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 87.50 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.90 },
+      { "fuel_type": "Premium 95", "price_per_liter": 89.50 }
+    ]
+  },
+  {
+    "name": "Petron Xpressfill Station",
+    "brand": "Petron",
+    "address": "59 Elisco Road, Barangay Ibayo-Tipas",
+    "barangay": "Ibayo-Tipas",
+    "city": "Taguig City",
+    "latitude": 14.5420,
+    "longitude": 121.0820,
+    "contact_info": "02-8643-7788",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.10 },
+      { "fuel_type": "Diesel", "price_per_liter": 91.80 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.10 }
+    ]
+  },
+  {
+    "name": "UniOil East Service Road",
+    "brand": "Unioil",
+    "address": "Km. 18 East Service Road, San Martin de Porres (Taguig / Parañaque Border)",
+    "barangay": "Western Bicutan",
+    "city": "Taguig City",
+    "latitude": 14.4820,
+    "longitude": 121.0450,
+    "contact_info": "02-8822-1919",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.08 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.70 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.08 }
+    ]
+  },
+  {
+    "name": "Caltex Levi Mariano / Pedro Cayetano",
+    "brand": "Caltex",
+    "address": "P. Cayetano Boulevard (formerly Levi Mariano Ave), Barangay Palingon-Tipas",
+    "barangay": "Palingon",
+    "city": "Taguig City",
+    "latitude": 14.5370,
+    "longitude": 121.0800,
+    "contact_info": "02-8837-9911",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.25 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.10 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.25 }
+    ]
+  },
+  {
+    "name": "Petron McKinley - Red Fuel",
+    "brand": "Petron",
+    "address": "C-5 Road / Upper McKinley Road, Fort Bonifacio",
+    "barangay": "Fort Bonifacio",
+    "city": "Taguig City",
+    "latitude": 14.5330,
+    "longitude": 121.0500,
+    "contact_info": "02-8856-3399",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 88.85 },
+      { "fuel_type": "Diesel", "price_per_liter": 92.80 },
+      { "fuel_type": "Premium 95", "price_per_liter": 90.85 }
+    ]
+  },
+  {
+    "name": "Shell 32nd Street Eastbound",
+    "brand": "Shell",
+    "address": "32nd Street corner Rizal Drive, Bonifacio Global City",
+    "barangay": "Fort Bonifacio",
+    "city": "Taguig City",
+    "latitude": 14.5548,
+    "longitude": 121.0458,
+    "contact_info": "02-8819-3200",
+    "status": "active",
+    "prices": [
+      { "fuel_type": "Unleaded 91", "price_per_liter": 89.75 },
+      { "fuel_type": "Diesel", "price_per_liter": 94.60 },
+      { "fuel_type": "Premium 95", "price_per_liter": 92.75 }
+    ]
+  }
+]

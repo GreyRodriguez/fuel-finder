@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-const fuelTypeColor = { Gasoline: "#f97316", Diesel: "#06b6d4", "Premium Gasoline": "#a855f7" };
+const fuelTypeColor = {
+  "Unleaded 91": "#f97316",
+  U91: "#f97316",
+  Gasoline: "#f97316",
+  Diesel: "#06b6d4",
+  DIESEL: "#06b6d4",
+  "Premium 95": "#a855f7",
+  P95: "#a855f7",
+  "Premium Gasoline": "#a855f7"
+};
 
 export default function StationDetails() {
   const { id } = useParams();

@@ -1,0 +1,36 @@
+# GasFinder - 28 Taguig Gas Station Listings
+# Coordinates are approximate estimates for prototype mapping, not all verified GPS pins.
+# Verify station identity, address, and coordinates before using for real-world navigation.
+# Format: No. | Gas Station | Latitude | Longitude
+
+1 | Flying V Gen. Santos Ave | 14.4897 | 121.0634
+2 | Flying V Taguig | 14.5116 | 121.0566
+3 | SEAOIL Taguig | 14.5190 | 121.0570
+4 | SEAOIL Taguig (duplicate listing) | 14.5200 | 121.0580
+5 | SEAOIL Ususan Gen. Luna | 14.5303 | 121.0769
+6 | Petron Taguig | 14.5280 | 121.0610
+7 | Petron Taguig (duplicate listing) | 14.5250 | 121.0660
+8 | Petron Taguig (third listing) | 14.5290 | 121.0600
+9 | SEAOIL Cuasay, Signal Village | 14.5160 | 121.0560
+10 | Phoenix Lawton Ave, Fort Bonifacio | 14.5350 | 121.0430
+11 | Petron Pasong Tamo Ext BGC | 14.5261 | 121.0271
+12 | Shell Cayetano Blvd 2 | 14.5310 | 121.0670
+13 | Shell C5 Logcom Northbound | 14.5413 | 121.0553
+14 | Shell Taguig | 14.5300 | 121.0680
+15 | Caltex BGC | 14.5552 | 121.0461
+16 | Shell North, Signal Village | 14.5180 | 121.0550
+17 | Shell Cayetano Blvd, Ususan | 14.5332 | 121.0727
+18 | Shell Taguig (duplicate listing) | 14.5290 | 121.0690
+19 | Caltex East Service Road, W. Bicutan | 14.5000 | 121.0550
+20 | Caltex East Service Road, Taguig | 14.5020 | 121.0560
+21 | Caltex Taguig | 14.5200 | 121.0650
+22 | Caltex Taguig (duplicate listing) | 14.5220 | 121.0670
+23 | Nitro Gas Station | 14.53033 | 121.07689
+24 | Petron Xpressfill Station | 14.5420 | 121.0820
+25 | UniOil East Service Road | 14.4820 | 121.0450
+26 | Caltex Levi Mariano / Pedro Cayetano | 14.5370 | 121.0800
+27 | Petron McKinley - Red Fuel | 14.5330 | 121.0500
+28 | Shell 32nd Street Eastbound | 14.5548 | 121.0458
+
+# Note: UniOil East Service Road may be outside Taguig (possibly Parañaque); verify the city boundary.
+# Duplicate/generic station names may refer to the same location or different branches; confirm before database entry.

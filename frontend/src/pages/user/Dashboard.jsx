@@ -31,7 +31,9 @@ const createStationIcon = (isSelected) =>
   });
 
 function PriceTag({ label, price, type }) {
-  const color = type === "Gasoline" ? "text-primary" : type === "Diesel" ? "text-accent" : "text-purple-400";
+  const isGas = type === "Gasoline" || type === "Unleaded 91" || type === "U91";
+  const isDiesel = type === "Diesel" || type === "DIESEL";
+  const color = isGas ? "text-primary" : isDiesel ? "text-accent" : "text-purple-400";
   return (
     <div className="flex justify-between items-center">
       <span className="text-xs text-slate-400">{label}</span>

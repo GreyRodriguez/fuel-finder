@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
-const fuelTypes = ["Gasoline", "Diesel", "Premium Gasoline"];
+const fuelTypes = ["Unleaded 91", "Diesel", "Premium 95"];
 
 export default function Compare() {
   const [params] = useSearchParams();
@@ -19,7 +19,13 @@ export default function Compare() {
   }, [ids]);
 
   const getPrice = (station, fuelType) => {
-    const p = station.fuel_prices?.find((fp) => fp.fuel_type === fuelType && fp.status === "active");
+    const p = station.fuel_prices?.find(
+      (fp) =>
+        (fp.fuel_type === fuelType ||
+          (fuelType === "Unleaded 91" && fp.fuel_type === "Gasoline") ||
+          (fuelType === "Premium 95" && fp.fuel_type === "Premium Gasoline")) &&
+        fp.status === "active"
+    );
     return p ? parseFloat(p.price_per_liter) : null;
   };
 
