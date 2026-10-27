@@ -41,12 +41,12 @@ export default function Stations() {
   };
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
+    <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col md:flex-row">
       <AdminNav />
-      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-black text-white">Gas Stations</h1>
-          <button onClick={() => { setForm(EMPTY); setEditing(null); setShowForm(!showForm); setErr(""); setMsg(""); }} className="btn-primary text-sm px-5 py-2.5">
+      <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 min-w-0 overscroll-contain">
+        <div className="flex items-center justify-between gap-3 mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-black text-white">Gas Stations</h1>
+          <button onClick={() => { setForm(EMPTY); setEditing(null); setShowForm(!showForm); setErr(""); setMsg(""); }} className="btn-primary text-sm px-5 py-2.5 whitespace-nowrap">
             {showForm ? "Cancel" : "+ Add Station"}
           </button>
         </div>
@@ -55,22 +55,22 @@ export default function Stations() {
         {err && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 mb-4 text-sm">{err}</div>}
 
         {showForm && (
-          <div className="glass-card p-6 mb-6">
+          <div className="glass-card p-4 md:p-6 mb-6">
             <h2 className="text-white font-bold text-lg mb-4">{editing ? "Edit Station" : "Add New Station"}</h2>
-            <form onSubmit={submit} className="grid grid-cols-2 gap-4">
+            <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[["name","Station Name","text",true],["brand","Brand","text",false],["address","Address","text",true],["barangay","Barangay","text",false],["contact_info","Contact Info","text",false]].map(([k,l,t,req])=>(
-                <div key={k} className={k === "address" ? "col-span-2" : ""}>
+                <div key={k} className={k === "address" ? "sm:col-span-2" : ""}>
                   <label className="label">{l}</label>
                   <input className="input-field" type={t} value={form[k]} onChange={(e)=>setForm({...form,[k]:e.target.value})} required={req} />
                 </div>
               ))}
               <div>
                 <label className="label">Latitude</label>
-                <input className="input-field" type="number" step="0.0000001" value={form.latitude} onChange={(e)=>setForm({...form,latitude:e.target.value})} required />
+                <input className="input-field" type="number" inputMode="decimal" step="0.0000001" value={form.latitude} onChange={(e)=>setForm({...form,latitude:e.target.value})} required />
               </div>
               <div>
                 <label className="label">Longitude</label>
-                <input className="input-field" type="number" step="0.0000001" value={form.longitude} onChange={(e)=>setForm({...form,longitude:e.target.value})} required />
+                <input className="input-field" type="number" inputMode="decimal" step="0.0000001" value={form.longitude} onChange={(e)=>setForm({...form,longitude:e.target.value})} required />
               </div>
               <div>
                 <label className="label">City</label>
@@ -83,14 +83,40 @@ export default function Stations() {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-              <div className="col-span-2">
-                <button type="submit" className="btn-primary px-8 py-3">{editing ? "Update Station" : "Create Station"}</button>
+              <div className="sm:col-span-2">
+                <button type="submit" className="btn-primary px-8 py-3 w-full sm:w-auto">{editing ? "Update Station" : "Create Station"}</button>
               </div>
             </form>
           </div>
         )}
 
-        <div className="glass-card overflow-hidden">
+        {/* Mobile / tablet: station cards */}
+        <div className="lg:hidden space-y-3">
+          {stations.map((s) => (
+            <div key={s.station_id} className="glass-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-white font-semibold">{s.name}</p>
+                  <p className="text-xs text-slate-400">{s.brand || "—"} · {s.city}</p>
+                </div>
+                <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${s.status === "active" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
+                  {s.status}
+                </span>
+              </div>
+              <p className="text-sm text-slate-400 mt-2">{s.address}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button onClick={() => startEdit(s)} className="text-sm btn-secondary">Edit</button>
+                <button onClick={() => remove(s.station_id)} className="text-sm btn-danger py-2.5">Delete</button>
+              </div>
+            </div>
+          ))}
+          {stations.length === 0 && (
+            <div className="glass-card px-4 py-8 text-center text-slate-500 text-sm">No stations yet. Add one above.</div>
+          )}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden lg:block glass-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-white/10">
               <tr>

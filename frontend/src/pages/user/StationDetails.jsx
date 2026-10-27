@@ -27,7 +27,7 @@ export default function StationDetails() {
   }, [id]);
 
   if (loading) return (
-    <div className="min-h-screen bg-dark-900 flex items-center justify-center">
+    <div className="min-h-dvh bg-dark-900 flex items-center justify-center">
       <p className="text-slate-400">Loading station details…</p>
     </div>
   );
@@ -35,26 +35,26 @@ export default function StationDetails() {
   if (!station) return null;
 
   return (
-    <div className="min-h-screen bg-dark-900">
+    <div className="min-h-dvh bg-dark-900">
       {/* Navbar */}
-      <nav className="bg-dark-800 border-b border-white/10 px-6 py-3 flex items-center gap-4">
+      <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4">
         <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm">
           ← Back to Map
         </button>
         <span className="text-white font-bold text-lg">Station Details</span>
       </nav>
 
-      <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Header card */}
-        <div className="glass-card p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-black text-white">{station.name}</h1>
+        <div className="glass-card p-4 md:p-6">
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-black text-white">{station.name}</h1>
               <p className="text-primary font-semibold">{station.brand}</p>
               <p className="text-slate-400 text-sm mt-1">{station.address}</p>
               {station.barangay && <p className="text-slate-500 text-xs">{station.barangay}, {station.city}</p>}
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+            <span className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-semibold ${
               station.status === "active" ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-red-500/10 text-red-400"
             }`}>
               {station.status}
@@ -69,7 +69,7 @@ export default function StationDetails() {
         </div>
 
         {/* Fuel Prices */}
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 md:p-6">
           <h2 className="text-white font-bold text-lg mb-4">Fuel Prices</h2>
           {station.fuel_prices?.length === 0 && (
             <p className="text-slate-500 text-sm">No prices listed yet.</p>
@@ -94,7 +94,7 @@ export default function StationDetails() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <a
             href={`https://www.openstreetmap.org/?mlat=${station.latitude}&mlon=${station.longitude}&zoom=17`}
             target="_blank"

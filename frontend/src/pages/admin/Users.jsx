@@ -25,14 +25,15 @@ export default function Users() {
   };
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
+    <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col md:flex-row">
       <AdminNav />
-      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <h1 className="text-2xl font-black text-white">User Management</h1>
+      <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 min-w-0 overscroll-contain">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-black text-white">User Management</h1>
           <input
             id="user-search"
-            className="input-field max-w-xs"
+            type="search"
+            className="input-field w-full sm:max-w-xs"
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => { setSearch(e.target.value); load(e.target.value); }}
@@ -41,7 +42,34 @@ export default function Users() {
 
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 mb-4 text-sm">{msg}</div>}
 
-        <div className="glass-card overflow-hidden">
+        {/* Mobile / tablet: user cards */}
+        <div className="lg:hidden space-y-3">
+          {users.map((u) => (
+            <div key={u.user_id} className="glass-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-white font-semibold truncate">{u.full_name}</p>
+                  <p className="text-sm text-slate-400 truncate">{u.email}</p>
+                </div>
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${u.role === "admin" ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"}`}>{u.role}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs ${u.status === "active" ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>{u.status}</span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 mt-2">Joined {u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button onClick={() => toggleStatus(u)} className="text-sm btn-secondary">{u.status === "active" ? "Deactivate" : "Activate"}</button>
+                <button onClick={() => remove(u)} className="text-sm btn-danger py-2.5">Delete</button>
+              </div>
+            </div>
+          ))}
+          {users.length === 0 && (
+            <div className="glass-card px-4 py-8 text-center text-slate-500 text-sm">No users found.</div>
+          )}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden lg:block glass-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-white/10">
               <tr>
