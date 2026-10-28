@@ -23,18 +23,18 @@ export default function Prices() {
   const selectedStation = stations.find((s) => s.station_id === parseInt(form.station_id));
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
+    <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col md:flex-row">
       <AdminNav />
-      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Fuel Price Management</h1>
+      <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 min-w-0 overscroll-contain">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-black text-white">Fuel Price Management</h1>
         </div>
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 mb-4 text-sm">{msg}</div>}
         {err && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 mb-4 text-sm">{err}</div>}
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Form */}
-          <div className="glass-card p-6">
+          <div className="glass-card p-4 md:p-6">
             <h2 className="text-white font-bold text-lg mb-5">Add / Update Price</h2>
             <form onSubmit={submit} className="space-y-4">
               <div>
@@ -54,7 +54,7 @@ export default function Prices() {
               </div>
               <div>
                 <label className="label">Price per Liter (₱)</label>
-                <input id="price-value" type="number" step="0.01" min="0" className="input-field" placeholder="e.g. 62.50"
+                <input id="price-value" type="number" inputMode="decimal" step="0.01" min="0" className="input-field" placeholder="e.g. 62.50"
                   value={form.price_per_liter} onChange={(e) => setForm({ ...form, price_per_liter: e.target.value })} required />
               </div>
               <button type="submit" className="btn-primary w-full py-3">Save Price</button>
@@ -62,7 +62,7 @@ export default function Prices() {
           </div>
 
           {/* Current prices for selected station */}
-          <div className="glass-card p-6">
+          <div className="glass-card p-4 md:p-6">
             <h2 className="text-white font-bold text-lg mb-5">
               {selectedStation ? `${selectedStation.name} — Current Prices` : "Select a station to view prices"}
             </h2>

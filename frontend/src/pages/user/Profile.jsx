@@ -46,8 +46,8 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900">
-      <nav className="bg-dark-800 border-b border-white/10 px-6 py-3 flex items-center gap-4">
+    <div className="min-h-dvh bg-dark-900">
+      <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4">
         <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white text-sm transition-colors">
           ← Dashboard
         </button>
@@ -59,12 +59,12 @@ export default function Profile() {
         </div>
       </nav>
 
-      <div className="max-w-lg mx-auto p-6 space-y-6">
+      <div className="max-w-lg mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 text-sm">{msg}</div>}
         {err && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm">{err}</div>}
 
         {/* Profile info */}
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 md:p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-white font-bold text-lg">Account Info</h2>
             <button onClick={() => setEditing(!editing)} className="btn-secondary text-sm px-4 py-2">
@@ -110,7 +110,7 @@ export default function Profile() {
         </div>
 
         {/* Change password */}
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 md:p-6">
           <h2 className="text-white font-bold text-lg mb-5">Change Password</h2>
           <form onSubmit={changePassword} className="space-y-4">
             <div>

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 import AdminNav from "../../components/AdminNav";
 
 export default function AdminProfile() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_new_password: "" });
   const [msg, setMsg] = useState(""); const [err, setErr] = useState("");
@@ -19,17 +23,17 @@ export default function AdminProfile() {
   };
 
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-dark-900 flex">
+    <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col md:flex-row">
       <AdminNav />
-      <main className="flex-1 h-screen overflow-y-auto p-8 min-w-0 overscroll-contain">
-        <div className="mb-8">
-          <h1 className="text-2xl font-black text-white">Admin Profile</h1>
+      <main className="flex-1 min-h-0 overflow-y-auto p-4 md:p-8 min-w-0 overscroll-contain">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-black text-white">Admin Profile</h1>
         </div>
         {msg && <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 mb-4 text-sm">{msg}</div>}
         {err && <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 mb-4 text-sm">{err}</div>}
 
         <div className="max-w-lg space-y-6">
-          <div className="glass-card p-6">
+          <div className="glass-card p-4 md:p-6">
             <h2 className="text-white font-bold text-lg mb-4">Account Info</h2>
             <div className="space-y-3">
               <div><p className="label">Full Name</p><p className="text-white font-medium">{profile?.full_name}</p></div>
@@ -37,7 +41,7 @@ export default function AdminProfile() {
               <div><p className="label">Role</p><span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">{profile?.role}</span></div>
             </div>
           </div>
-          <div className="glass-card p-6">
+          <div className="glass-card p-4 md:p-6">
             <h2 className="text-white font-bold text-lg mb-5">Change Password</h2>
             <form onSubmit={changePassword} className="space-y-4">
               <div><label className="label">Current Password</label><input type="password" className="input-field" value={pwForm.current_password} onChange={(e)=>setPwForm({...pwForm,current_password:e.target.value})} required /></div>

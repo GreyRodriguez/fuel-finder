@@ -38,6 +38,9 @@ body {
   height: 100%;
 }
 
+/* Remove the grey flash on tap in mobile WebKit */
+html { -webkit-tap-highlight-color: transparent; }
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #13131f; }
 ::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 9999px; }
@@ -113,6 +116,11 @@ body {
 .input-field::placeholder { color: #64748b; }
 .input-field:focus { border-color: #f97316; box-shadow: 0 0 0 1px #f97316; }
 
+/* iOS Safari auto-zooms on focus when an input is < 16px — use 16px on phones */
+@media (max-width: 767px) {
+  .input-field { font-size: 16px; }
+}
+
 .label {
   font-size: 0.875rem;
   font-weight: 500;
@@ -142,3 +150,27 @@ body {
 }
 .leaflet-popup-tip { background: #1a1a2e !important; }
 .leaflet-popup-close-button { color: #94a3b8 !important; }
+
+/* ── Mobile dashboard: map + draggable bottom sheet ─────────────────────
+   --sheet-h is set on .ff-sheet-wrap from JS (Dashboard.jsx). */
+@media (max-width: 767px) {
+  .ff-sheet {
+    height: var(--sheet-h, 50%);
+    transition: height 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  /* Keep Leaflet's bottom controls (attribution) just above the sheet */
+  .ff-sheet-wrap .leaflet-bottom {
+    bottom: var(--sheet-h, 50%);
+    transition: bottom 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  /* Follow the finger 1:1 while dragging */
+  .ff-sheet-wrap[data-dragging] .ff-sheet,
+  .ff-sheet-wrap[data-dragging] .leaflet-bottom {
+    transition: none;
+  }
+  .ff-sheet-wrap .leaflet-container { border-radius: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ff-sheet, .ff-sheet-wrap .leaflet-bottom { transition: none !important; }
+}

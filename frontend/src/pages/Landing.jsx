@@ -5,13 +5,13 @@ export default function Landing() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="min-h-screen bg-dark-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-dvh bg-dark-900 flex flex-col relative overflow-hidden">
       {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl pointer-events-none glow-primary" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[320px] h-[320px] md:w-[600px] md:h-[600px] bg-primary/10 rounded-full blur-3xl pointer-events-none glow-primary" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header navigation */}
-      <header className="relative z-20 border-b border-white/10 px-6 py-4 flex items-center justify-between">
+      <header className="relative z-20 border-b border-white/10 px-4 md:px-6 py-4 flex items-center justify-between gap-2">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-md shadow-primary/30">
             <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ export default function Landing() {
       </header>
 
       {/* Main Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10 text-center px-6 max-w-2xl mx-auto py-12">
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 text-center px-5 md:px-6 max-w-2xl mx-auto py-10 md:py-12">
         {/* Logo badge */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
@@ -66,14 +66,14 @@ export default function Landing() {
           <span className="text-3xl font-black text-white tracking-tight">Fuel<span className="text-primary">Finder</span></span>
         </div>
 
-        <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
+        <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
           Find the Cheapest<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-amber-400">
             Gas in Taguig
           </span>
         </h1>
 
-        <p className="text-slate-400 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
+        <p className="text-slate-400 text-base md:text-lg mb-8 md:mb-10 max-w-lg mx-auto leading-relaxed">
           Real-time fuel prices from verified gas stations across Taguig City, Philippines.
           Compare, find, and save every time you fill up.
         </p>
@@ -102,7 +102,7 @@ export default function Landing() {
         </div>
 
         {/* Feature pills */}
-        <div className="mt-16 flex flex-wrap justify-center gap-3">
+        <div className="mt-10 md:mt-16 flex flex-wrap justify-center gap-3">
           {["📍 Live Map", "⛽ Price Comparison", "🔍 Search Stations", "🚗 Nearest First"].map((f) => (
             <span key={f} className="glass-card px-4 py-2 text-sm text-slate-300">{f}</span>
           ))}
