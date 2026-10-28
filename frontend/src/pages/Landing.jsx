@@ -92,7 +92,7 @@ export default function Landing() {
           ) : (
             <>
               <Link to="/register" id="cta-register" className="btn-primary text-lg px-8 py-4 flex-1">
-                Sign Up — It's Free
+                Sign Up 
               </Link>
               <Link to="/login" id="cta-login" className="btn-secondary text-lg px-8 py-4 flex-1">
                 Log In
