@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -17,6 +17,18 @@ L.Icon.Default.mergeOptions({
 });
 
 const TAGUIG_CENTER = [14.5243, 121.0792];
+const MOVE_REFETCH_KM = 0.25; // reload nearby stations once the user has moved this far
+
+// "You are here" pin: blue dot with a white ring
+const userIcon = L.divIcon({
+  className: "",
+  html: `<div style="
+    width:20px;height:20px;background:#3b82f6;border:3px solid #fff;
+    border-radius:50%;box-shadow:0 0 0 4px rgba(59,130,246,0.35),0 2px 8px rgba(0,0,0,0.4);
+  "></div>`,
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
 
 // Mobile bottom-sheet snap points, smallest → largest
 const SNAP_ORDER = ["peek", "half", "full"];
@@ -55,6 +67,18 @@ function PriceTag({ label, price, type }) {
   );
 }
 
+/** Great-circle distance between two lat/lng points, in kilometers. */
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -74,6 +98,8 @@ export default function Dashboard() {
   const mapRef = useRef(null);
   const markerRefs = useRef({});
   const dragRef = useRef(null);
+  const lastFetchRef = useRef(null);   // position the station list was last loaded for
+  const centeredRef = useRef(false);   // map has been moved to the user's first fix
 
   const fetchStations = useCallback(async (lat, lng) => {
     try {
@@ -86,15 +112,37 @@ export default function Dashboard() {
     }
   }, []);
 
+  // Track the user's live position. Nothing is stored: every visit asks the device for a fresh fix
+  // (maximumAge: 0 forbids cached positions), so the pin always reflects where the user is now.
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
+    const fallback = () => {
+      if (lastFetchRef.current) return;
+      lastFetchRef.current = { lat: TAGUIG_CENTER[0], lng: TAGUIG_CENTER[1] };
+      fetchStations(TAGUIG_CENTER[0], TAGUIG_CENTER[1]);
+    };
+    if (!navigator.geolocation) { fallback(); return; }
+
+    const watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
         setUserLocation(loc);
-        fetchStations(loc.lat, loc.lng);
+
+        const last = lastFetchRef.current;
+        if (!last || haversineKm(last.lat, last.lng, loc.lat, loc.lng) > MOVE_REFETCH_KM) {
+          lastFetchRef.current = loc;
+          fetchStations(loc.lat, loc.lng);
+        }
+
+        // MapContainer's `center` only applies on mount, so move the map to the user once
+        if (!centeredRef.current && mapRef.current) {
+          centeredRef.current = true;
+          mapRef.current.flyTo([loc.lat, loc.lng], 15, { duration: 0.8 });
+        }
       },
-      () => fetchStations(TAGUIG_CENTER[0], TAGUIG_CENTER[1])
+      fallback,
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
     );
+    return () => navigator.geolocation.clearWatch(watchId);
   }, [fetchStations]);
 
   // ── Bottom sheet (mobile only; CSS ignores --sheet-h at ≥768px) ──────────
@@ -183,6 +231,24 @@ export default function Dashboard() {
     setSearchResults(res.data);
   };
 
+  const hasUserPosition =
+    Number.isFinite(userLocation?.lat) && Number.isFinite(userLocation?.lng);
+
+  // Derived: closest station to the user's position ({ station, distanceKm } or null)
+  const nearest = useMemo(() => {
+    if (!Number.isFinite(userLocation?.lat) || !Number.isFinite(userLocation?.lng)) return null;
+    if (!Array.isArray(stations) || stations.length === 0) return null;
+    let best = null;
+    for (const s of stations) {
+      const lat = parseFloat(s.latitude);
+      const lng = parseFloat(s.longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+      const d = haversineKm(userLocation.lat, userLocation.lng, lat, lng);
+      if (best === null || d < best.distanceKm) best = { station: s, distanceKm: d }; // strict < keeps the first on ties
+    }
+    return best;
+  }, [userLocation, stations]);
+
   const displayed = searchResults ?? stations;
 
   const sorted = [...displayed].sort((a, b) => {
@@ -209,6 +275,21 @@ export default function Dashboard() {
     if (!map) return;
     map.once("moveend", () => markerRefs.current[s.station_id]?.openPopup());
     map.flyTo([parseFloat(s.latitude), parseFloat(s.longitude)], Math.max(map.getZoom(), 16), { duration: 0.6 });
+  };
+
+  // Snap the map back to the user's blue dot
+  const handleLocateMe = () => {
+    const map = mapRef.current;
+    if (!map || !hasUserPosition) return;
+    const zoom = Math.max(map.getZoom(), 16);
+    let target = L.latLng(userLocation.lat, userLocation.lng);
+    if (isMobile) {
+      // The bottom sheet covers the lower part of the map: shift the view centre down by half the
+      // sheet height so the dot lands in the middle of the *visible* map instead of behind the sheet.
+      const sheetPx = wrapRef.current?.querySelector(".ff-sheet")?.offsetHeight ?? 0;
+      target = map.unproject(map.project(target, zoom).add([0, sheetPx / 2]), zoom);
+    }
+    map.flyTo(target, zoom, { duration: 0.6 });
   };
 
   const countLabel = loading
@@ -392,6 +473,21 @@ export default function Dashboard() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            {hasUserPosition && (
+              <>
+                {Number.isFinite(userLocation.accuracy) && (
+                  <Circle
+                    center={[userLocation.lat, userLocation.lng]}
+                    radius={userLocation.accuracy}
+                    interactive={false}
+                    pathOptions={{ color: "#3b82f6", weight: 1, fillColor: "#3b82f6", fillOpacity: 0.12 }}
+                  />
+                )}
+                <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon} zIndexOffset={1000}>
+                  <Popup>You are here</Popup>
+                </Marker>
+              </>
+            )}
             {sorted.map((s) => (
               <Marker
                 key={s.station_id}
@@ -402,6 +498,11 @@ export default function Dashboard() {
               >
                 <Popup>
                   <div className="min-w-[200px]">
+                    {nearest?.station.station_id === s.station_id && (
+                      <span className="inline-block rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 mb-1">
+                        Closest to you!
+                      </span>
+                    )}
                     <p className="font-bold text-white text-sm mb-1">{s.name}</p>
                     <p className="text-xs text-slate-400 mb-2">{s.address}</p>
                     {s.fuel_prices?.map((p) => (
@@ -421,6 +522,28 @@ export default function Dashboard() {
               </Marker>
             ))}
           </MapContainer>
+          {!(isMobile && sheet === "full") && (
+            <button
+              type="button"
+              id="locate-me-btn"
+              onClick={handleLocateMe}
+              disabled={!hasUserPosition}
+              aria-label="My location"
+              title={hasUserPosition ? "My location" : "Waiting for your location…"}
+              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-12 h-12 rounded-full bg-white text-blue-600 shadow-lg
+                         border border-black/10 flex items-center justify-center cursor-pointer touch-manipulation
+                         hover:bg-slate-100 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LocateFixed className="w-6 h-6" strokeWidth={2.2} aria-hidden="true" />
+            </button>
+          )}
+          {stations.length > 0 && (!hasUserPosition || nearest) && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none max-w-[90%] text-center bg-white text-slate-800 text-sm font-medium rounded-lg shadow-lg px-4 py-2">
+              {nearest
+                ? `Nearest: ${nearest.station.name} (${nearest.distanceKm.toFixed(2)} km away)`
+                : "Locating you..."}
+            </div>
+          )}
         </div>
       </div>
     </div>

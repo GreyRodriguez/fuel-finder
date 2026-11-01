@@ -169,8 +169,14 @@ html { -webkit-tap-highlight-color: transparent; }
     transition: none;
   }
   .ff-sheet-wrap .leaflet-container { border-radius: 0; }
+  /* "My location" button rides on top of the sheet edge (clear of the attribution line) */
+  .ff-sheet-wrap .ff-locate-btn {
+    bottom: calc(var(--sheet-h, 50%) + 2.5rem);
+    transition: bottom 0.3s cubic-bezier(0.32, 0.72, 0, 1), transform 0.15s;
+  }
+  .ff-sheet-wrap[data-dragging] .ff-locate-btn { transition: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ff-sheet, .ff-sheet-wrap .leaflet-bottom { transition: none !important; }
+  .ff-sheet, .ff-sheet-wrap .leaflet-bottom, .ff-sheet-wrap .ff-locate-btn { transition: none !important; }
 }
