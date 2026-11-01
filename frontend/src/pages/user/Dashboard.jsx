@@ -277,6 +277,21 @@ export default function Dashboard() {
     map.flyTo([parseFloat(s.latitude), parseFloat(s.longitude)], Math.max(map.getZoom(), 16), { duration: 0.6 });
   };
 
+  // Snap the map back to the user's blue dot
+  const handleLocateMe = () => {
+    const map = mapRef.current;
+    if (!map || !hasUserPosition) return;
+    const zoom = Math.max(map.getZoom(), 16);
+    let target = L.latLng(userLocation.lat, userLocation.lng);
+    if (isMobile) {
+      // The bottom sheet covers the lower part of the map: shift the view centre down by half the
+      // sheet height so the dot lands in the middle of the *visible* map instead of behind the sheet.
+      const sheetPx = wrapRef.current?.querySelector(".ff-sheet")?.offsetHeight ?? 0;
+      target = map.unproject(map.project(target, zoom).add([0, sheetPx / 2]), zoom);
+    }
+    map.flyTo(target, zoom, { duration: 0.6 });
+  };
+
   const countLabel = loading
     ? "Loading stations…"
     : `${sorted.length} station${sorted.length !== 1 ? "s" : ""} ${searchResults ? "found" : "nearby"}`;
@@ -507,6 +522,21 @@ export default function Dashboard() {
               </Marker>
             ))}
           </MapContainer>
+          {!(isMobile && sheet === "full") && (
+            <button
+              type="button"
+              id="locate-me-btn"
+              onClick={handleLocateMe}
+              disabled={!hasUserPosition}
+              aria-label="My location"
+              title={hasUserPosition ? "My location" : "Waiting for your location…"}
+              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-12 h-12 rounded-full bg-white text-blue-600 shadow-lg
+                         border border-black/10 flex items-center justify-center cursor-pointer touch-manipulation
+                         hover:bg-slate-100 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LocateFixed className="w-6 h-6" strokeWidth={2.2} aria-hidden="true" />
+            </button>
+          )}
           {stations.length > 0 && (!hasUserPosition || nearest) && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none max-w-[90%] text-center bg-white text-slate-800 text-sm font-medium rounded-lg shadow-lg px-4 py-2">
               {nearest
