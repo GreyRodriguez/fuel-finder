@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 
@@ -48,8 +49,8 @@ export default function Profile() {
   return (
     <div className="min-h-dvh bg-dark-900">
       <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4">
-        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white text-sm transition-colors">
-          ← Dashboard
+        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white text-sm transition-colors inline-flex items-center gap-1.5">
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Dashboard
         </button>
         <span className="text-white font-bold text-lg">My Profile</span>
         <div className="ml-auto">

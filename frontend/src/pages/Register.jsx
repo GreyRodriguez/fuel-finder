@@ -55,7 +55,7 @@ export default function Register() {
                 id="reg-name"
                 type="text"
                 className="input-field"
-                placeholder="Juan dela Cruz"
+                placeholder="Enter your name"
                 value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                 required
@@ -114,7 +114,7 @@ export default function Register() {
                   id="reg-confirm"
                   type={showConfirmPassword ? "text" : "password"}
                   className="input-field pr-11"
-                  placeholder="Repeat your password"
+                  placeholder="Confirm your password"
                   value={form.confirm_password}
                   onChange={(e) => setForm({ ...form, confirm_password: e.target.value })}
                   required

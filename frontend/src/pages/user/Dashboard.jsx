@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useAuth } from "../../context/AuthContext";
@@ -299,7 +300,7 @@ export default function Dashboard() {
                   onFocus={() => { if (isMobile && sheet !== "full") applySnap("full"); }}
                   onChange={(e) => { setSearch(e.target.value); if (!e.target.value) setSearchResults(null); }}
                 />
-                <button type="submit" aria-label="Search" className="btn-primary px-3 py-2 text-sm">🔍</button>
+                <button type="submit" aria-label="Search" className="btn-primary px-3 py-2 text-sm flex items-center justify-center"><Search className="w-4 h-4" strokeWidth={2.2} aria-hidden="true" /></button>
               </form>
               <div className="flex gap-2">
                 {["nearest", "cheapest"].map((f) => (
@@ -307,11 +308,14 @@ export default function Dashboard() {
                     key={f}
                     id={`filter-${f}`}
                     onClick={() => setFilter(f)}
-                    className={`flex-1 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium capitalize transition-all flex items-center justify-center gap-1.5 ${
                       filter === f ? "bg-primary text-white" : "bg-dark-600 text-slate-400 hover:text-white"
                     }`}
                   >
-                    {f === "nearest" ? "📍 Nearest" : "💸 Cheapest"}
+                    {f === "nearest"
+                      ? <LocateFixed className="w-4 h-4" aria-hidden="true" />
+                      : <TrendingDown className="w-4 h-4" aria-hidden="true" />}
+                    {f === "nearest" ? "Nearest" : "Cheapest"}
                   </button>
                 ))}
               </div>
@@ -359,13 +363,15 @@ export default function Dashboard() {
                   </Link>
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleCompare(s.station_id); }}
-                    className={`text-xs px-3 py-2.5 md:py-1.5 rounded-xl border transition-all ${
+                    className={`text-xs px-3 py-2.5 md:py-1.5 rounded-xl border transition-all inline-flex items-center justify-center gap-1 ${
                       compareList.includes(s.station_id)
                         ? "bg-primary/20 border-primary/40 text-primary"
                         : "bg-dark-600 border-white/10 text-slate-400 hover:text-white"
                     }`}
                   >
-                    {compareList.includes(s.station_id) ? "✓ Added" : "+ Compare"}
+                    {compareList.includes(s.station_id)
+                      ? <><Check className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Added</>
+                      : <><Plus className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Compare</>}
                   </button>
                 </div>
               </div>
@@ -406,9 +412,9 @@ export default function Dashboard() {
                     ))}
                     <Link
                       to={`/dashboard/station/${s.station_id}`}
-                      className="block mt-2 text-center text-xs bg-primary text-white rounded-lg py-1.5"
+                      className="mt-2 flex items-center justify-center gap-1 text-xs bg-primary text-white rounded-lg py-1.5"
                     >
-                      View Details →
+                      View Details <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </Link>
                   </div>
                 </Popup>

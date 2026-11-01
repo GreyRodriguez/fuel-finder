@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LayoutDashboard, Fuel, Banknote, Users, TrendingUp, UserRound, LogOut } from "lucide-react";
 import useMediaQuery, { MOBILE_QUERY } from "../hooks/useMediaQuery";
 
 const navLinks = [
-  { to: "/admin", label: "Dashboard", icon: "📊" },
-  { to: "/admin/stations", label: "Stations", icon: "⛽" },
-  { to: "/admin/prices", label: "Fuel Prices", icon: "💰" },
-  { to: "/admin/users", label: "Users", icon: "👥" },
-  { to: "/admin/reports", label: "Reports", icon: "📈" },
-  { to: "/admin/profile", label: "Profile", icon: "👤" },
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/stations", label: "Stations", icon: Fuel },
+  { to: "/admin/prices", label: "Fuel Prices", icon: Banknote },
+  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/reports", label: "Reports", icon: TrendingUp },
+  { to: "/admin/profile", label: "Profile", icon: UserRound },
 ];
 
 /**
@@ -135,7 +136,7 @@ export default function AdminNav() {
                     : "text-slate-400 hover:text-white hover:bg-dark-700"
                 }`}
               >
-                <span className="text-base">{item.icon}</span>
+                <item.icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.9} aria-hidden="true" />
                 <span>{item.label}</span>
               </Link>
             );
@@ -152,7 +153,7 @@ export default function AdminNav() {
             onClick={handleLogout}
             className="btn-danger w-full text-sm py-2 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>🚪</span> Logout
+            <LogOut className="w-4 h-4" strokeWidth={2} aria-hidden="true" /> Logout
           </button>
         </div>
       </aside>
