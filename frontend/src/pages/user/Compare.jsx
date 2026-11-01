@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import api from "../../services/api";
 
 const fuelTypes = ["Unleaded 91", "Diesel", "Premium 95"];
@@ -39,8 +40,8 @@ export default function Compare() {
   return (
     <div className="min-h-dvh bg-dark-900">
       <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4 sticky top-0 z-20">
-        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm py-2 pr-2">
-          ← Back
+        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm py-2 pr-2 inline-flex items-center gap-1.5">
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back
         </button>
         <span className="text-white font-bold text-lg">Price Comparison</span>
       </nav>

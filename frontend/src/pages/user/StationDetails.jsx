@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Phone, MapPin, Map } from "lucide-react";
 import api from "../../services/api";
 
 const fuelTypeColor = {
@@ -38,8 +39,8 @@ export default function StationDetails() {
     <div className="min-h-dvh bg-dark-900">
       {/* Navbar */}
       <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4">
-        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm">
-          ← Back to Map
+        <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm inline-flex items-center gap-1.5">
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to Map
         </button>
         <span className="text-white font-bold text-lg">Station Details</span>
       </nav>
@@ -61,10 +62,10 @@ export default function StationDetails() {
             </span>
           </div>
           {station.contact_info && (
-            <p className="text-slate-400 text-sm">📞 {station.contact_info}</p>
+            <p className="text-slate-400 text-sm flex items-center gap-2"><Phone className="w-4 h-4 flex-shrink-0" aria-hidden="true" /> {station.contact_info}</p>
           )}
           {station.distance_km && (
-            <p className="text-accent text-sm font-medium mt-1">📍 {station.distance_km} km away</p>
+            <p className="text-accent text-sm font-medium mt-1 flex items-center gap-2"><MapPin className="w-4 h-4 flex-shrink-0" aria-hidden="true" /> {station.distance_km} km away</p>
           )}
         </div>
 
@@ -99,9 +100,9 @@ export default function StationDetails() {
             href={`https://www.openstreetmap.org/?mlat=${station.latitude}&mlon=${station.longitude}&zoom=17`}
             target="_blank"
             rel="noreferrer"
-            className="btn-primary flex-1 text-center py-3"
+            className="btn-primary flex-1 py-3 inline-flex items-center justify-center gap-2"
           >
-            🗺️ Open in Maps
+            <Map className="w-4 h-4" aria-hidden="true" /> Open in Maps
           </a>
           <Link to={`/dashboard/compare?ids=${id}`} className="btn-secondary flex-1 text-center py-3">
             Compare Prices

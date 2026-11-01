@@ -100,13 +100,6 @@ export default function Landing() {
             </>
           )}
         </div>
-
-        {/* Feature pills */}
-        <div className="mt-10 md:mt-16 flex flex-wrap justify-center gap-3">
-          {["📍 Live Map", "⛽ Price Comparison", "🔍 Search Stations", "🚗 Nearest First"].map((f) => (
-            <span key={f} className="glass-card px-4 py-2 text-sm text-slate-300">{f}</span>
-          ))}
-        </div>
       </main>
     </div>
   );
