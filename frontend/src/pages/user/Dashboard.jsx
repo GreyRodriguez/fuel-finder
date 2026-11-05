@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import { Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight } from "lucide-react";
+import { Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight, GitCompare } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useAuth } from "../../context/AuthContext";
+import AppHeader from "../../components/AppHeader";
 import useMediaQuery, { MOBILE_QUERY } from "../../hooks/useMediaQuery";
 import api from "../../services/api";
 
@@ -80,7 +80,6 @@ function haversineKm(lat1, lng1, lat2, lng2) {
 }
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const [stations, setStations] = useState([]);
@@ -296,52 +295,24 @@ export default function Dashboard() {
     ? "Loading stations…"
     : `${sorted.length} station${sorted.length !== 1 ? "s" : ""} ${searchResults ? "found" : "nearby"}`;
 
-  const firstName = user?.full_name?.split(" ")[0];
-
   return (
     <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col">
-      {/* Navbar */}
-      <nav className="flex-shrink-0 bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center justify-between gap-3 sticky top-0 z-50">
-        <Link to="/" className="text-lg md:text-xl font-black text-white flex-shrink-0">
-          Fuel<span className="text-primary">Finder</span>
-        </Link>
-        <div className="flex items-center gap-2 md:gap-3 min-w-0">
-          {compareList.length > 0 && (
+      {/* Shared header: logo + main menu on the left; Compare / profile / Logout on the right */}
+      <AppHeader
+        actions={
+          compareList.length > 0 && (
             <button
               id="compare-btn"
               onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`)}
-              className="btn-primary text-sm px-4 py-2 whitespace-nowrap"
+              aria-label={`Compare (${compareList.length})`}
+              className="btn-primary text-sm px-3 md:px-4 py-2 whitespace-nowrap gap-1.5"
             >
-              Compare ({compareList.length})
+              <GitCompare className="w-4 h-4 min-[400px]:hidden md:hidden" aria-hidden="true" />
+              <span className="hidden min-[400px]:inline md:inline">Compare </span>({compareList.length})
             </button>
-          )}
-          {/* Mobile: avatar initial. Desktop: name button (wrapped — .btn-secondary forces display). */}
-          <Link
-            to="/dashboard/profile"
-            id="profile-avatar"
-            aria-label="My profile"
-            className="md:hidden w-9 h-9 flex-shrink-0 rounded-full bg-dark-600 border border-white/10 flex items-center justify-center text-sm font-bold text-white"
-          >
-            {firstName?.[0]?.toUpperCase() || "U"}
-          </Link>
-          <div className="hidden md:block">
-            <Link to="/dashboard/profile" className="btn-secondary text-sm px-4 py-2">
-              {firstName}
-            </Link>
-          </div>
-          <button
-            id="logout-btn"
-            onClick={() => { logout(); navigate("/"); }}
-            aria-label="Logout"
-            className="text-slate-400 hover:text-white text-sm transition-colors p-2 -mr-2 md:p-0 md:mr-0"
-          >
-            <svg className="w-5 h-5 md:hidden" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-            </svg>
-            <span className="hidden md:inline">Logout</span>
-          </button>
-        </div>
-      </nav>
+          )
+        }
+      />
 
       <div ref={wrapRef} className="ff-sheet-wrap relative flex flex-1 overflow-hidden min-h-0">
         {/* Station list — desktop: left sidebar · mobile: draggable bottom sheet over the map */}

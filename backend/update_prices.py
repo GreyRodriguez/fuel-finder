@@ -313,6 +313,25 @@ def apply_database_adjustments(gas_shift: float, diesel_shift: float, kerosene_s
     finally:
         conn.close()
 
+    record_price_snapshot()
+
+
+def record_price_snapshot():
+    """Store this week's post-update average prices so the Price Trends page has weekly history."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from app.db.session import init_db, SessionLocal
+        from app.services.trends import record_weekly_snapshot
+        init_db()
+        db = SessionLocal()
+        try:
+            record_weekly_snapshot(db)
+            logger.info("Weekly price snapshot recorded for the Price Trends page.")
+        finally:
+            db.close()
+    except Exception as snap_err:  # never fail the price update because of the trend snapshot
+        logger.warning("Could not record weekly price snapshot: %s", snap_err)
+
 
 # =============================================================================
 # 4. CLI ENTRY POINT

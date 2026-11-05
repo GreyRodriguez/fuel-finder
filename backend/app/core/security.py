@@ -59,3 +59,23 @@ def require_admin(current_user=Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
+
+
+
+_optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
+
+
+def get_optional_user(token: str | None = Depends(_optional_oauth2_scheme), db: Session = Depends(get_db)):
+    """Return the logged-in user, or None for anonymous / invalid-token requests (never raises)."""
+    if not token:
+        return None
+    from app.models.user import User
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id = payload.get("sub")
+        if user_id is None:
+            return None
+        user = db.query(User).filter(User.user_id == int(user_id)).first()
+    except (JWTError, ValueError):
+        return None
+    return user if user and user.status == "active" else None

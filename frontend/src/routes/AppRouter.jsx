@@ -9,6 +9,10 @@ import Dashboard from "../pages/user/Dashboard";
 import StationDetails from "../pages/user/StationDetails";
 import Compare from "../pages/user/Compare";
 import Profile from "../pages/user/Profile";
+import Updates from "../pages/user/Updates";
+import Feedback from "../pages/user/Feedback";
+import About from "../pages/user/About";
+import AdminUpdates from "../pages/admin/AdminUpdates";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Stations from "../pages/admin/Stations";
 import Prices from "../pages/admin/Prices";
@@ -31,11 +35,15 @@ export default function AppRouter() {
           <Route path="/dashboard/station/:id" element={<ProtectedRoute role="user"><StationDetails /></ProtectedRoute>} />
           <Route path="/dashboard/compare" element={<ProtectedRoute role="user"><Compare /></ProtectedRoute>} />
           <Route path="/dashboard/profile" element={<ProtectedRoute role="user"><Profile /></ProtectedRoute>} />
+          <Route path="/updates" element={<ProtectedRoute role="user"><Updates /></ProtectedRoute>} />
+          <Route path="/feedback" element={<ProtectedRoute role="user"><Feedback /></ProtectedRoute>} />
+          <Route path="/about" element={<ProtectedRoute role="user"><About /></ProtectedRoute>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/stations" element={<ProtectedRoute role="admin"><Stations /></ProtectedRoute>} />
           <Route path="/admin/prices" element={<ProtectedRoute role="admin"><Prices /></ProtectedRoute>} />
+          <Route path="/admin/updates" element={<ProtectedRoute role="admin"><AdminUpdates /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute role="admin"><Users /></ProtectedRoute>} />
           <Route path="/admin/reports" element={<ProtectedRoute role="admin"><Reports /></ProtectedRoute>} />
           <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfile /></ProtectedRoute>} />
