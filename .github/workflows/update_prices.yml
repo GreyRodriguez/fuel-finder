@@ -3,7 +3,7 @@ name: Weekly Fuel Price Update
 on:
   schedule:
     # Runs every Tuesday at 6:00 AM Philippine Time (Monday 10:00 PM UTC)
-    - cron: '0 22 * * 1'
+    - cron: "0 22 * * 1"
   workflow_dispatch: # Enables the manual "Run workflow" button in GitHub
 
 jobs:
@@ -18,9 +18,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
-          cache-dependency-path: 'backend/requirements.txt'
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "backend/requirements.txt"
 
       - name: Install dependencies
         run: |
@@ -33,4 +33,3 @@ jobs:
         run: |
           cd backend
           python update_prices.py
-
