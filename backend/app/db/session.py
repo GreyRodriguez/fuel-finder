@@ -27,5 +27,5 @@ def get_db():
 
 def init_db():
     """Create all tables on startup."""
-    from app.models import user, station, price  # noqa: F401
+    from app.models import user, station, price, updates, feedback  # noqa: F401
     Base.metadata.create_all(bind=engine)

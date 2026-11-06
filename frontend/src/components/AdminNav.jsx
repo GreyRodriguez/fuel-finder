@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { LayoutDashboard, Fuel, Banknote, Users, TrendingUp, UserRound, LogOut } from "lucide-react";
+import { LayoutDashboard, Fuel, Banknote, Users, TrendingUp, UserRound, LogOut, Megaphone } from "lucide-react";
 import useMediaQuery, { MOBILE_QUERY } from "../hooks/useMediaQuery";
 
 const navLinks = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/stations", label: "Stations", icon: Fuel },
   { to: "/admin/prices", label: "Fuel Prices", icon: Banknote },
+  { to: "/admin/updates", label: "Updates & Forecasts", icon: Megaphone },
   { to: "/admin/users", label: "Users", icon: Users },
   { to: "/admin/reports", label: "Reports", icon: TrendingUp },
   { to: "/admin/profile", label: "Profile", icon: UserRound },

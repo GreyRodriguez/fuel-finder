@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.session import init_db
-from app.routers import auth, stations, user, admin
+from app.routers import auth, stations, user, admin, updates, feedback, admin_updates
 
 app = FastAPI(title="Fuel Finder API", version="1.0.0")
 
@@ -29,6 +29,9 @@ app.include_router(auth.router)
 app.include_router(stations.router)
 app.include_router(user.router)
 app.include_router(admin.router)
+app.include_router(admin_updates.router)
+app.include_router(updates.router)
+app.include_router(feedback.router)
 
 
 @app.on_event("startup")
