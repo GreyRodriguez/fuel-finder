@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import useMediaQuery, { MOBILE_QUERY } from "../hooks/useMediaQuery";
 import { MAIN_NAV } from "../config/mainNav";
@@ -95,18 +95,20 @@ export default function AppHeader({ actions = null }) {
           <ul ref={menuRef} onKeyDown={onMenuKeyDown} className="flex items-center gap-0.5 lg:gap-1">
             {MAIN_NAV.map((item) => {
               const active = item.match(pathname);
+              const Icon = item.icon;
               return (
                 <li key={item.to}>
                   <Link
                     to={item.to}
                     aria-current={active ? "page" : undefined}
                     aria-label={item.label}
-                    className={`block px-2.5 lg:px-3 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors rounded-t-md ${focusRing} ${
+                    className={`flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-2 text-[13px] lg:text-sm font-medium whitespace-nowrap border-b-2 transition-colors rounded-t-md ${focusRing} ${
                       active
                         ? "text-white border-primary"
                         : "text-slate-400 border-transparent hover:text-white hover:border-white/20"
                     }`}
                   >
+                    {Icon && <Icon className={`w-4 h-4 flex-shrink-0 ${active ? "text-primary" : ""}`} aria-hidden="true" />}
                     {item.shortLabel ? (
                       <>
                         <span className="lg:hidden" aria-hidden="true">{item.shortLabel}</span>
@@ -132,8 +134,8 @@ export default function AppHeader({ actions = null }) {
         >
           {firstName?.[0]?.toUpperCase() || "U"}
         </Link>
-        <div className="hidden md:block">
-          <Link to="/dashboard/profile" className={`btn-secondary text-sm px-4 py-2 ${focusRing}`}>
+        <div className="hidden md:block min-w-0">
+          <Link to="/dashboard/profile" className={`btn-secondary text-sm px-3 lg:px-4 py-2 max-w-[9rem] truncate ${focusRing}`}>
             {firstName}
           </Link>
         </div>
@@ -141,12 +143,10 @@ export default function AppHeader({ actions = null }) {
           id="logout-btn"
           onClick={handleLogout}
           aria-label="Logout"
-          className={`text-slate-400 hover:text-white text-sm transition-colors p-2 -mr-2 md:p-0 md:mr-0 rounded ${focusRing}`}
+          className={`flex-shrink-0 flex items-center justify-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors w-11 h-11 -mr-2 md:w-9 md:h-9 md:mr-0 lg:w-auto lg:h-auto lg:px-2 lg:py-1 rounded-lg ${focusRing}`}
         >
-          <svg className="w-5 h-5 md:hidden" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-          </svg>
-          <span className="hidden md:inline">Logout</span>
+          <LogOut className="w-5 h-5" aria-hidden="true" />
+          <span className="hidden lg:inline">Logout</span>
         </button>
       </div>
 
@@ -188,18 +188,20 @@ export default function AppHeader({ actions = null }) {
           <ul className="space-y-1">
             {MAIN_NAV.map((item) => {
               const active = item.match(pathname);
+              const Icon = item.icon;
               return (
                 <li key={item.to}>
                   <Link
                     to={item.to}
                     aria-current={active ? "page" : undefined}
-                    className={`flex items-center min-h-[48px] px-4 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${focusRing} ${
+                    className={`flex items-center gap-3 min-h-[48px] px-4 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${focusRing} ${
                       active
                         ? "bg-primary/15 text-primary border border-primary/30"
                         : "text-slate-300 border border-transparent hover:bg-dark-700 hover:text-white"
                     }`}
                   >
-                    {item.label}
+                    {Icon && <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />}
+                    <span className="min-w-0">{item.label}</span>
                   </Link>
                 </li>
               );
