@@ -128,7 +128,10 @@ function FeedbackCard({ f, busy, onStatus, onDelete }) {
           </button>
         ))}
         {f.category === "Price Report" && f.station_id && (
-          <Link to="/admin/prices" className="btn-secondary flex-1 sm:flex-none text-xs min-h-[44px] sm:min-h-[36px] px-3 gap-1.5">
+          <Link
+            to={`/admin/prices?station_id=${f.station_id}${f.fuel_type ? `&fuel_type=${encodeURIComponent(f.fuel_type)}` : ""}${f.reported_price != null ? `&price=${f.reported_price}` : ""}`}
+            className="btn-secondary flex-1 sm:flex-none text-xs min-h-[44px] sm:min-h-[36px] px-3 gap-1.5"
+          >
             <Fuel className="w-3.5 h-3.5" aria-hidden="true" /> Update price
           </Link>
         )}
@@ -297,9 +300,9 @@ export default function FeedbackInbox({ summary }) {
       </div>
 
       {/* Toast */}
-      <div aria-live="polite" className="fixed z-50 left-4 right-4 bottom-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-sm pointer-events-none">
+      <div aria-live="polite" className="fixed z-50 left-4 right-4 bottom-20 md:bottom-6 sm:left-auto sm:right-6 sm:max-w-sm pointer-events-none">
         {notice && (
-          <div className="rounded-xl bg-dark-600 border border-white/10 shadow-2xl px-4 py-3 text-sm text-white">{notice}</div>
+          <div className="rounded-xl bg-dark-600/95 backdrop-blur-md border border-white/15 shadow-2xl px-4 py-3 text-sm text-white">{notice}</div>
         )}
       </div>
 

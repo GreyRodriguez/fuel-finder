@@ -7,6 +7,7 @@ from app.models.station import GasStation
 from app.models.price import FuelPrice
 from app.models.user import User
 from app.models.feedback import Feedback
+from app.routers.stations import station_to_dict
 from app.schemas.station import StationCreate, StationUpdate
 from app.schemas.price import PriceCreate
 from app.schemas.user import UserOut, AdminUserUpdate
@@ -18,9 +19,21 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 # ── Stations ──────────────────────────────────────────────────────────────────
 
+def _admin_station_dict(s: GasStation) -> dict:
+    data = station_to_dict(s)
+    data["created_at"] = s.created_at.isoformat() if s.created_at else None
+    return data
+
+
 @router.get("/stations")
 def list_stations(db: Session = Depends(get_db), _=Depends(require_admin)):
-    return db.query(GasStation).all()
+    rows = (
+        db.query(GasStation)
+        .options(joinedload(GasStation.fuel_prices))
+        .order_by(GasStation.name.asc())
+        .all()
+    )
+    return [_admin_station_dict(s) for s in rows]
 
 
 @router.post("/stations", status_code=201)
@@ -31,19 +44,22 @@ def create_station(payload: StationCreate, db: Session = Depends(get_db), _=Depe
     db.add(station)
     db.commit()
     db.refresh(station)
-    return station
+    return _admin_station_dict(station)
 
 
 @router.put("/stations/{station_id}")
 def update_station(station_id: int, payload: StationUpdate, db: Session = Depends(get_db), _=Depends(require_admin)):
-    station = db.query(GasStation).filter(GasStation.station_id == station_id).first()
+    station = db.query(GasStation).options(joinedload(GasStation.fuel_prices)).filter(GasStation.station_id == station_id).first()
     if not station:
         raise HTTPException(status_code=404, detail="Station not found")
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    updates = payload.model_dump(exclude_unset=True)
+    if "city" in updates and updates["city"] != "Taguig City":
+        raise HTTPException(status_code=400, detail="Only Taguig City stations are allowed")
+    for key, value in updates.items():
         setattr(station, key, value)
     db.commit()
     db.refresh(station)
-    return station
+    return _admin_station_dict(station)
 
 
 @router.delete("/stations/{station_id}")
@@ -96,9 +112,10 @@ def add_price(
 @router.get("/users", response_model=list[UserOut])
 def list_users(q: str = None, db: Session = Depends(get_db), _=Depends(require_admin)):
     query = db.query(User)
-    if q:
-        query = query.filter(User.full_name.ilike(f"%{q}%") | User.email.ilike(f"%{q}%"))
-    return query.all()
+    if q and q.strip():
+        term = f"%{q.strip()}%"
+        query = query.filter(User.full_name.ilike(term) | User.email.ilike(term))
+    return query.order_by(User.created_at.desc(), User.user_id.desc()).all()
 
 
 @router.put("/users/{user_id}", response_model=UserOut)
@@ -106,12 +123,15 @@ def update_user(
     user_id: int,
     payload: AdminUserUpdate,
     db: Session = Depends(get_db),
-    _=Depends(require_admin),
+    admin: User = Depends(require_admin),
 ):
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    updates = payload.model_dump(exclude_unset=True)
+    if user_id == admin.user_id and updates.get("status") == "inactive":
+        raise HTTPException(status_code=400, detail="You cannot deactivate your own account")
+    for key, value in updates.items():
         setattr(user, key, value)
     db.commit()
     db.refresh(user)
@@ -119,7 +139,9 @@ def update_user(
 
 
 @router.delete("/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
+def delete_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    if user_id == admin.user_id:
+        raise HTTPException(status_code=400, detail="You cannot delete your own account")
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
