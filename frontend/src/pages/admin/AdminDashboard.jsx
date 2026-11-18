@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { MessageSquare, ArrowRight } from "lucide-react";
 import api from "../../services/api";
+import useFeedbackSummary from "../../hooks/useFeedbackSummary";
 
 import AdminNav from "../../components/AdminNav";
 
@@ -15,6 +18,8 @@ function StatCard({ label, value, color }) {
 export default function AdminDashboard() {
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { summary } = useFeedbackSummary();
+  const newFeedback = summary?.new ?? 0;
 
   useEffect(() => {
     api.get("/api/admin/reports").then((r) => setReports(r.data)).finally(() => setLoading(false));
@@ -30,6 +35,21 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <h1 className="text-xl md:text-2xl font-black text-white">Dashboard Overview</h1>
         </div>
+
+        {newFeedback > 0 && (
+          <Link
+            to="/admin/reports?tab=feedback&status=new"
+            className="mb-6 md:mb-8 flex items-center gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning hover:bg-warning/15 transition-colors"
+          >
+            <MessageSquare className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+            <span className="flex-1">
+              You have <strong>{newFeedback}</strong> new feedback {newFeedback === 1 ? "message" : "messages"} from users.
+            </span>
+            <span className="inline-flex items-center gap-1 font-semibold flex-shrink-0">
+              Review <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </span>
+          </Link>
+        )}
 
         {loading ? (
           <p className="text-slate-400">Loading…</p>

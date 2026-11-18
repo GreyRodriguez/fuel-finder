@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { LayoutDashboard, Fuel, Banknote, Users, TrendingUp, UserRound, LogOut, Megaphone } from "lucide-react";
 import useMediaQuery, { MOBILE_QUERY } from "../hooks/useMediaQuery";
+import useFeedbackSummary from "../hooks/useFeedbackSummary";
 
 const navLinks = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -10,7 +11,7 @@ const navLinks = [
   { to: "/admin/prices", label: "Fuel Prices", icon: Banknote },
   { to: "/admin/updates", label: "Updates & Forecasts", icon: Megaphone },
   { to: "/admin/users", label: "Users", icon: Users },
-  { to: "/admin/reports", label: "Reports", icon: TrendingUp },
+  { to: "/admin/reports", label: "Reports", icon: TrendingUp, badge: "feedback" },
   { to: "/admin/profile", label: "Profile", icon: UserRound },
 ];
 
@@ -25,6 +26,8 @@ export default function AdminNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(MOBILE_QUERY);
+  const { summary } = useFeedbackSummary();
+  const newFeedback = summary?.new ?? 0;
   const [open, setOpen] = useState(false);
   const menuBtnRef = useRef(null);
   const drawerRef = useRef(null);
@@ -64,14 +67,17 @@ export default function AdminNav() {
           id="admin-menu-btn"
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open menu"
+          aria-label={newFeedback > 0 ? `Open menu (${newFeedback} new feedback)` : "Open menu"}
           aria-expanded={open}
           aria-controls="admin-drawer"
-          className="-ml-2 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-dark-700 transition-colors"
+          className="relative -ml-2 p-2 rounded-lg text-slate-300 hover:text-white hover:bg-dark-700 transition-colors"
         >
           <svg className="w-6 h-6" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
+          {newFeedback > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-dark-800" aria-hidden="true" />
+          )}
         </button>
         <Link to="/admin" className="text-lg font-black text-white flex items-center">
           Fuel<span className="text-primary">Finder</span>
@@ -139,6 +145,16 @@ export default function AdminNav() {
               >
                 <item.icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.9} aria-hidden="true" />
                 <span>{item.label}</span>
+                {item.badge === "feedback" && newFeedback > 0 && (
+                  <span
+                    className={`ml-auto min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold inline-flex items-center justify-center ${
+                      isActive ? "bg-white text-primary" : "bg-primary text-white"
+                    }`}
+                  >
+                    {newFeedback > 99 ? "99+" : newFeedback}
+                    <span className="sr-only"> new feedback</span>
+                  </span>
+                )}
               </Link>
             );
           })}

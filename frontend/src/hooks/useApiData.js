@@ -29,6 +29,12 @@ export default function useApiData(path, params) {
   }, [path, key, tick]);
 
   const reload = useCallback(() => setTick((t) => t + 1), []);
-  return { ...state, reload };
+  const mutate = useCallback((updater) => {
+    setState((s) => ({
+      ...s,
+      data: typeof updater === "function" ? updater(s.data) : updater,
+    }));
+  }, []);
+  return { ...state, reload, mutate };
 }
 
