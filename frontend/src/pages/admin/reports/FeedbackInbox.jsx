@@ -230,28 +230,26 @@ export default function FeedbackInbox({ summary }) {
 
   return (
     <div className="space-y-4">
-      {/* Status chips — scroll sideways on narrow phones */}
-      <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
-        <div role="group" aria-label="Filter by status" className="flex gap-2 w-max sm:w-auto sm:flex-wrap">
-          {STATUS_FILTERS.map((s) => {
-            const active = status === s;
-            const n = countFor(s);
-            return (
-              <button
-                key={s || "all"}
-                type="button"
-                aria-pressed={active}
-                onClick={() => setStatusFilter(s)}
-                className={`min-h-[40px] px-4 rounded-full border text-sm font-medium whitespace-nowrap inline-flex items-center gap-2 transition-colors ${
-                  active ? "bg-white text-dark-900 border-white" : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
-                }`}
-              >
-                {s ? STATUS_LABEL[s] : "All"}
-                {n != null && <span className={`text-xs tabular-nums ${active ? "text-dark-600" : "text-slate-500"}`}>{n}</span>}
-              </button>
-            );
-          })}
-        </div>
+      {/* Status chips — wrap cleanly on mobile without swiping */}
+      <div role="group" aria-label="Filter by status" className="flex flex-wrap gap-2">
+        {STATUS_FILTERS.map((s) => {
+          const active = status === s;
+          const n = countFor(s);
+          return (
+            <button
+              key={s || "all"}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setStatusFilter(s)}
+              className={`h-9 px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap inline-flex items-center gap-2 transition-colors ${
+                active ? "bg-white text-dark-900 border-white" : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
+              }`}
+            >
+              {s ? STATUS_LABEL[s] : "All"}
+              {n != null && <span className={`text-xs tabular-nums ${active ? "text-dark-600" : "text-slate-500"}`}>{n}</span>}
+            </button>
+          );
+        })}
       </div>
 
       {/* Category + search */}

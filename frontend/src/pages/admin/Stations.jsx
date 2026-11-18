@@ -140,28 +140,26 @@ export default function Stations() {
     >
       {/* Filters */}
       <div className="space-y-3 mb-5">
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
-          <div role="group" aria-label="Filter stations by status" className="flex gap-2 w-max sm:w-auto sm:flex-wrap">
-            {STATUS_FILTERS.map((f) => {
-              const active = statusFilter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setStatusFilter(f.id)}
-                  className={`min-h-[40px] px-4 rounded-full border text-sm font-medium whitespace-nowrap inline-flex items-center gap-2 transition-colors ${
-                    active ? "bg-white text-dark-900 border-white" : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
-                  }`}
-                >
-                  {f.label}
-                  <span className={`text-xs tabular-nums ${active ? "text-dark-600" : "text-slate-500"}`}>
-                    {countFor(f.id)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <div role="group" aria-label="Filter stations by status" className="flex flex-wrap gap-2">
+          {STATUS_FILTERS.map((f) => {
+            const active = statusFilter === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setStatusFilter(f.id)}
+                className={`h-9 px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap inline-flex items-center gap-2 transition-colors ${
+                  active ? "bg-white text-dark-900 border-white" : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
+                }`}
+              >
+                {f.label}
+                <span className={`text-xs tabular-nums ${active ? "text-dark-600" : "text-slate-500"}`}>
+                  {countFor(f.id)}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="relative">
