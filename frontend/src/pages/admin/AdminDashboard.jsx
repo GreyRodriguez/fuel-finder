@@ -47,8 +47,8 @@ export default function AdminDashboard() {
       title="Dashboard"
       subtitle="Taguig station coverage, recent pump prices and user feedback."
       actions={
-        <Link to="/admin/prices" className="btn-primary text-sm min-h-[44px] px-4 gap-2 w-full sm:w-auto">
-          <Banknote className="w-4 h-4" aria-hidden="true" /> Update Price
+        <Link to="/admin/prices" className="btn-primary text-xs sm:text-sm h-9 sm:h-10 px-3.5 gap-1.5 whitespace-nowrap">
+          <Banknote className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" /> Update Price
         </Link>
       }
     >

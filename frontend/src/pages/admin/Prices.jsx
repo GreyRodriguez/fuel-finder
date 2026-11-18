@@ -119,7 +119,7 @@ export default function Prices() {
 
               <div>
                 <span className="label">Fuel Type</span>
-                <div role="radiogroup" aria-label="Fuel type" className="grid grid-cols-3 gap-2">
+                <div role="radiogroup" aria-label="Fuel type" className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-dark-800 border border-white/10">
                   {FUEL_OPTIONS.map((ft) => {
                     const active = form.fuel_type === ft;
                     const style = FUEL_STYLE[ft] || FUEL_STYLE["Unleaded 91"];
@@ -130,10 +130,10 @@ export default function Prices() {
                         role="radio"
                         aria-checked={active}
                         onClick={() => setForm((f) => ({ ...f, fuel_type: ft }))}
-                        className={`min-h-[48px] px-2.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                        className={`h-10 px-2 rounded-lg border text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 min-w-0 ${
                           active
                             ? style.ring
-                            : "bg-dark-600/70 border-white/10 text-slate-400 hover:text-white hover:border-white/25"
+                            : "border-transparent text-slate-400 hover:text-white"
                         }`}
                       >
                         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${style.dot}`} aria-hidden="true" />
@@ -177,7 +177,7 @@ export default function Prices() {
               <button
                 type="submit"
                 disabled={saving}
-                className="btn-primary w-full min-h-[48px] gap-2 disabled:opacity-60"
+                className="btn-primary w-full sm:w-auto h-10 px-6 text-sm gap-2 disabled:opacity-60"
               >
                 {saving ? <><Spinner /> Saving…</> : <><Check className="w-4 h-4" aria-hidden="true" /> Save Price</>}
               </button>

@@ -22,7 +22,7 @@ export function ErrorBlock({ message, onRetry }) {
       <AlertTriangle className="w-5 h-5 text-danger flex-shrink-0" aria-hidden="true" />
       <p className="text-sm text-slate-300 flex-1">{message}</p>
       {onRetry && (
-        <button type="button" onClick={onRetry} className="btn-secondary text-sm min-h-[44px] px-4">
+        <button type="button" onClick={onRetry} className="btn-secondary text-xs sm:text-sm h-9 px-4 self-start sm:self-auto">
           Try again
         </button>
       )}

@@ -46,24 +46,24 @@ function PriceReport({ f }) {
         <span className="truncate">{f.station_name || "Station removed"}</span>
       </p>
       <dl className="grid grid-cols-3 gap-2 mt-2 text-xs">
-        <div>
+        <div className="min-w-0">
           <dt className="text-slate-500">Fuel</dt>
-          <dd className="text-slate-200 font-medium">{f.fuel_type || "—"}</dd>
+          <dd className="text-slate-200 font-medium truncate">{f.fuel_type || "—"}</dd>
         </div>
-        <div>
+        <div className="min-w-0">
           <dt className="text-slate-500">Reported</dt>
-          <dd className="text-primary font-bold">{peso(f.reported_price)}</dd>
+          <dd className="text-primary font-bold tabular-nums">{peso(f.reported_price)}</dd>
         </div>
-        <div>
+        <div className="min-w-0">
           <dt className="text-slate-500">Listed now</dt>
-          <dd className="text-slate-200 font-medium">
+          <dd className="text-slate-200 font-medium tabular-nums">
             {peso(f.current_price)}
             {diff != null && Math.abs(diff) >= 0.01 && (
-              <span className={`block ${diff < 0 ? "text-success" : "text-danger"}`}>
+              <span className={`block text-[11px] ${diff < 0 ? "text-success" : "text-danger"}`}>
                 {diff > 0 ? "+" : "−"}{peso(Math.abs(diff)).slice(1)} vs listed
               </span>
             )}
-            {diff != null && Math.abs(diff) < 0.01 && <span className="block text-slate-500">matches</span>}
+            {diff != null && Math.abs(diff) < 0.01 && <span className="block text-[11px] text-slate-500">matches</span>}
           </dd>
         </div>
       </dl>
@@ -115,14 +115,14 @@ function FeedbackCard({ f, busy, onStatus, onDelete }) {
       {f.category === "Price Report" && <PriceReport f={f} />}
 
       {/* Actions */}
-      <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap gap-2">
+      <div className="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center gap-2">
         {NEXT_ACTIONS[f.status]?.map((a) => (
           <button
             key={a.to}
             type="button"
             disabled={busy}
             onClick={() => onStatus(f, a.to)}
-            className="btn-secondary flex-1 sm:flex-none text-xs min-h-[44px] sm:min-h-[36px] px-3 gap-1.5 disabled:opacity-50"
+            className="btn-secondary text-xs h-9 px-3 gap-1.5 disabled:opacity-50"
           >
             <a.icon className="w-3.5 h-3.5" aria-hidden="true" /> {a.label}
           </button>
@@ -130,13 +130,13 @@ function FeedbackCard({ f, busy, onStatus, onDelete }) {
         {f.category === "Price Report" && f.station_id && (
           <Link
             to={`/admin/prices?station_id=${f.station_id}${f.fuel_type ? `&fuel_type=${encodeURIComponent(f.fuel_type)}` : ""}${f.reported_price != null ? `&price=${f.reported_price}` : ""}`}
-            className="btn-secondary flex-1 sm:flex-none text-xs min-h-[44px] sm:min-h-[36px] px-3 gap-1.5"
+            className="btn-secondary text-xs h-9 px-3 gap-1.5"
           >
             <Fuel className="w-3.5 h-3.5" aria-hidden="true" /> Update price
           </Link>
         )}
         {mailto && (
-          <a href={mailto} className="btn-secondary flex-1 sm:flex-none text-xs min-h-[44px] sm:min-h-[36px] px-3 gap-1.5">
+          <a href={mailto} className="btn-secondary text-xs h-9 px-3 gap-1.5">
             <Mail className="w-3.5 h-3.5" aria-hidden="true" /> Reply
           </a>
         )}
@@ -145,10 +145,10 @@ function FeedbackCard({ f, busy, onStatus, onDelete }) {
           disabled={busy}
           onClick={() => onDelete(f)}
           aria-label={`Delete feedback from ${sender}`}
-          className="btn-danger text-xs min-h-[44px] sm:min-h-[36px] px-3 inline-flex items-center justify-center gap-1.5 sm:ml-auto disabled:opacity-50"
+          className="btn-danger text-xs h-9 px-3 inline-flex items-center justify-center gap-1.5 ml-auto disabled:opacity-50"
         >
           {busy ? <Spinner className="w-3.5 h-3.5" /> : <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />}
-          <span className="sm:hidden md:inline">Delete</span>
+          <span className="hidden sm:inline">Delete</span>
         </button>
       </div>
     </li>

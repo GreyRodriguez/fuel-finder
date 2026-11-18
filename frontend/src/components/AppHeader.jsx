@@ -17,20 +17,19 @@ const focusRing =
 export default function AppHeader({ actions = null }) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const pathname = location.pathname;
   const navigate = useNavigate();
   const isMobile = useMediaQuery(MOBILE_QUERY);
-  const [open, setOpen] = useState(false);
+  const [openPath, setOpenPath] = useState(null);
+  const open = isMobile && openPath === pathname;
+  const openDrawer = () => setOpenPath(pathname);
+  const closeDrawer = () => setOpenPath(null);
   const menuBtnRef = useRef(null);
   const closeBtnRef = useRef(null);
   const drawerRef = useRef(null);
   const menuRef = useRef(null);
 
   const firstName = user?.full_name?.split(" ")[0];
-  const pathname = location.pathname;
-
-  // Close the drawer on route change, and when the viewport grows to desktop
-  useEffect(() => { setOpen(false); }, [pathname]);
-  useEffect(() => { if (!isMobile) setOpen(false); }, [isMobile]);
 
   // While open: Esc closes, Tab is trapped inside the drawer, focus returns to the hamburger afterwards
   useEffect(() => {
@@ -38,7 +37,7 @@ export default function AppHeader({ actions = null }) {
     const menuBtn = menuBtnRef.current;
     closeBtnRef.current?.focus();
     const onKey = (e) => {
-      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key === "Escape") { closeDrawer(); return; }
       if (e.key !== "Tab") return;
       const items = drawerRef.current?.querySelectorAll("a[href], button:not([disabled])");
       if (!items?.length) return;
@@ -70,14 +69,15 @@ export default function AppHeader({ actions = null }) {
   const handleLogout = () => { logout(); navigate("/"); };
 
   return (
-    <header className="flex-shrink-0 bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center justify-between gap-3 sticky top-0 z-50">
+    <>
+      <header className="flex-shrink-0 bg-dark-800/90 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-2.5 md:py-3 flex items-center justify-between gap-3 sticky top-0 z-50">
       <div className="flex items-center gap-2 md:gap-6 min-w-0">
         {/* Mobile hamburger */}
         <button
           ref={menuBtnRef}
           id="main-menu-btn"
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openDrawer}
           aria-label="Open main menu"
           aria-expanded={open}
           aria-controls="main-drawer"
@@ -100,6 +100,7 @@ export default function AppHeader({ actions = null }) {
                 <li key={item.to}>
                   <Link
                     to={item.to}
+                    onClick={closeDrawer}
                     aria-current={active ? "page" : undefined}
                     aria-label={item.label}
                     className={`flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-2 text-[13px] lg:text-sm font-medium whitespace-nowrap border-b-2 transition-colors rounded-t-md ${focusRing} ${
@@ -149,12 +150,13 @@ export default function AppHeader({ actions = null }) {
           <span className="hidden lg:inline">Logout</span>
         </button>
       </div>
+      </header>
 
-      {/* Mobile drawer: backdrop (outside tap closes) + panel */}
+      {/* Mobile drawer rendered outside <header> so header backdrop-blur never traps fixed positioning */}
       <div
         aria-hidden="true"
-        onClick={() => setOpen(false)}
-        className={`md:hidden fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${
+        onClick={closeDrawer}
+        className={`md:hidden fixed inset-0 z-[1100] bg-black/65 backdrop-blur-xs transition-opacity duration-300 ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       />
@@ -165,7 +167,7 @@ export default function AppHeader({ actions = null }) {
         aria-modal={open ? "true" : undefined}
         aria-label="Main navigation"
         inert={!open}
-        className={`md:hidden fixed inset-y-0 left-0 z-50 w-[min(18rem,85vw)] bg-dark-800 border-r border-white/10 shadow-2xl
+        className={`md:hidden fixed inset-y-0 left-0 z-[1200] h-dvh w-[min(18rem,85vw)] bg-dark-800 border-r border-white/10 shadow-2xl
                     flex flex-col transition-transform duration-300 ease-out motion-reduce:transition-none ${
                       open ? "translate-x-0" : "-translate-x-full"
                     }`}
@@ -177,7 +179,7 @@ export default function AppHeader({ actions = null }) {
           <button
             ref={closeBtnRef}
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={closeDrawer}
             aria-label="Close main menu"
             className={`-mr-2 w-11 h-11 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-dark-700 transition-colors ${focusRing}`}
           >
@@ -193,6 +195,7 @@ export default function AppHeader({ actions = null }) {
                 <li key={item.to}>
                   <Link
                     to={item.to}
+                    onClick={closeDrawer}
                     aria-current={active ? "page" : undefined}
                     className={`flex items-center gap-3 min-h-[48px] px-4 py-2.5 rounded-xl text-[15px] font-medium transition-colors ${focusRing} ${
                       active
@@ -209,6 +212,6 @@ export default function AppHeader({ actions = null }) {
           </ul>
         </nav>
       </aside>
-    </header>
+    </>
   );
 }
