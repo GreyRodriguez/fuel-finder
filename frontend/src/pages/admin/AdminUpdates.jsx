@@ -62,10 +62,10 @@ function SheetForm({ kind, idKey, endpoint, empty, initialRow, fields, toBody, o
       <form onSubmit={submit} className="space-y-4">
         {fields(form, setForm)}
         <div className="flex flex-col-reverse sm:flex-row gap-2.5 pt-2">
-          <button type="button" onClick={onClose} className="btn-secondary min-h-[48px] sm:min-h-[44px] sm:px-6">
+          <button type="button" onClick={onClose} className="btn-secondary h-10 text-sm sm:px-5">
             Cancel
           </button>
-          <button type="submit" disabled={saving} className="btn-primary flex-1 min-h-[48px] sm:min-h-[44px] gap-2 disabled:opacity-60">
+          <button type="submit" disabled={saving} className="btn-primary flex-1 h-10 text-sm gap-2 disabled:opacity-60">
             {saving && <Spinner />}{editingId ? "Save Changes" : `Publish ${kind}`}
           </button>
         </div>
@@ -168,7 +168,7 @@ const CONFIG = {
         </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field id="fc-date" label="Week starting">
-            <input id="fc-date" type="date" required className="input-field min-h-[44px]" value={f.effective_date} onChange={(e) => set({ ...f, effective_date: e.target.value })} />
+            <input id="fc-date" type="date" required className="input-field min-h-[44px] min-w-0 [color-scheme:dark]" value={f.effective_date} onChange={(e) => set({ ...f, effective_date: e.target.value })} />
           </Field>
           <Field id="fc-source" label="Source">
             <input id="fc-source" className="input-field min-h-[44px]" maxLength={150} placeholder="e.g. DOE advisory" value={f.source} onChange={(e) => set({ ...f, source: e.target.value })} />
@@ -226,7 +226,7 @@ const CONFIG = {
             <input id="ad-source" required maxLength={100} className="input-field min-h-[44px]" value={f.source} onChange={(e) => set({ ...f, source: e.target.value })} />
           </Field>
           <Field id="ad-date" label="Date published">
-            <input id="ad-date" type="date" required className="input-field min-h-[44px]" value={f.published_date} onChange={(e) => set({ ...f, published_date: e.target.value })} />
+            <input id="ad-date" type="date" required className="input-field min-h-[44px] min-w-0 [color-scheme:dark]" value={f.published_date} onChange={(e) => set({ ...f, published_date: e.target.value })} />
           </Field>
         </div>
         <Field id="ad-fuel" label="Applies to">
@@ -276,9 +276,9 @@ export default function AdminUpdates() {
         <button
           type="button"
           onClick={() => setSheet({ tab, row: null })}
-          className="btn-primary text-sm min-h-[44px] px-4 gap-2 w-full sm:w-auto"
+          className="btn-primary text-xs sm:text-sm h-9 sm:h-10 px-3.5 gap-1.5 whitespace-nowrap"
         >
-          <Plus className="w-4 h-4" aria-hidden="true" /> New {cfg.kind}
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" /> New {cfg.kind}
         </button>
       }
     >

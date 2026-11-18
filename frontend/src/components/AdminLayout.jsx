@@ -19,10 +19,10 @@ export default function AdminLayout({ title, subtitle, actions = null, children 
       >
         <div className="max-w-7xl mx-auto">
           {(title || actions) && (
-            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 md:mb-7">
-              <div className="min-w-0">
+            <header className="flex flex-wrap items-start justify-between gap-3 mb-5 md:mb-7">
+              <div className="min-w-0 flex-1">
                 {title && <h1 className="text-xl md:text-2xl font-black text-white tracking-tight">{title}</h1>}
-                {subtitle && <p className="text-sm text-slate-400 mt-1">{subtitle}</p>}
+                {subtitle && <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1">{subtitle}</p>}
               </div>
               {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
             </header>

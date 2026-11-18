@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { CheckCircle2, AlertTriangle, Lightbulb, Fuel, Wrench, MessageCircle, Send } from "lucide-react";
 import UserLayout from "../../components/UserLayout";
 import StationCombobox from "../../components/StationCombobox";
 import { Spinner } from "../../components/DataStates";
@@ -7,7 +8,12 @@ import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
 import { FUEL_OPTIONS } from "../../utils/format";
 
-const CATEGORIES = ["System Needs", "Suggestion", "Price Report", "Other"];
+const CATEGORIES = [
+  { id: "Suggestion", label: "Suggestion", icon: Lightbulb },
+  { id: "Price Report", label: "Price Report", icon: Fuel },
+  { id: "System Needs", label: "System Issue", icon: Wrench },
+  { id: "Other", label: "Other", icon: MessageCircle },
+];
 const MAX_MESSAGE = 1000;
 const MIN_MESSAGE = 10;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,12 +69,17 @@ function FieldError({ id, message }) {
 }
 
 export default function Feedback() {
+  const [params] = useSearchParams();
   const { user } = useAuth();
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(() => {
+    const cat = CATEGORIES.some((c) => c.id === params.get("category")) ? params.get("category") : "Suggestion";
+    const sid = Number.parseInt(params.get("station_id") || "", 10);
+    return { ...EMPTY, category: cat, station_id: Number.isNaN(sid) ? "" : sid };
+  });
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [serverError, setServerError] = useState("");
-  const submittingRef = useRef(false); // synchronous guard against double submits
+  const submittingRef = useRef(false);
   const bannerRef = useRef(null);
   const lastPayload = useRef(null);
 
@@ -83,12 +94,10 @@ export default function Feedback() {
       .catch(() => setStationsState("error"));
   };
 
-  // Load the station list the first time "Price Report" is chosen
   useEffect(() => {
     if (isPriceReport && stationsState === "idle") loadStations();
   }, [isPriceReport, stationsState]);
 
-  // Move focus to the success / error banner so screen-reader users hear the result
   useEffect(() => {
     if (status === "success" || status === "error") bannerRef.current?.focus();
   }, [status]);
@@ -137,7 +146,6 @@ export default function Feedback() {
     const found = validate(form);
     setErrors(found);
     if (Object.keys(found).length) {
-      // focus the first invalid field
       const first = ["name", "email", "message", "station_id", "fuel_type", "reported_price"].find((k) => found[k]);
       document.getElementById(`fb-${first}`)?.focus();
       return;
@@ -170,52 +178,74 @@ export default function Feedback() {
           <button
             type="button"
             onClick={() => lastPayload.current && send(lastPayload.current)}
-            className="btn-secondary text-sm mt-3 min-h-[44px] px-4"
+            className="btn-secondary text-xs h-9 mt-3 px-4"
           >
             Retry sending
           </button>
         </div>
       )}
 
-      <form onSubmit={onSubmit} noValidate className="glass-card p-4 md:p-6 space-y-5" aria-busy={submitting}>
+      <form onSubmit={onSubmit} noValidate className="glass-card p-4 md:p-6 space-y-4 sm:space-y-5" aria-busy={submitting}>
         {user && (
           <p className="text-xs text-slate-400">
-            Signed in as <span className="text-slate-200">{user.full_name}</span> — your feedback will be linked to your account.
+            Signed in as <span className="text-slate-200 font-medium">{user.full_name}</span> — your feedback will be linked to your account.
           </p>
         )}
+
+        <div>
+          <span className="label">Category</span>
+          <div role="radiogroup" aria-label="Feedback category" className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {CATEGORIES.map((c) => {
+              const active = form.category === c.id;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => {
+                    setForm((f) => ({ ...f, category: c.id }));
+                    if (status === "success") setStatus("idle");
+                  }}
+                  className={`h-10 px-2.5 rounded-xl border text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-all ${
+                    active
+                      ? "bg-primary/15 border-primary text-white"
+                      : "bg-dark-800/80 border-white/10 text-slate-400 hover:text-white hover:border-white/25"
+                  }`}
+                >
+                  <c.icon className={`w-3.5 h-3.5 flex-shrink-0 ${active ? "text-primary" : ""}`} aria-hidden="true" />
+                  <span className="truncate">{c.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="fb-name" className="label">Name <span className="text-slate-500">(optional)</span></label>
-            <input id="fb-name" className="input-field min-h-[44px]" autoComplete="name" maxLength={100}
+            <input id="fb-name" className="input-field min-h-[42px]" autoComplete="name" maxLength={100}
               value={form.name} onChange={set("name")} aria-invalid={!!errors.name || undefined} aria-describedby={describe("name")} />
             <FieldError id="fb-name-err" message={errors.name} />
           </div>
           <div>
             <label htmlFor="fb-email" className="label">Email <span className="text-slate-500">(optional)</span></label>
-            <input id="fb-email" type="email" className="input-field min-h-[44px]" autoComplete="email" inputMode="email" maxLength={150}
+            <input id="fb-email" type="email" className="input-field min-h-[42px]" autoComplete="email" inputMode="email" maxLength={150}
               value={form.email} onChange={set("email")} aria-invalid={!!errors.email || undefined} aria-describedby={describe("email")} />
             <FieldError id="fb-email-err" message={errors.email} />
           </div>
         </div>
 
-        <div>
-          <label htmlFor="fb-category" className="label">Category</label>
-          <select id="fb-category" className="input-field min-h-[44px]" value={form.category} onChange={set("category")}>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-
         {isPriceReport && (
-          <fieldset className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-4">
-            <legend className="px-2 text-sm font-semibold text-primary">Price report details</legend>
+          <fieldset className="rounded-xl border border-primary/25 bg-primary/5 p-3.5 sm:p-4 space-y-4">
+            <legend className="px-2 text-xs sm:text-sm font-semibold text-primary">Price report details</legend>
 
             <div>
               <label htmlFor="fb-station_id" className="label">Station</label>
               {stationsState === "error" ? (
                 <div className="flex items-center gap-3 text-sm text-danger" role="alert">
                   Couldn't load stations.
-                  <button type="button" onClick={loadStations} className="btn-secondary text-sm min-h-[44px] px-4">Retry</button>
+                  <button type="button" onClick={loadStations} className="btn-secondary text-xs h-9 px-3.5">Retry</button>
                 </div>
               ) : stationsState === "loading" || stationsState === "idle" ? (
                 <p className="text-sm text-slate-400 flex items-center gap-2" role="status"><Spinner /> Loading stations…</p>
@@ -235,7 +265,7 @@ export default function Feedback() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="fb-fuel_type" className="label">Fuel type</label>
-                <select id="fb-fuel_type" className="input-field min-h-[44px]" value={form.fuel_type} onChange={set("fuel_type")}
+                <select id="fb-fuel_type" className="input-field min-h-[42px]" value={form.fuel_type} onChange={set("fuel_type")}
                   aria-invalid={!!errors.fuel_type || undefined} aria-describedby={describe("fuel_type")}>
                   <option value="">Select fuel type</option>
                   {FUEL_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}
@@ -243,9 +273,9 @@ export default function Feedback() {
                 <FieldError id="fb-fuel_type-err" message={errors.fuel_type} />
               </div>
               <div>
-                <label htmlFor="fb-reported_price" className="label">Reported price (₱ per liter)</label>
+                <label htmlFor="fb-reported_price" className="label">Reported price (₱/L)</label>
                 <input id="fb-reported_price" type="number" inputMode="decimal" step="0.01" min="0" max="999.99" placeholder="e.g. 62.50"
-                  className="input-field min-h-[44px]" value={form.reported_price} onChange={set("reported_price")}
+                  className="input-field min-h-[42px]" value={form.reported_price} onChange={set("reported_price")}
                   aria-invalid={!!errors.reported_price || undefined} aria-describedby={describe("reported_price")} />
                 <FieldError id="fb-reported_price-err" message={errors.reported_price} />
               </div>
@@ -255,7 +285,7 @@ export default function Feedback() {
 
         <div>
           <label htmlFor="fb-message" className="label">Message</label>
-          <textarea id="fb-message" rows={6} maxLength={MAX_MESSAGE} className="input-field resize-y min-h-[140px]"
+          <textarea id="fb-message" rows={5} maxLength={MAX_MESSAGE} className="input-field resize-y min-h-[120px]"
             placeholder="Tell us what's on your mind…"
             value={form.message} onChange={set("message")}
             aria-invalid={!!errors.message || undefined} aria-describedby={describe("message", "fb-message-count")} />
@@ -273,11 +303,10 @@ export default function Feedback() {
           <input id="fb-website" name="website" type="text" tabIndex={-1} autoComplete="off" value={form.website} onChange={set("website")} />
         </div>
 
-        <button type="submit" disabled={submitting} className="btn-primary w-full sm:w-auto min-h-[48px] px-8 gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
-          {submitting ? (<><Spinner /> Sending…</>) : "Send feedback"}
+        <button type="submit" disabled={submitting} className="btn-primary w-full sm:w-auto h-10 px-6 text-sm gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+          {submitting ? (<><Spinner /> Sending…</>) : <><Send className="w-4 h-4" aria-hidden="true" /> Send feedback</>}
         </button>
       </form>
     </UserLayout>
   );
 }
-

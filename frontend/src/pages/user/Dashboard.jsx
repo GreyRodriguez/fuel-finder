@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import { Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight, GitCompare } from "lucide-react";
+import {
+  Search, LocateFixed, TrendingDown, Check, Plus, ArrowRight, GitCompare, X, MapPin,
+} from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import AppHeader from "../../components/AppHeader";
+import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useMediaQuery, { MOBILE_QUERY } from "../../hooks/useMediaQuery";
 import api from "../../services/api";
+import { peso } from "../../utils/format";
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,7 +40,7 @@ const SHEET_TOP_GAP = 12; // px of map left visible above a fully-open sheet
 
 /** CSS height for a snap state. "peek" = just the sheet header (handle + search). */
 const snapToCss = (state, headerEl) => {
-  if (state === "peek") return `${headerEl?.offsetHeight ?? 170}px`;
+  if (state === "peek") return `${headerEl?.offsetHeight ?? 164}px`;
   if (state === "half") return "50%";
   return `calc(100% - ${SHEET_TOP_GAP}px)`;
 };
@@ -55,14 +59,25 @@ const createStationIcon = (isSelected) =>
     iconAnchor: [17, 34],
   });
 
+function fuelColor(type) {
+  if (type === "Gasoline" || type === "Unleaded 91" || type === "U91") {
+    return { text: "text-primary", dot: "bg-primary" };
+  }
+  if (type === "Diesel" || type === "DIESEL") {
+    return { text: "text-accent", dot: "bg-accent" };
+  }
+  return { text: "text-purple-400", dot: "bg-purple-400" };
+}
+
 function PriceTag({ label, price, type }) {
-  const isGas = type === "Gasoline" || type === "Unleaded 91" || type === "U91";
-  const isDiesel = type === "Diesel" || type === "DIESEL";
-  const color = isGas ? "text-primary" : isDiesel ? "text-accent" : "text-purple-400";
+  const c = fuelColor(type);
   return (
-    <div className="flex justify-between items-center">
-      <span className="text-xs text-slate-400">{label}</span>
-      <span className={`text-sm font-bold ${color}`}>₱{Number(price).toFixed(2)}/L</span>
+    <div className="flex justify-between items-center py-0.5">
+      <span className="text-xs text-slate-400 inline-flex items-center gap-1.5 min-w-0 truncate">
+        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} aria-hidden="true" />
+        <span className="truncate">{label}</span>
+      </span>
+      <span className={`text-xs sm:text-sm font-bold tabular-nums ${c.text}`}>{peso(price)}/L</span>
     </div>
   );
 }
@@ -85,11 +100,13 @@ export default function Dashboard() {
   const [stations, setStations] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("nearest");
   const [selected, setSelected] = useState(null);
   const [compareList, setCompareList] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
+  const [searching, setSearching] = useState(false);
   const [sheet, setSheet] = useState("half");
 
   const wrapRef = useRef(null);        // holds the --sheet-h CSS variable
@@ -101,11 +118,12 @@ export default function Dashboard() {
   const centeredRef = useRef(false);   // map has been moved to the user's first fix
 
   const fetchStations = useCallback(async (lat, lng) => {
+    setLoadError("");
     try {
       const res = await api.get(`/api/stations/?lat=${lat}&lng=${lng}&radius=15`);
       setStations(res.data);
     } catch {
-      console.error("Failed to load stations");
+      setLoadError("Couldn't load nearby stations. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -146,7 +164,6 @@ export default function Dashboard() {
 
   // ── Bottom sheet (mobile only; CSS ignores --sheet-h at ≥768px) ──────────
   const applySnap = useCallback((state) => {
-    // Write the variable directly too, so snapping back to the *same* state after a drag still resets the height.
     wrapRef.current?.style.setProperty("--sheet-h", snapToCss(state, sheetHeaderRef.current));
     setSheet(state);
   }, []);
@@ -201,10 +218,9 @@ export default function Dashboard() {
 
     const points = { peek: d.minH, half: wrapRef.current.clientHeight * 0.5, full: d.maxH };
     const cur = Math.min(d.maxH, Math.max(d.minH, d.startH - (d.lastY - d.startY)));
-    const velocity = e.timeStamp - d.lastT > 120 ? 0 : d.v; // finger paused → no flick
+    const velocity = e.timeStamp - d.lastT > 120 ? 0 : d.v;
     let target;
     if (Math.abs(velocity) > 0.4) {
-      // Flick: finger moving up (negative v) grows the sheet, down shrinks it
       target = velocity < 0
         ? SNAP_ORDER.find((s) => points[s] > cur + 1) ?? "full"
         : [...SNAP_ORDER].reverse().find((s) => points[s] < cur - 1) ?? "peek";
@@ -226,8 +242,22 @@ export default function Dashboard() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!search.trim()) { setSearchResults(null); return; }
-    const res = await api.get(`/api/stations/search?q=${encodeURIComponent(search)}`);
-    setSearchResults(res.data);
+    setSearching(true);
+    setLoadError("");
+    try {
+      const res = await api.get(`/api/stations/search?q=${encodeURIComponent(search.trim())}`);
+      setSearchResults(res.data);
+    } catch {
+      setLoadError("Search failed. Please try again.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearch("");
+    setSearchResults(null);
+    setLoadError("");
   };
 
   const hasUserPosition =
@@ -243,7 +273,7 @@ export default function Dashboard() {
       const lng = parseFloat(s.longitude);
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
       const d = haversineKm(userLocation.lat, userLocation.lng, lat, lng);
-      if (best === null || d < best.distanceKm) best = { station: s, distanceKm: d }; // strict < keeps the first on ties
+      if (best === null || d < best.distanceKm) best = { station: s, distanceKm: d };
     }
     return best;
   }, [userLocation, stations]);
@@ -283,8 +313,6 @@ export default function Dashboard() {
     const zoom = Math.max(map.getZoom(), 16);
     let target = L.latLng(userLocation.lat, userLocation.lng);
     if (isMobile) {
-      // The bottom sheet covers the lower part of the map: shift the view centre down by half the
-      // sheet height so the dot lands in the middle of the *visible* map instead of behind the sheet.
       const sheetPx = wrapRef.current?.querySelector(".ff-sheet")?.offsetHeight ?? 0;
       target = map.unproject(map.project(target, zoom).add([0, sheetPx / 2]), zoom);
     }
@@ -297,7 +325,6 @@ export default function Dashboard() {
 
   return (
     <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col">
-      {/* Shared header: logo + main menu on the left; Compare / profile / Logout on the right */}
       <AppHeader
         actions={
           compareList.length > 0 && (
@@ -305,7 +332,7 @@ export default function Dashboard() {
               id="compare-btn"
               onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`)}
               aria-label={`Compare (${compareList.length})`}
-              className="btn-primary text-sm px-3 md:px-4 py-2 whitespace-nowrap gap-1.5"
+              className="btn-primary text-xs sm:text-sm h-9 px-3 sm:px-3.5 whitespace-nowrap gap-1.5"
             >
               <GitCompare className="w-4 h-4 min-[400px]:hidden md:hidden" aria-hidden="true" />
               <span className="hidden min-[400px]:inline md:inline">Compare </span>({compareList.length})
@@ -320,10 +347,10 @@ export default function Dashboard() {
           aria-label="Stations"
           className="ff-sheet absolute inset-x-0 bottom-0 z-20 rounded-t-3xl border-t shadow-[0_-12px_40px_rgba(0,0,0,0.55)]
                      md:relative md:inset-auto md:z-auto md:w-96 md:h-full md:rounded-none md:border-t-0 md:border-r md:shadow-none
-                     flex-shrink-0 bg-dark-800 border-white/10 flex flex-col overflow-hidden min-h-0"
+                     flex-shrink-0 bg-dark-800/95 backdrop-blur-lg border-white/10 flex flex-col overflow-hidden min-h-0"
         >
           {/* Sheet header: drag handle (mobile) + Search & Filters */}
-          <div ref={sheetHeaderRef} className="flex-shrink-0 border-b border-white/10 bg-dark-800 z-10">
+          <div ref={sheetHeaderRef} className="flex-shrink-0 border-b border-white/10 bg-dark-800/95 z-10">
             <div
               id="sheet-handle"
               role="button"
@@ -335,39 +362,65 @@ export default function Dashboard() {
               onPointerUp={onDragEnd}
               onPointerCancel={onDragEnd}
               onKeyDown={onHandleKey}
-              className="md:hidden touch-none select-none cursor-grab active:cursor-grabbing pt-2.5 pb-1 px-4 flex flex-col items-center gap-1.5"
+              className="md:hidden touch-none select-none cursor-grab active:cursor-grabbing pt-2.5 pb-1 px-4 flex flex-col items-center gap-1"
             >
-              <span className="block w-10 h-1.5 rounded-full bg-white/25" aria-hidden="true" />
-              <span className="text-xs font-medium text-slate-400">{countLabel}</span>
+              <span className="block w-10 h-1 rounded-full bg-white/25" aria-hidden="true" />
+              <span className="text-[11px] font-medium text-slate-400">{countLabel}</span>
             </div>
-            <div className="p-4 pt-2 md:pt-4 space-y-3">
+
+            <div className="px-3.5 pb-3 pt-1.5 md:p-4 space-y-2.5">
               <form onSubmit={handleSearch} className="flex gap-2">
-                <input
-                  id="station-search"
-                  type="search"
-                  enterKeyHint="search"
-                  className="input-field text-sm py-2"
-                  placeholder="Search stations…"
-                  value={search}
-                  onFocus={() => { if (isMobile && sheet !== "full") applySnap("full"); }}
-                  onChange={(e) => { setSearch(e.target.value); if (!e.target.value) setSearchResults(null); }}
-                />
-                <button type="submit" aria-label="Search" className="btn-primary px-3 py-2 text-sm flex items-center justify-center"><Search className="w-4 h-4" strokeWidth={2.2} aria-hidden="true" /></button>
+                <div className="relative flex-1 min-w-0">
+                  <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
+                  <input
+                    id="station-search"
+                    type="search"
+                    enterKeyHint="search"
+                    className="input-field h-10 pl-9 pr-9 text-sm [&::-webkit-search-cancel-button]:hidden"
+                    placeholder="Search stations or brands…"
+                    value={search}
+                    onFocus={() => { if (isMobile && sheet !== "full") applySnap("full"); }}
+                    onChange={(e) => { setSearch(e.target.value); if (!e.target.value) setSearchResults(null); }}
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      aria-label="Clear search"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={searching}
+                  aria-label="Search"
+                  className="btn-primary h-10 px-3.5 text-sm flex-shrink-0 disabled:opacity-60"
+                >
+                  <Search className="w-4 h-4" strokeWidth={2.2} aria-hidden="true" />
+                </button>
               </form>
-              <div className="flex gap-2">
-                {["nearest", "cheapest"].map((f) => (
+
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-dark-900/75 border border-white/10">
+                {[
+                  { id: "nearest", label: "Nearest", icon: LocateFixed },
+                  { id: "cheapest", label: "Cheapest", icon: TrendingDown },
+                ].map((f) => (
                   <button
-                    key={f}
-                    id={`filter-${f}`}
-                    onClick={() => setFilter(f)}
-                    className={`flex-1 py-2 rounded-xl text-sm font-medium capitalize transition-all flex items-center justify-center gap-1.5 ${
-                      filter === f ? "bg-primary text-white" : "bg-dark-600 text-slate-400 hover:text-white"
+                    key={f.id}
+                    type="button"
+                    id={`filter-${f.id}`}
+                    onClick={() => setFilter(f.id)}
+                    className={`h-8 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                      filter === f.id
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "text-slate-400 hover:text-white"
                     }`}
                   >
-                    {f === "nearest"
-                      ? <LocateFixed className="w-4 h-4" aria-hidden="true" />
-                      : <TrendingDown className="w-4 h-4" aria-hidden="true" />}
-                    {f === "nearest" ? "Nearest" : "Cheapest"}
+                    <f.icon className="w-3.5 h-3.5" aria-hidden="true" />
+                    {f.label}
                   </button>
                 ))}
               </div>
@@ -375,59 +428,92 @@ export default function Dashboard() {
           </div>
 
           {/* Station List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 overscroll-contain">
-            {loading && <p className="text-slate-400 text-center py-8">Loading stations…</p>}
-            {!loading && sorted.length === 0 && (
-              <p className="text-slate-500 text-center py-8">No stations found.</p>
-            )}
-            {sorted.map((s) => (
-              <div
-                key={s.station_id}
-                id={`station-card-${s.station_id}`}
-                className={`glass-card p-4 cursor-pointer transition-all hover:border-primary/50 ${
-                  selected === s.station_id ? "border-primary/70 shadow-lg shadow-primary/10" : ""
-                }`}
-                onClick={() => handleCardClick(s)}
-              >
-                <div className="flex justify-between items-start gap-2 mb-2">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-white text-sm">{s.name}</p>
-                    <p className="text-xs text-slate-400">{s.brand} · {s.barangay}</p>
-                  </div>
-                  {s.distance_km != null && (
-                    <span className="flex-shrink-0 text-xs text-accent font-medium bg-accent/10 px-2 py-0.5 rounded-full">
-                      {s.distance_km} km
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  {s.fuel_prices?.map((p) => (
-                    <PriceTag key={p.price_id} label={p.fuel_type} price={p.price_per_liter} type={p.fuel_type} />
-                  ))}
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <Link
-                    to={`/dashboard/station/${s.station_id}`}
-                    className="flex-1 text-center text-xs btn-secondary py-1.5"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Details
-                  </Link>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); toggleCompare(s.station_id); }}
-                    className={`text-xs px-3 py-2.5 md:py-1.5 rounded-xl border transition-all inline-flex items-center justify-center gap-1 ${
-                      compareList.includes(s.station_id)
-                        ? "bg-primary/20 border-primary/40 text-primary"
-                        : "bg-dark-600 border-white/10 text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    {compareList.includes(s.station_id)
-                      ? <><Check className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Added</>
-                      : <><Plus className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Compare</>}
-                  </button>
-                </div>
+          <div className="flex-1 overflow-y-auto p-3.5 md:p-4 space-y-2.5 min-h-0 overscroll-contain">
+            {loadError ? (
+              <ErrorBlock
+                message={loadError}
+                onRetry={() => {
+                  const pos = lastFetchRef.current ?? { lat: TAGUIG_CENTER[0], lng: TAGUIG_CENTER[1] };
+                  setLoading(true);
+                  fetchStations(pos.lat, pos.lng);
+                }}
+              />
+            ) : loading ? (
+              <div className="space-y-2.5">
+                <LoadingBlock count={4} className="h-28" label="Loading stations…" />
               </div>
-            ))}
+            ) : sorted.length === 0 ? (
+              <div className="space-y-3">
+                <EmptyBlock message={searchResults ? `No stations matched "${search}".` : "No stations found nearby."} />
+                {searchResults && (
+                  <button type="button" onClick={clearSearch} className="btn-secondary text-xs h-9 mx-auto flex">
+                    Clear search
+                  </button>
+                )}
+              </div>
+            ) : (
+              sorted.map((s) => {
+                const isSelected = selected === s.station_id;
+                const inCompare = compareList.includes(s.station_id);
+                return (
+                  <div
+                    key={s.station_id}
+                    id={`station-card-${s.station_id}`}
+                    className={`glass-card p-3.5 cursor-pointer transition-all hover:border-primary/45 ${
+                      isSelected ? "border-primary/70 bg-dark-700/90 shadow-lg shadow-primary/10" : ""
+                    }`}
+                    onClick={() => handleCardClick(s)}
+                  >
+                    <div className="flex justify-between items-start gap-2 mb-2">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white text-sm leading-snug truncate">{s.name}</p>
+                        <p className="text-xs text-slate-400 truncate mt-0.5">
+                          {[s.brand, s.barangay].filter(Boolean).join(" · ") || "Taguig City"}
+                        </p>
+                      </div>
+                      {s.distance_km != null && (
+                        <span className="flex-shrink-0 text-[11px] text-accent font-semibold bg-accent/10 border border-accent/20 px-2 py-0.5 rounded-full tabular-nums">
+                          {s.distance_km} km
+                        </span>
+                      )}
+                    </div>
+
+                    {s.fuel_prices?.length > 0 ? (
+                      <div className="rounded-xl bg-dark-900/55 border border-white/5 px-3 py-2 space-y-0.5">
+                        {s.fuel_prices.map((p) => (
+                          <PriceTag key={p.price_id} label={p.fuel_type} price={p.price_per_liter} type={p.fuel_type} />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-500 italic">No prices listed yet</p>
+                    )}
+
+                    <div className="mt-2.5 flex items-center gap-2">
+                      <Link
+                        to={`/dashboard/station/${s.station_id}`}
+                        className="flex-1 text-center text-xs btn-secondary h-8 px-3 gap-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Details <ArrowRight className="w-3 h-3" aria-hidden="true" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); toggleCompare(s.station_id); }}
+                        className={`text-xs h-8 px-3 rounded-xl border font-medium transition-all inline-flex items-center justify-center gap-1 ${
+                          inCompare
+                            ? "bg-primary/20 border-primary/40 text-primary"
+                            : "bg-dark-600/80 border-white/10 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        {inCompare
+                          ? <><Check className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Added</>
+                          : <><Plus className="w-3.5 h-3.5" strokeWidth={2.5} aria-hidden="true" /> Compare</>}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </aside>
 
@@ -470,21 +556,21 @@ export default function Dashboard() {
                 <Popup>
                   <div className="min-w-[200px]">
                     {nearest?.station.station_id === s.station_id && (
-                      <span className="inline-block rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 mb-1">
-                        Closest to you!
+                      <span className="inline-block rounded-full bg-primary/20 text-primary-light border border-primary/30 text-[11px] font-semibold px-2 py-0.5 mb-1.5">
+                        Closest to you
                       </span>
                     )}
-                    <p className="font-bold text-white text-sm mb-1">{s.name}</p>
+                    <p className="font-bold text-white text-sm mb-0.5">{s.name}</p>
                     <p className="text-xs text-slate-400 mb-2">{s.address}</p>
                     {s.fuel_prices?.map((p) => (
                       <div key={p.price_id} className="flex justify-between text-xs mb-1">
                         <span className="text-slate-300">{p.fuel_type}</span>
-                        <span className="font-bold text-primary">₱{Number(p.price_per_liter).toFixed(2)}</span>
+                        <span className="font-bold text-primary tabular-nums">{peso(p.price_per_liter)}</span>
                       </div>
                     ))}
                     <Link
                       to={`/dashboard/station/${s.station_id}`}
-                      className="mt-2 flex items-center justify-center gap-1 text-xs bg-primary text-white rounded-lg py-1.5"
+                      className="mt-2.5 flex items-center justify-center gap-1 text-xs font-semibold bg-primary text-white rounded-lg py-1.5"
                     >
                       View Details <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </Link>
@@ -493,6 +579,7 @@ export default function Dashboard() {
               </Marker>
             ))}
           </MapContainer>
+
           {!(isMobile && sheet === "full") && (
             <button
               type="button"
@@ -501,18 +588,22 @@ export default function Dashboard() {
               disabled={!hasUserPosition}
               aria-label="My location"
               title={hasUserPosition ? "My location" : "Waiting for your location…"}
-              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-12 h-12 rounded-full bg-white text-blue-600 shadow-lg
-                         border border-black/10 flex items-center justify-center cursor-pointer touch-manipulation
-                         hover:bg-slate-100 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-11 h-11 rounded-full bg-dark-800/95 backdrop-blur-md text-accent shadow-xl
+                         border border-white/15 flex items-center justify-center cursor-pointer touch-manipulation
+                         hover:bg-dark-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <LocateFixed className="w-6 h-6" strokeWidth={2.2} aria-hidden="true" />
+              <LocateFixed className="w-5 h-5" strokeWidth={2.2} aria-hidden="true" />
             </button>
           )}
+
           {stations.length > 0 && (!hasUserPosition || nearest) && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none max-w-[90%] text-center bg-white text-slate-800 text-sm font-medium rounded-lg shadow-lg px-4 py-2">
-              {nearest
-                ? `Nearest: ${nearest.station.name} (${nearest.distanceKm.toFixed(2)} km away)`
-                : "Locating you..."}
+            <div className="absolute top-3 left-14 right-3 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-fit mx-auto z-[1000] pointer-events-none max-w-[calc(100%-4.5rem)] sm:max-w-md bg-dark-900/90 backdrop-blur-md text-white border border-white/15 text-xs sm:text-sm font-medium rounded-full shadow-xl px-3.5 py-1.5 flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" aria-hidden="true" />
+              <span className="truncate">
+                {nearest
+                  ? `Nearest: ${nearest.station.name} (${nearest.distanceKm.toFixed(2)} km)`
+                  : "Locating you…"}
+              </span>
             </div>
           )}
         </div>

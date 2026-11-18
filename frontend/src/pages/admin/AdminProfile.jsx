@@ -123,25 +123,27 @@ export default function AdminProfile() {
       ) : (
         <div className="space-y-4 md:space-y-6">
           {/* Hero banner */}
-          <div className="glass-card p-5 md:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-xl font-black text-white shadow-lg shadow-primary/25 flex-shrink-0">
+          <div className="glass-card p-4 sm:p-6 flex items-center gap-3.5 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-lg sm:text-xl font-black text-white shadow-lg shadow-primary/25 flex-shrink-0">
               {initials}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg md:text-xl font-black text-white truncate">{profile?.full_name}</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/25 inline-flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" /> {profile?.role}
+                <h2 className="text-base sm:text-xl font-black text-white truncate">{profile?.full_name}</h2>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-primary/10 text-primary border border-primary/25 inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3" aria-hidden="true" /> {profile?.role}
                 </span>
               </div>
-              <p className="text-sm text-slate-400 break-all mt-0.5">{profile?.email}</p>
+              <p className="text-xs sm:text-sm text-slate-400 break-all mt-0.5">{profile?.email}</p>
             </div>
             <button
               type="button"
               onClick={() => { logout(); navigate("/"); }}
-              className="btn-danger min-h-[44px] px-4 inline-flex items-center justify-center gap-2 text-sm w-full sm:w-auto flex-shrink-0"
+              aria-label="Logout"
+              className="btn-danger h-9 px-3 inline-flex items-center justify-center gap-1.5 text-xs flex-shrink-0"
             >
-              <LogOut className="w-4 h-4" aria-hidden="true" /> Logout
+              <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
 
@@ -238,7 +240,7 @@ export default function AdminProfile() {
                   value={pwForm.confirm_new_password}
                   onChange={(e) => setPwForm({ ...pwForm, confirm_new_password: e.target.value })}
                 />
-                <button type="submit" disabled={savingPw} className="btn-primary w-full min-h-[48px] gap-2 disabled:opacity-60">
+                <button type="submit" disabled={savingPw} className="btn-primary w-full sm:w-auto h-10 px-6 text-sm gap-2 disabled:opacity-60">
                   {savingPw && <Spinner />} Update Password
                 </button>
               </form>

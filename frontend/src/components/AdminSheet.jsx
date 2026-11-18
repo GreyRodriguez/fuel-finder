@@ -13,9 +13,8 @@ export default function AdminSheet({ open, onClose, title, subtitle, maxWidth = 
   useEffect(() => {
     if (!open) return;
     const prevFocus = document.activeElement;
-    // Focus close button or first focusable input cleanly
-    const target = panelRef.current?.querySelector("input:not([disabled]), select:not([disabled]), textarea:not([disabled])");
-    (target || closeRef.current)?.focus();
+    // Focus the sheet close button rather than an input so mobile virtual keyboards don't jump open immediately.
+    closeRef.current?.focus({ preventScroll: true });
 
     const onKey = (e) => {
       if (e.key === "Escape") onClose();

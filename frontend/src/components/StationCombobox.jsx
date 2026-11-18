@@ -95,7 +95,7 @@ export default function StationCombobox({ stations, value, onChange, id, invalid
           id={listId}
           role="listbox"
           aria-label="Stations"
-          className="absolute z-30 mt-1 w-full max-h-64 overflow-y-auto overscroll-contain rounded-xl bg-dark-700 border border-white/10 shadow-2xl py-1"
+          className="absolute z-40 mt-1 w-full max-h-64 overflow-y-auto overscroll-contain rounded-xl bg-dark-700 border border-white/10 shadow-2xl py-1"
         >
           {options.length === 0 && <li className="px-4 py-3 text-sm text-slate-400" role="presentation">No stations match “{query}”.</li>}
           {options.map((s, i) => (
@@ -104,7 +104,7 @@ export default function StationCombobox({ stations, value, onChange, id, invalid
               id={`${uid}-opt-${i}`}
               role="option"
               aria-selected={s.station_id === value}
-              onPointerDown={(e) => e.preventDefault() /* keep focus in the input */}
+              onMouseDown={(e) => e.preventDefault() /* keep focus in the input without blocking touch scroll */}
               onClick={() => choose(s)}
               onMouseEnter={() => setActive(i)}
               className={`min-h-[44px] px-4 py-2 cursor-pointer flex flex-col justify-center text-sm ${

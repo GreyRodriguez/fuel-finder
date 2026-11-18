@@ -200,7 +200,7 @@ export default function Users() {
                       type="button"
                       disabled={busy || isSelf}
                       onClick={() => toggleStatus(u)}
-                      className="btn-secondary text-xs min-h-[44px] gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="btn-secondary text-xs h-9 gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {busy ? <Spinner className="w-3.5 h-3.5" /> : u.status === "active"
                         ? <><UserX className="w-3.5 h-3.5" aria-hidden="true" /> Deactivate</>
@@ -210,7 +210,7 @@ export default function Users() {
                       type="button"
                       disabled={busy || isSelf}
                       onClick={() => remove(u)}
-                      className="btn-danger text-xs min-h-[44px] inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="btn-danger text-xs h-9 inline-flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {busy ? <Spinner className="w-3.5 h-3.5" /> : <><Trash2 className="w-3.5 h-3.5" aria-hidden="true" /> Delete</>}
                     </button>

@@ -6,18 +6,22 @@ import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataState
 import useApiData from "../../hooks/useApiData";
 import { FUEL_OPTIONS, peso, formatDate, DIRECTION_STYLE } from "../../utils/format";
 
+const FUEL_TABS = ["All", ...FUEL_OPTIONS, "Kerosene"];
+
 const RANGES = [
-  { value: "4", label: "Last 4 weeks", weeks: 4 },
-  { value: "8", label: "Last 8 weeks", weeks: 8 },
-  { value: "12", label: "Last 12 weeks", weeks: 12 },
-  { value: "all", label: "All time", weeks: null },
+  { value: "4", label: "4w", fullLabel: "Last 4 weeks", weeks: 4 },
+  { value: "8", label: "8w", fullLabel: "Last 8 weeks", weeks: 8 },
+  { value: "12", label: "12w", fullLabel: "Last 12 weeks", weeks: 12 },
+  { value: "all", label: "All", fullLabel: "All time", weeks: null },
 ];
 
 function SectionHeading({ id, icon: Icon, title, hint }) {
   return (
     <div className="mb-3 md:mb-4">
-      <h2 id={id} className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
-        <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
+      <h2 id={id} className="text-base sm:text-lg md:text-xl font-bold text-white flex items-center gap-2">
+        <span className="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
+          <Icon className="w-4 h-4" aria-hidden="true" />
+        </span>
         {title}
       </h2>
       {hint && <p className="text-xs md:text-sm text-slate-500 mt-1">{hint}</p>}
@@ -28,23 +32,23 @@ function SectionHeading({ id, icon: Icon, title, hint }) {
 function ForecastCard({ f }) {
   const style = DIRECTION_STYLE[f.direction];
   const headline =
-    f.direction === "flat" ? "No change expected" : f.direction === "up" ? "Expected increase" : "Expected decrease";
+    f.direction === "flat" ? "No change" : f.direction === "up" ? "Expected hike" : "Expected rollback";
   return (
     <article className="glass-card p-4 md:p-5" aria-label={`${f.fuel_type} forecast`}>
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-white font-semibold">{f.fuel_type}</h3>
-        <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${style.bg} ${style.border} ${style.text}`}>
+        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${style.bg} ${style.border} ${style.text}`}>
           {headline}
         </span>
       </div>
-      <p className={`mt-3 text-3xl font-black ${style.text}`}>
+      <p className={`mt-3 text-2xl sm:text-3xl font-black tabular-nums ${style.text}`}>
         <span aria-hidden="true">{style.arrow} </span>
         {f.direction === "flat" ? "₱0.00" : peso(Math.abs(f.change_per_liter))}
-        <span className="text-base font-semibold text-slate-400">/L</span>
+        <span className="text-sm font-semibold text-slate-400">/L</span>
       </p>
-      <p className="text-xs text-slate-400 mt-2">Outlook for the week of {formatDate(f.effective_date)}</p>
+      <p className="text-xs text-slate-400 mt-2">Week of {formatDate(f.effective_date)}</p>
       <p className="text-xs text-slate-500 mt-0.5">Source: {f.source}</p>
-      {f.notes && <p className="text-xs text-slate-400 mt-2">{f.notes}</p>}
+      {f.notes && <p className="text-xs text-slate-400 mt-2 leading-relaxed">{f.notes}</p>}
     </article>
   );
 }
@@ -63,12 +67,12 @@ function MetricCard({ m }) {
         <h3 className="text-white font-semibold">{m.fuel_type}</h3>
         <span className="text-xs text-slate-500">{m.station_count} stations</span>
       </div>
-      <p className="mt-2 text-3xl font-black text-white">
+      <p className="mt-2 text-2xl sm:text-3xl font-black text-white tabular-nums">
         {peso(m.current_avg)}
-        <span className="text-base font-semibold text-slate-400">/L</span>
+        <span className="text-sm font-semibold text-slate-400">/L</span>
       </p>
       <p className="text-xs text-slate-500">Current average</p>
-      <p className={`mt-2 text-sm font-semibold ${style.text}`}>
+      <p className={`mt-2 text-xs sm:text-sm font-semibold ${style.text}`}>
         {m.change != null && <span aria-hidden="true">{style.arrow} </span>}
         <span className="sr-only">
           {m.direction === "down" ? "Down " : m.direction === "up" ? "Up " : ""}
@@ -92,7 +96,7 @@ function MetricCard({ m }) {
 function AdvisoryItem({ a }) {
   return (
     <li className="glass-card p-4 md:p-5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs">
         <time dateTime={a.published_date} className="text-slate-400">{formatDate(a.published_date)}</time>
         <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold">
           {a.source}
@@ -101,17 +105,17 @@ function AdvisoryItem({ a }) {
           <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20">{a.fuel_type}</span>
         )}
       </div>
-      <h3 className="text-white font-semibold mt-2">{a.title}</h3>
-      <p className="text-sm text-slate-400 mt-1.5 whitespace-pre-line">{a.summary}</p>
+      <h3 className="text-white font-semibold mt-2 text-sm sm:text-base leading-snug">{a.title}</h3>
+      <p className="text-xs sm:text-sm text-slate-400 mt-1.5 whitespace-pre-line leading-relaxed">{a.summary}</p>
       {a.source_url && (
         <a
           href={a.source_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm text-primary hover:underline min-h-[44px] md:min-h-0
+          className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline py-1
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded"
         >
-          Read the full advisory <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+          Read full advisory <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           <span className="sr-only">(opens in a new tab)</span>
         </a>
       )}
@@ -129,37 +133,63 @@ export default function Updates() {
   const trends = useApiData("/api/updates/trends", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? 12 });
   const advisories = useApiData("/api/updates/advisories", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? undefined });
 
-  const grid = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
+  const grid = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4";
   const filterLabel = fuel === "All" ? "" : ` for ${fuel}`;
 
   return (
     <UserLayout
-      title="Latest Updates & Price Trends"
-      subtitle="Next-week outlook, weekly price movement and official energy advisories for Taguig City."
+      title="Updates & Price Trends"
+      subtitle="Next-week outlook, weekly price movement and official energy advisories."
     >
-      {/* Filters */}
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        aria-label="Filters"
-        className="glass-card p-4 mb-6 md:mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:max-w-xl"
-      >
-        <div>
-          <label htmlFor="filter-fuel" className="label">Fuel type</label>
-          <select id="filter-fuel" className="input-field min-h-[44px]" value={fuel} onChange={(e) => setFuel(e.target.value)}>
-            <option value="All">All fuels</option>
-            {[...FUEL_OPTIONS, "Kerosene"].map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
+      {/* Mobile-friendly pill filters */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 md:mb-8">
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
+          <div role="group" aria-label="Filter by fuel type" className="flex gap-1.5 w-max sm:w-auto sm:flex-wrap">
+            {FUEL_TABS.map((f) => {
+              const active = fuel === f;
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setFuel(f)}
+                  className={`h-9 px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
+                    active
+                      ? "bg-white text-dark-900 border-white"
+                      : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
+                  }`}
+                >
+                  {f === "All" ? "All fuels" : f}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div>
-          <label htmlFor="filter-range" className="label">Date range</label>
-          <select id="filter-range" className="input-field min-h-[44px]" value={range} onChange={(e) => setRange(e.target.value)}>
-            {RANGES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-          </select>
+
+        <div
+          role="group"
+          aria-label="Date range"
+          className="grid grid-cols-4 sm:inline-grid gap-1 p-1 rounded-xl bg-dark-800 border border-white/10 self-start sm:self-auto"
+        >
+          {RANGES.map((r) => (
+            <button
+              key={r.value}
+              type="button"
+              aria-pressed={range === r.value}
+              aria-label={r.fullLabel}
+              onClick={() => setRange(r.value)}
+              className={`h-8 px-3 rounded-lg text-xs font-semibold transition-colors ${
+                range === r.value ? "bg-dark-600 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
         </div>
-      </form>
+      </div>
 
       {/* Market forecast */}
-      <section aria-labelledby="forecast-h" className="mb-8 md:mb-10">
+      <section aria-labelledby="forecast-h" className="mb-7 md:mb-10">
         <SectionHeading id="forecast-h" icon={TrendingUp} title="Next-week market forecast" hint="Expected pump price movement for next week (₱ per liter)." />
         <div className={grid}>
           {forecasts.loading && <LoadingBlock count={3} className="h-44" label="Loading forecasts…" />}
@@ -172,7 +202,7 @@ export default function Updates() {
       </section>
 
       {/* Fuel price change metrics */}
-      <section aria-labelledby="trends-h" className="mb-8 md:mb-10">
+      <section aria-labelledby="trends-h" className="mb-7 md:mb-10">
         <SectionHeading id="trends-h" icon={TrendingUp} title="Fuel price changes" hint="Average pump price across Taguig stations, compared with last week." />
         <div className={grid}>
           {trends.loading && <LoadingBlock count={3} className="h-64" label="Loading price trends…" />}
@@ -188,14 +218,14 @@ export default function Updates() {
       <section aria-labelledby="advisories-h">
         <SectionHeading id="advisories-h" icon={Megaphone} title="Official energy advisories" hint="Newest first." />
         {advisories.loading && (
-          <div className="grid gap-4"><LoadingBlock count={3} className="h-32" label="Loading advisories…" /></div>
+          <div className="grid gap-3"><LoadingBlock count={3} className="h-32" label="Loading advisories…" /></div>
         )}
         {advisories.error && <div className="grid"><ErrorBlock message={advisories.error} onRetry={advisories.reload} /></div>}
         {!advisories.loading && !advisories.error && advisories.data?.length === 0 && (
           <div className="grid"><EmptyBlock message={`No advisories${filterLabel} in this period.`} /></div>
         )}
         {!advisories.loading && advisories.data?.length > 0 && (
-          <ul className="space-y-4">
+          <ul className="space-y-3">
             {advisories.data.map((a) => <AdvisoryItem key={a.advisory_id} a={a} />)}
           </ul>
         )}

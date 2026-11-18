@@ -133,8 +133,8 @@ export default function Stations() {
       title="Gas Stations"
       subtitle={`${stations.length} registered in Taguig City (${activeCount} active)`}
       actions={
-        <button type="button" onClick={openCreate} className="btn-primary text-sm min-h-[44px] px-4 gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" aria-hidden="true" /> Add Station
+        <button type="button" onClick={openCreate} className="btn-primary text-xs sm:text-sm h-9 sm:h-10 px-3.5 gap-1.5 whitespace-nowrap">
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" /> Add Station
         </button>
       }
     >
@@ -207,8 +207,8 @@ export default function Stations() {
                 <li key={s.station_id} className="glass-card p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-white font-bold text-base leading-snug">{s.name}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-white font-bold text-base leading-snug break-words">{s.name}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 truncate">
                         {s.brand || "Unbranded"}{s.barangay ? ` · ${s.barangay}` : ""} · {s.city}
                       </p>
                     </div>
@@ -246,14 +246,14 @@ export default function Stations() {
                   <div className="pt-2 border-t border-white/5 grid grid-cols-3 gap-2">
                     <Link
                       to={`/admin/prices?station_id=${s.station_id}`}
-                      className="btn-secondary text-xs min-h-[44px] px-2 gap-1.5"
+                      className="btn-secondary text-xs h-9 px-2 gap-1.5"
                     >
                       <Banknote className="w-3.5 h-3.5" aria-hidden="true" /> Prices
                     </Link>
                     <button
                       type="button"
                       onClick={() => openEdit(s)}
-                      className="btn-secondary text-xs min-h-[44px] px-2 gap-1.5"
+                      className="btn-secondary text-xs h-9 px-2 gap-1.5"
                     >
                       <Pencil className="w-3.5 h-3.5" aria-hidden="true" /> Edit
                     </button>
@@ -261,7 +261,7 @@ export default function Stations() {
                       type="button"
                       disabled={busy}
                       onClick={() => remove(s)}
-                      className="btn-danger text-xs min-h-[44px] px-2 inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="btn-danger text-xs h-9 px-2 inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
                     >
                       {busy ? <Spinner className="w-3.5 h-3.5" /> : <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />} Delete
                     </button>
@@ -420,10 +420,10 @@ export default function Stations() {
           </div>
 
           <div className="sm:col-span-2 flex flex-col-reverse sm:flex-row gap-2.5 pt-2">
-            <button type="button" onClick={closeSheet} className="btn-secondary min-h-[48px] sm:min-h-[44px] sm:px-6">
+            <button type="button" onClick={closeSheet} className="btn-secondary h-10 text-sm sm:px-5">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="btn-primary flex-1 min-h-[48px] sm:min-h-[44px] gap-2 disabled:opacity-60">
+            <button type="submit" disabled={saving} className="btn-primary flex-1 h-10 text-sm gap-2 disabled:opacity-60">
               {saving && <Spinner />}{editing ? "Save Changes" : "Create Station"}
             </button>
           </div>
