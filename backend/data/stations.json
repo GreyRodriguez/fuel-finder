@@ -10,9 +10,18 @@
     "contact_info": "02-8837-2244",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 82.93 },
-      { "fuel_type": "Diesel", "price_per_liter": 90.78 },
-      { "fuel_type": "Premium 95", "price_per_liter": 86.63 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 68.93
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 85.78
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 72.63
+      }
     ]
   },
   {
@@ -26,9 +35,18 @@
     "contact_info": "02-8838-1122",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 83.25 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.00 },
-      { "fuel_type": "Premium 95", "price_per_liter": 86.95 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 69.25
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.0
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 72.95
+      }
     ]
   },
   {
@@ -37,14 +55,23 @@
     "address": "Taguig Diversion Road, Diego Silang corridor",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5190,
-    "longitude": 121.0570,
+    "latitude": 14.519,
+    "longitude": 121.057,
     "contact_info": "02-8397-1010",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.28 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.33 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.28 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.28
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.33
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.28
+      }
     ]
   },
   {
@@ -53,14 +80,23 @@
     "address": "Taguig Diversion Road (Branch 2), Diego Silang corridor",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5200,
-    "longitude": 121.0580,
+    "latitude": 14.52,
+    "longitude": 121.058,
     "contact_info": "02-8397-1011",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.45 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.48 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.45 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.45
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.48
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.45
+      }
     ]
   },
   {
@@ -74,9 +110,18 @@
     "contact_info": "02-8397-2020",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.60 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.72 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.60 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.6
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.72
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.6
+      }
     ]
   },
   {
@@ -85,14 +130,23 @@
     "address": "C-5 Road, Taguig",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5280,
-    "longitude": 121.0610,
+    "latitude": 14.528,
+    "longitude": 121.061,
     "contact_info": "02-8888-7711",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.33 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.00 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.33 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.33
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.0
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.33
+      }
     ]
   },
   {
@@ -101,14 +155,23 @@
     "address": "C-5 Road / Diego Silang Area (Branch 2), Taguig",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5250,
-    "longitude": 121.0660,
+    "latitude": 14.525,
+    "longitude": 121.066,
     "contact_info": "02-8888-7712",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.55 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.20 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.55 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.55
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.2
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.55
+      }
     ]
   },
   {
@@ -117,14 +180,23 @@
     "address": "C-5 Road / Ususan Northbound (Branch 3), Taguig",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5290,
-    "longitude": 121.0600,
+    "latitude": 14.529,
+    "longitude": 121.06,
     "contact_info": "02-8888-7713",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.70 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.35 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.70 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.7
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.35
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.7
+      }
     ]
   },
   {
@@ -133,14 +205,23 @@
     "address": "Cuasay Street corner MRT Avenue, North Signal Village",
     "barangay": "North Signal Village",
     "city": "Taguig City",
-    "latitude": 14.5160,
-    "longitude": 121.0560,
+    "latitude": 14.516,
+    "longitude": 121.056,
     "contact_info": "02-8397-1010",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.75 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.85 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.75 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.75
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.85
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.75
+      }
     ]
   },
   {
@@ -149,14 +230,23 @@
     "address": "Lawton Avenue, Fort Bonifacio (near Philippine Army Compound)",
     "barangay": "Fort Bonifacio",
     "city": "Taguig City",
-    "latitude": 14.5350,
-    "longitude": 121.0430,
+    "latitude": 14.535,
+    "longitude": 121.043,
     "contact_info": "02-8403-4013",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 87.93 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.40 },
-      { "fuel_type": "Premium 95", "price_per_liter": 89.93 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 73.93
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.4
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 75.93
+      }
     ]
   },
   {
@@ -170,9 +260,18 @@
     "contact_info": "02-8892-4545",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.10 },
-      { "fuel_type": "Diesel", "price_per_liter": 93.10 },
-      { "fuel_type": "Premium 95", "price_per_liter": 91.10 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.1
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 88.1
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 77.1
+      }
     ]
   },
   {
@@ -181,14 +280,23 @@
     "address": "Lot 12940 Levi Mariano Avenue corner Pedro Cayetano Blvd, Ususan",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5310,
-    "longitude": 121.0670,
+    "latitude": 14.531,
+    "longitude": 121.067,
     "contact_info": "02-8876-1234",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.74 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.20 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.74 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.74
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.2
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.74
+      }
     ]
   },
   {
@@ -202,9 +310,18 @@
     "contact_info": "02-8876-5678",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.55 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.00 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.55 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.55
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.0
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.55
+      }
     ]
   },
   {
@@ -213,14 +330,23 @@
     "address": "Cayetano Boulevard Area, Taguig",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5300,
-    "longitude": 121.0680,
+    "latitude": 14.53,
+    "longitude": 121.068,
     "contact_info": "02-8876-9900",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.40 },
-      { "fuel_type": "Diesel", "price_per_liter": 93.85 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.40 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.4
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 88.85
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.4
+      }
     ]
   },
   {
@@ -234,9 +360,18 @@
     "contact_info": "02-8818-4321",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.71 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.50 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.71 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.71
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.5
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.71
+      }
     ]
   },
   {
@@ -245,14 +380,23 @@
     "address": "North Signal Village Area, Taguig",
     "barangay": "North Signal Village",
     "city": "Taguig City",
-    "latitude": 14.5180,
-    "longitude": 121.0550,
+    "latitude": 14.518,
+    "longitude": 121.055,
     "contact_info": "02-8876-7788",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.20 },
-      { "fuel_type": "Diesel", "price_per_liter": 93.60 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.20 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.2
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 88.6
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.2
+      }
     ]
   },
   {
@@ -266,9 +410,18 @@
     "contact_info": "02-8876-9090",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.35 },
-      { "fuel_type": "Diesel", "price_per_liter": 93.75 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.35 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.35
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 88.75
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.35
+      }
     ]
   },
   {
@@ -277,14 +430,23 @@
     "address": "Pedro Cayetano Boulevard / Levi Mariano (Branch 2), Ususan",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5290,
-    "longitude": 121.0690,
+    "latitude": 14.529,
+    "longitude": 121.069,
     "contact_info": "02-8876-9901",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.50 },
-      { "fuel_type": "Diesel", "price_per_liter": 93.95 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.50 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.5
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 88.95
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.5
+      }
     ]
   },
   {
@@ -293,14 +455,23 @@
     "address": "East Service Road corner Veterans Road (near FTI), Western Bicutan",
     "barangay": "Western Bicutan",
     "city": "Taguig City",
-    "latitude": 14.5000,
-    "longitude": 121.0550,
+    "latitude": 14.5,
+    "longitude": 121.055,
     "contact_info": "02-8838-5566",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.45 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.35 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.45 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.45
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.35
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.45
+      }
     ]
   },
   {
@@ -309,14 +480,23 @@
     "address": "East Service Road (Taguig Section), Western Bicutan",
     "barangay": "Western Bicutan",
     "city": "Taguig City",
-    "latitude": 14.5020,
-    "longitude": 121.0560,
+    "latitude": 14.502,
+    "longitude": 121.056,
     "contact_info": "02-8838-5567",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.30 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.15 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.30 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.3
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.15
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.3
+      }
     ]
   },
   {
@@ -325,14 +505,23 @@
     "address": "Taguig Central / C-5 corridor",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5200,
-    "longitude": 121.0650,
+    "latitude": 14.52,
+    "longitude": 121.065,
     "contact_info": "02-8838-4411",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.60 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.40 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.60 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.6
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.4
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.6
+      }
     ]
   },
   {
@@ -341,14 +530,23 @@
     "address": "Taguig Central (Branch 2), Ususan",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5220,
-    "longitude": 121.0670,
+    "latitude": 14.522,
+    "longitude": 121.067,
     "contact_info": "02-8838-4412",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.65 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.55 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.65 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.65
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.55
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.65
+      }
     ]
   },
   {
@@ -357,14 +555,23 @@
     "address": "F. Manalo Street, Calzada-Tipas (near Vista Mall Taguig)",
     "barangay": "Calzada",
     "city": "Taguig City",
-    "latitude": 14.5350,
+    "latitude": 14.535,
     "longitude": 121.0805,
     "contact_info": "02-8642-1234",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 87.50 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.90 },
-      { "fuel_type": "Premium 95", "price_per_liter": 89.50 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 73.5
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.9
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 75.5
+      }
     ]
   },
   {
@@ -373,14 +580,23 @@
     "address": "59 Elisco Road, Barangay Ibayo-Tipas",
     "barangay": "Ibayo-Tipas",
     "city": "Taguig City",
-    "latitude": 14.5420,
-    "longitude": 121.0820,
+    "latitude": 14.542,
+    "longitude": 121.082,
     "contact_info": "02-8643-7788",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.10 },
-      { "fuel_type": "Diesel", "price_per_liter": 91.80 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.10 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.1
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 86.8
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.1
+      }
     ]
   },
   {
@@ -389,14 +605,23 @@
     "address": "Km. 18 East Service Road, San Martin de Porres (Taguig / Parañaque Border)",
     "barangay": "Western Bicutan",
     "city": "Taguig City",
-    "latitude": 14.4820,
-    "longitude": 121.0450,
+    "latitude": 14.482,
+    "longitude": 121.045,
     "contact_info": "02-8822-1919",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.08 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.70 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.08 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.08
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.7
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.08
+      }
     ]
   },
   {
@@ -405,14 +630,23 @@
     "address": "P. Cayetano Boulevard (formerly Levi Mariano Ave), Barangay Palingon-Tipas",
     "barangay": "Palingon",
     "city": "Taguig City",
-    "latitude": 14.5370,
-    "longitude": 121.0800,
+    "latitude": 14.537,
+    "longitude": 121.08,
     "contact_info": "02-8837-9911",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.25 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.10 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.25 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.25
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.1
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.25
+      }
     ]
   },
   {
@@ -421,14 +655,23 @@
     "address": "C-5 Road / Upper McKinley Road, Fort Bonifacio",
     "barangay": "Fort Bonifacio",
     "city": "Taguig City",
-    "latitude": 14.5330,
-    "longitude": 121.0500,
+    "latitude": 14.533,
+    "longitude": 121.05,
     "contact_info": "02-8856-3399",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 88.85 },
-      { "fuel_type": "Diesel", "price_per_liter": 92.80 },
-      { "fuel_type": "Premium 95", "price_per_liter": 90.85 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 74.85
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 87.8
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 76.85
+      }
     ]
   },
   {
@@ -442,9 +685,18 @@
     "contact_info": "02-8819-3200",
     "status": "active",
     "prices": [
-      { "fuel_type": "Unleaded 91", "price_per_liter": 89.75 },
-      { "fuel_type": "Diesel", "price_per_liter": 94.60 },
-      { "fuel_type": "Premium 95", "price_per_liter": 92.75 }
+      {
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 75.75
+      },
+      {
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.6
+      },
+      {
+        "fuel_type": "Premium 95",
+        "price_per_liter": 78.75
+      }
     ]
   }
 ]
