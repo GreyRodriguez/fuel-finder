@@ -1,6 +1,6 @@
 [
   {
-    "station_id": 11,
+    "station_id": 1,
     "name": "Flying V Gen. Santos Ave",
     "brand": "Flying V",
     "address": "General Santos Avenue corner Paraiso Street, Upper Bicutan",
@@ -12,34 +12,50 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 30,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.8,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 1,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 86.43,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 31,
+        "price_id": 3,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 90.13,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 2,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
+        "price_per_liter": 90.78,
+        "date_updated": "2026-10-28",
+        "time_updated": "08:33:34.276808",
+        "status": "inactive"
       },
       {
-        "price_id": 32,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 85,
+        "fuel_type": "Diesel",
+        "price_per_liter": 89.9,
+        "date_updated": "2026-11-02",
+        "time_updated": "00:00:00",
+        "status": "inactive"
+      },
+      {
+        "price_id": 86,
+        "fuel_type": "Diesel",
+        "price_per_liter": 76.8,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 12,
-    "name": "Flying V Signal Village",
+    "station_id": 2,
+    "name": "Flying V Taguig",
     "brand": "Flying V",
     "address": "Marichu R. Tinga Avenue, Central Signal Village",
     "barangay": "Central Signal Village",
@@ -50,71 +66,109 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 33,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.75,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 4,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 86.75,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 34,
+        "price_id": 5,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.85,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 77.7,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 35,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 6,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 90.45,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 13,
-    "name": "SEAOIL Cuasay, Signal Village",
+    "station_id": 3,
+    "name": "SEAOIL Taguig",
     "brand": "SEAOIL",
-    "address": "Cuasay Street corner MRT Avenue, North Signal Village",
-    "barangay": "North Signal Village",
+    "address": "Taguig Diversion Road, Diego Silang corridor",
+    "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.516,
-    "longitude": 121.056,
+    "latitude": 14.519,
+    "longitude": 121.057,
     "contact_info": "02-8397-1010",
     "status": "active",
     "prices": [
       {
-        "price_id": 36,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 7,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.78,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 37,
+        "price_id": 8,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.7,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 78.03,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 38,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 9,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.78,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 14,
+    "station_id": 4,
+    "name": "SEAOIL Taguig - Branch Listing 2",
+    "brand": "SEAOIL",
+    "address": "Taguig Diversion Road (Branch 2), Diego Silang corridor",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.52,
+    "longitude": 121.058,
+    "contact_info": "02-8397-1011",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 10,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.95,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 11,
+        "fuel_type": "Diesel",
+        "price_per_liter": 78.18,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 12,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.95,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 5,
     "name": "SEAOIL Ususan Gen. Luna",
     "brand": "SEAOIL",
     "address": "21 General Luna Street, Ususan",
@@ -126,71 +180,185 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 39,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.6,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 13,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 40,
+        "price_id": 14,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.75,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 78.42,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 41,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.3,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 15,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 15,
-    "name": "Petron Diego Silang C-5",
+    "station_id": 6,
+    "name": "Petron Taguig",
     "brand": "Petron",
-    "address": "C-5 Road corner Diego Silang, Ususan",
+    "address": "C-5 Road, Taguig",
     "barangay": "Ususan",
     "city": "Taguig City",
-    "latitude": 14.5285,
-    "longitude": 121.0572,
+    "latitude": 14.528,
+    "longitude": 121.061,
     "contact_info": "02-8888-7711",
     "status": "active",
     "prices": [
       {
-        "price_id": 42,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 16,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.83,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 43,
+        "price_id": 17,
         "fuel_type": "Diesel",
-        "price_per_liter": 57.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 78.7,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 44,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 68.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 18,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.83,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 16,
+    "station_id": 7,
+    "name": "Petron Taguig - Branch Listing 2",
+    "brand": "Petron",
+    "address": "C-5 Road / Diego Silang Area (Branch 2), Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.525,
+    "longitude": 121.066,
+    "contact_info": "02-8888-7712",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 19,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 20,
+        "fuel_type": "Diesel",
+        "price_per_liter": 78.9,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 21,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 8,
+    "name": "Petron Taguig - Branch Listing 3",
+    "brand": "Petron",
+    "address": "C-5 Road / Ususan Northbound (Branch 3), Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.529,
+    "longitude": 121.06,
+    "contact_info": "02-8888-7713",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 22,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.2,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 23,
+        "fuel_type": "Diesel",
+        "price_per_liter": 79.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 24,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.2,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 9,
+    "name": "SEAOIL Cuasay, Signal Village",
+    "brand": "SEAOIL",
+    "address": "Cuasay Street corner MRT Avenue, North Signal Village",
+    "barangay": "North Signal Village",
+    "city": "Taguig City",
+    "latitude": 14.516,
+    "longitude": 121.056,
+    "contact_info": "02-8397-1010",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 25,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.25,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 26,
+        "fuel_type": "Diesel",
+        "price_per_liter": 78.55,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 27,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.25,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 10,
     "name": "Phoenix Lawton Ave, Fort Bonifacio",
     "brand": "Phoenix",
     "address": "Lawton Avenue, Fort Bonifacio (near Philippine Army Compound)",
@@ -202,34 +370,34 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 45,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 28,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.43,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 46,
+        "price_id": 29,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.95,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 79.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 47,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.8,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 30,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.43,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 17,
-    "name": "Petron Pasong Tamo Ext BGC",
+    "station_id": 11,
+    "name": "Petron Pasong Tamo Ext, BGC",
     "brand": "Petron",
     "address": "2331 Chino Roces Avenue Extension, Fort Bonifacio",
     "barangay": "Fort Bonifacio",
@@ -240,33 +408,33 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 48,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.8,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 31,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.6,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 49,
+        "price_id": 32,
         "fuel_type": "Diesel",
-        "price_per_liter": 57.75,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 79.8,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 50,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 68.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 33,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.6,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 18,
+    "station_id": 12,
     "name": "Shell Cayetano Blvd 2",
     "brand": "Shell",
     "address": "Lot 12940 Levi Mariano Avenue corner Pedro Cayetano Blvd, Ususan",
@@ -278,33 +446,33 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 51,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 34,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.24,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 52,
+        "price_id": 35,
         "fuel_type": "Diesel",
-        "price_per_liter": 57.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 80.9,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 53,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 36,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.24,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 19,
+    "station_id": 13,
     "name": "Shell C5 Logcom Northbound",
     "brand": "Shell",
     "address": "C-5 Road Northbound, Logcom, Ususan",
@@ -316,33 +484,71 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 54,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 63.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 37,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 55,
+        "price_id": 38,
         "fuel_type": "Diesel",
-        "price_per_liter": 58.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 80.7,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 56,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.6,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 39,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 20,
+    "station_id": 14,
+    "name": "Shell Taguig",
+    "brand": "Shell",
+    "address": "Cayetano Boulevard Area, Taguig",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.53,
+    "longitude": 121.068,
+    "contact_info": "02-8876-9900",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 40,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.9,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 41,
+        "fuel_type": "Diesel",
+        "price_per_liter": 80.55,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 42,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.9,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 15,
     "name": "Caltex BGC",
     "brand": "Caltex",
     "address": "32nd Street, Crescent Park West, Bonifacio Global City",
@@ -354,33 +560,71 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 57,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 63.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 43,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.21,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 58,
+        "price_id": 44,
         "fuel_type": "Diesel",
-        "price_per_liter": 58.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 81.2,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 59,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 45,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.21,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 21,
+    "station_id": 16,
+    "name": "Shell North, Signal Village",
+    "brand": "Shell",
+    "address": "North Signal Village Area, Taguig",
+    "barangay": "North Signal Village",
+    "city": "Taguig City",
+    "latitude": 14.518,
+    "longitude": 121.055,
+    "contact_info": "02-8876-7788",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 46,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.7,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 47,
+        "fuel_type": "Diesel",
+        "price_per_liter": 80.3,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 48,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.7,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 17,
     "name": "Shell Cayetano Blvd, Ususan",
     "brand": "Shell",
     "address": "Cayetano Avenue corner P. Mariano, Ususan",
@@ -392,33 +636,71 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 60,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.85,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 49,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.85,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 61,
+        "price_id": 50,
         "fuel_type": "Diesel",
-        "price_per_liter": 57.85,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 80.45,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 62,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 51,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.85,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
   },
   {
-    "station_id": 22,
+    "station_id": 18,
+    "name": "Shell Taguig - Branch Listing 2",
+    "brand": "Shell",
+    "address": "Pedro Cayetano Boulevard / Levi Mariano (Branch 2), Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.529,
+    "longitude": 121.069,
+    "contact_info": "02-8876-9901",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 52,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.0,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 53,
+        "fuel_type": "Diesel",
+        "price_per_liter": 80.65,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 54,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.0,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 19,
     "name": "Caltex East Service Road, W. Bicutan",
     "brand": "Caltex",
     "address": "East Service Road corner Veterans Road (near FTI), Western Bicutan",
@@ -430,27 +712,141 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 63,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_id": 55,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.95,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
-        "price_id": 64,
+        "price_id": 56,
         "fuel_type": "Diesel",
-        "price_per_liter": 56.95,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "price_per_liter": 81.05,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 57,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.95,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 20,
+    "name": "Caltex East Service Road, Taguig",
+    "brand": "Caltex",
+    "address": "East Service Road (Taguig Section), Western Bicutan",
+    "barangay": "Western Bicutan",
+    "city": "Taguig City",
+    "latitude": 14.502,
+    "longitude": 121.056,
+    "contact_info": "02-8838-5567",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 58,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.8,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 59,
+        "fuel_type": "Diesel",
+        "price_per_liter": 80.85,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 60,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.8,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 21,
+    "name": "Caltex Taguig",
+    "brand": "Caltex",
+    "address": "Taguig Central / C-5 corridor",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.52,
+    "longitude": 121.065,
+    "contact_info": "02-8838-4411",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 61,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 62,
+        "fuel_type": "Diesel",
+        "price_per_liter": 81.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 63,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.1,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      }
+    ]
+  },
+  {
+    "station_id": 22,
+    "name": "Caltex Taguig - Branch Listing 2",
+    "brand": "Caltex",
+    "address": "Taguig Central (Branch 2), Ususan",
+    "barangay": "Ususan",
+    "city": "Taguig City",
+    "latitude": 14.522,
+    "longitude": 121.067,
+    "contact_info": "02-8838-4412",
+    "status": "active",
+    "prices": [
+      {
+        "price_id": 64,
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.15,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 65,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.85,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 81.25,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 66,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.15,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -468,27 +864,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 66,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 67,
-        "fuel_type": "Diesel",
-        "price_per_liter": 56.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.0,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 68,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 66.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 78.6,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 69,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.0,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -506,27 +902,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 69,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 70,
-        "fuel_type": "Diesel",
-        "price_per_liter": 57.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.6,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 71,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 68.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 78.5,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 72,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.6,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -544,27 +940,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 72,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 73,
-        "fuel_type": "Diesel",
-        "price_per_liter": 56.6,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 91.58,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 74,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 79.4,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 75,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 93.58,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -582,27 +978,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 75,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.2,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 76,
-        "fuel_type": "Diesel",
-        "price_per_liter": 57.25,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.75,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 77,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 68.3,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 80.8,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 78,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 95.75,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -620,27 +1016,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 78,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 79,
-        "fuel_type": "Diesel",
-        "price_per_liter": 57.8,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 92.35,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 80,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.3,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 79.5,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
+        "status": "active"
+      },
+      {
+        "price_id": 81,
+        "fuel_type": "Premium 95",
+        "price_per_liter": 94.35,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]
@@ -658,217 +1054,27 @@
     "status": "active",
     "prices": [
       {
-        "price_id": 81,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 63.6,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
         "price_id": 82,
-        "fuel_type": "Diesel",
-        "price_per_liter": 58.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Unleaded 91",
+        "price_per_liter": 93.25,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       },
       {
         "price_id": 83,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 70.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Diesel",
+        "price_per_liter": 81.3,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
-      }
-    ]
-  },
-  {
-    "station_id": 29,
-    "name": "Petron BGC",
-    "brand": "Petron",
-    "address": "9th Avenue corner 32nd Street, Bonifacio Global City",
-    "barangay": "Fort Bonifacio",
-    "city": "Taguig City",
-    "latitude": 14.55,
-    "longitude": 121.0494,
-    "contact_info": "02-8818-5555",
-    "status": "active",
-    "prices": [
+      },
       {
         "price_id": 84,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 63.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 85,
-        "fuel_type": "Diesel",
-        "price_per_liter": 58.3,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 86,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.8,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      }
-    ]
-  },
-  {
-    "station_id": 30,
-    "name": "Shell BGC Station",
-    "brand": "Shell",
-    "address": "5th Avenue corner 26th Street, Bonifacio Global City",
-    "barangay": "Fort Bonifacio",
-    "city": "Taguig City",
-    "latitude": 14.5485,
-    "longitude": 121.052,
-    "contact_info": "02-8819-1234",
-    "status": "active",
-    "prices": [
-      {
-        "price_id": 87,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 63.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 88,
-        "fuel_type": "Diesel",
-        "price_per_liter": 58.4,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 89,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.95,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      }
-    ]
-  },
-  {
-    "station_id": 31,
-    "name": "Caltex Arca South",
-    "brand": "Caltex",
-    "address": "Arca Boulevard corner East Union Drive, Arca South, Western Bicutan",
-    "barangay": "Western Bicutan",
-    "city": "Taguig City",
-    "latitude": 14.505,
-    "longitude": 121.052,
-    "contact_info": "02-8856-7890",
-    "status": "active",
-    "prices": [
-      {
-        "price_id": 90,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 91,
-        "fuel_type": "Diesel",
-        "price_per_liter": 57.15,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 92,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 68.1,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      }
-    ]
-  },
-  {
-    "station_id": 32,
-    "name": "Shell C-5 Heritage Taguig",
-    "brand": "Shell",
-    "address": "C-5 Road Southbound, Fort Bonifacio",
-    "barangay": "Fort Bonifacio",
-    "city": "Taguig City",
-    "latitude": 14.5255,
-    "longitude": 121.0545,
-    "contact_info": "02-8876-3344",
-    "status": "active",
-    "prices": [
-      {
-        "price_id": 93,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 62.95,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 94,
-        "fuel_type": "Diesel",
-        "price_per_liter": 57.9,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 95,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 69.25,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      }
-    ]
-  },
-  {
-    "station_id": 33,
-    "name": "Unioil Taguig (Bayani Road)",
-    "brand": "Unioil",
-    "address": "Bayani Road, Western Bicutan",
-    "barangay": "Western Bicutan",
-    "city": "Taguig City",
-    "latitude": 14.506,
-    "longitude": 121.05,
-    "contact_info": "02-8551-9900",
-    "status": "active",
-    "prices": [
-      {
-        "price_id": 96,
-        "fuel_type": "Gasoline",
-        "price_per_liter": 61.5,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 97,
-        "fuel_type": "Diesel",
-        "price_per_liter": 56.75,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
-        "status": "active"
-      },
-      {
-        "price_id": 98,
-        "fuel_type": "Premium Gasoline",
-        "price_per_liter": 67.25,
-        "date_updated": "2026-10-26",
-        "time_updated": "10:42:13.940507",
+        "fuel_type": "Premium 95",
+        "price_per_liter": 96.25,
+        "date_updated": "2026-11-17",
+        "time_updated": "04:18:15.550957",
         "status": "active"
       }
     ]

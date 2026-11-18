@@ -132,8 +132,9 @@ def scrape_gaswatch_adjustments() -> Dict[str, float]:
 
     # Regex pattern: Matches Fuel Type, Sign (+ or - / −), optional currency (₱, &#8369;, etc.),
     # decimal amount, and unit (/L or /liter).
+    # Supports: Diesel, Gasoline, Gas, Unleaded, Premium, Kerosene
     pattern = re.compile(
-        r"(Diesel|Gasoline|Kerosene)\s*([+\-\u2212\u2013\u2014])\s*(?:&#8369;|[\u20b1₱Pp]|PHP)?\s*([0-9]+(?:\.[0-9]+)?)\s*/\s*L",
+        r"(Diesel|Gasoline|Gas|Unleaded|Premium|Kerosene)\s*([+\-\u2212\u2013\u2014])\s*(?:&#8369;|[\u20b1₱Pp]|PHP)?\s*([0-9]+(?:\.[0-9]+)?)\s*/\s*L",
         re.IGNORECASE,
     )
 
@@ -147,21 +148,32 @@ def scrape_gaswatch_adjustments() -> Dict[str, float]:
         # Search specifically for header tags, update pills, or any relevant text container
         candidate_tags = soup.find_all(
             lambda tag: tag.name in ["span", "div", "p", "h1", "h2", "h3", "li"]
-            and any(f in tag.text for f in ["Diesel", "Gasoline", "Kerosene"])
+            and any(f in tag.text for f in ["Diesel", "Gasoline", "Gas", "Unleaded", "Premium", "Kerosene"])
         )
 
         for tag in candidate_tags:
             text = tag.get_text(separator=" ", strip=True)
             for match in pattern.finditer(text):
-                fuel = match.group(1).capitalize()
+                fuel_raw = match.group(1).lower()
                 sign = match.group(2)
                 amount_str = match.group(3)
 
                 shift_val = parse_shift_value(sign, amount_str)
+                
+                # Normalize category: Gasoline shift applies to BOTH Unleaded 91 and Premium 95
+                if fuel_raw in ["gasoline", "gas", "unleaded", "premium"]:
+                    category = "Gasoline"
+                elif fuel_raw == "diesel":
+                    category = "Diesel"
+                elif fuel_raw == "kerosene":
+                    category = "Kerosene"
+                else:
+                    category = fuel_raw.capitalize()
+
                 # Keep the first detected match for each fuel type in the header strip
-                if fuel not in extracted_shifts:
-                    extracted_shifts[fuel] = shift_val
-                    logger.info("Scraped %s adjustment: %+0.2f PHP/L", fuel, shift_val)
+                if category not in extracted_shifts:
+                    extracted_shifts[category] = shift_val
+                    logger.info("Scraped %s adjustment (matched '%s'): %+0.2f PHP/L", category, match.group(1), shift_val)
 
     except requests.exceptions.RequestException as req_err:
         logger.warning(
@@ -224,8 +236,8 @@ def apply_database_adjustments(gas_shift: float, diesel_shift: float, kerosene_s
       3. Single mass calculation query on `stations` preserving relative base gaps.
     """
     logger.info("Preparing database update:")
-    logger.info("  Gasoline Shift : %+0.2f PHP/L", gas_shift)
-    logger.info("  Diesel Shift   : %+0.2f PHP/L", diesel_shift)
+    logger.info("  Gasoline Shift : %+0.2f PHP/L (Applies to BOTH 'Unleaded 91' & 'Premium 95')", gas_shift)
+    logger.info("  Diesel Shift   : %+0.2f PHP/L (Applies to 'Diesel')", diesel_shift)
     logger.info("  Kerosene Shift : %+0.2f PHP/L", kerosene_shift)
 
     if dry_run:
@@ -271,20 +283,31 @@ def apply_database_adjustments(gas_shift: float, diesel_shift: float, kerosene_s
                 fuel_prices_query = """
                     UPDATE fuel_prices fp
                     SET price_per_liter = ROUND(fp.price_per_liter + CASE 
-                            WHEN fp.fuel_type ILIKE '%gasoline%' OR fp.fuel_type ILIKE '%unleaded%' OR fp.fuel_type ILIKE '%u91%' OR fp.fuel_type ILIKE '%premium%' OR fp.fuel_type ILIKE '%p95%' THEN (SELECT gasoline_shift FROM price_adjustments WHERE id = 1)
-                            WHEN fp.fuel_type ILIKE '%diesel%' THEN (SELECT diesel_shift FROM price_adjustments WHERE id = 1)
-                            WHEN fp.fuel_type ILIKE '%kerosene%' THEN (SELECT kerosene_shift FROM price_adjustments WHERE id = 1)
+                            WHEN fp.fuel_type ILIKE '%unleaded%' 
+                              OR fp.fuel_type ILIKE '%premium%' 
+                              OR fp.fuel_type ILIKE '%gasoline%' 
+                              OR fp.fuel_type ILIKE '%u91%' 
+                              OR fp.fuel_type ILIKE '%p95%' 
+                              OR fp.fuel_type IN ('Unleaded 91', 'Premium 95', 'Gasoline', 'Regular')
+                            THEN (SELECT gasoline_shift FROM price_adjustments WHERE id = 1)
+                            
+                            WHEN fp.fuel_type ILIKE '%diesel%' 
+                              OR fp.fuel_type IN ('Diesel')
+                            THEN (SELECT diesel_shift FROM price_adjustments WHERE id = 1)
+                            
+                            WHEN fp.fuel_type ILIKE '%kerosene%' 
+                              OR fp.fuel_type IN ('Kerosene')
+                            THEN (SELECT kerosene_shift FROM price_adjustments WHERE id = 1)
+                            
                             ELSE 0.00
                         END, 2),
                         date_updated = CURRENT_DATE,
                         time_updated = CURRENT_TIME
-                    FROM gas_stations gs
-                    WHERE fp.station_id = gs.station_id
-                      AND fp.status = 'active';
+                    WHERE fp.status = 'active';
                 """
                 cur.execute(fuel_prices_query)
                 prices_updated = cur.rowcount
-                logger.info("Updated active prices in 'fuel_prices': %d price records updated.", prices_updated)
+                logger.info("Updated active prices in 'fuel_prices': %d records updated (Unleaded 91, Premium 95, Diesel).", prices_updated)
 
             # Check if stations table exists as well
             cur.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'stations');")
@@ -349,7 +372,7 @@ def main():
         "--manual-gas",
         type=float,
         default=None,
-        help="Manually override Gasoline shift (e.g. --manual-gas -4.30)",
+        help="Manually override Gasoline shift (applied to both Unleaded 91 and Premium 95, e.g. --manual-gas -4.30)",
     )
     parser.add_argument(
         "--manual-diesel",
