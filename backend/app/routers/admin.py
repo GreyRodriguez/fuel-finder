@@ -1,13 +1,16 @@
-from datetime import date, time as time_type
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from collections import Counter, defaultdict
+from datetime import date, datetime, timedelta, timezone
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 from app.db.session import get_db
 from app.models.station import GasStation
 from app.models.price import FuelPrice
 from app.models.user import User
+from app.models.feedback import Feedback
 from app.schemas.station import StationCreate, StationUpdate
 from app.schemas.price import PriceCreate
 from app.schemas.user import UserOut, AdminUserUpdate
+from app.schemas.updates import FEEDBACK_STATUSES
 from app.core.security import require_admin
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -72,12 +75,13 @@ def add_price(
         FuelPrice.status == "active",
     ).update({"status": "inactive"})
 
+    now = datetime.now()
     price = FuelPrice(
         station_id=payload.station_id,
         fuel_type=payload.fuel_type,
         price_per_liter=payload.price_per_liter,
-        date_updated=date.today(),
-        time_updated=time_type(),
+        date_updated=now.date(),
+        time_updated=now.time().replace(microsecond=0),
         status="active",
         updated_by=admin.user_id,
     )
@@ -126,15 +130,105 @@ def delete_user(user_id: int, db: Session = Depends(get_db), _=Depends(require_a
 
 # ── Reports ───────────────────────────────────────────────────────────────────
 
+
+def _station_ref(s: GasStation | None) -> dict | None:
+    if s is None:
+        return None
+    return {"station_id": s.station_id, "name": s.name, "brand": s.brand, "barangay": s.barangay}
+
+
+def _aware(dt: datetime) -> datetime:
+    """Treat naive timestamps as UTC so they compare safely with aware ones."""
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
 @router.get("/reports")
-def get_reports(db: Session = Depends(get_db), _=Depends(require_admin)):
-    total_stations = db.query(GasStation).count()
-    active_stations = db.query(GasStation).filter(GasStation.status == "active").count()
+def get_reports(
+    days: int = Query(30, ge=1, le=365, description="Reporting period in days"),
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
+    """Snapshot counts (used by the dashboard) plus period analytics for the Reports page."""
+    today = date.today()
+    since_date = today - timedelta(days=days - 1)
+    since_ts = datetime.now(timezone.utc) - timedelta(days=days)
+
+    stations = db.query(GasStation).all()
+    total_stations = len(stations)
+    active_stations = sum(1 for s in stations if s.status == "active")
     inactive_stations = total_stations - active_stations
+
     total_users = db.query(User).filter(User.role == "user").count()
-    recent_prices = db.query(FuelPrice).order_by(FuelPrice.date_updated.desc(), FuelPrice.time_updated.desc()).limit(10).all()
+    new_users = db.query(User).filter(User.role == "user", User.created_at >= since_ts).count()
+
+    recent_prices = (
+        db.query(FuelPrice)
+        .options(joinedload(FuelPrice.station))
+        .order_by(FuelPrice.date_updated.desc(), FuelPrice.time_updated.desc(), FuelPrice.price_id.desc())
+        .limit(10)
+        .all()
+    )
+
+    # ── Price updates in the period, per day (for the activity chart) ──
+    period_prices = db.query(FuelPrice.date_updated).filter(FuelPrice.date_updated >= since_date).all()
+    per_day = Counter(d for (d,) in period_prices)
+    # Keep the chart readable: daily buckets up to 31 days, weekly buckets beyond that.
+    activity = []
+    if days <= 31:
+        for i in range(days):
+            d = since_date + timedelta(days=i)
+            activity.append({"label": d.isoformat(), "count": per_day.get(d, 0)})
+    else:
+        start = since_date
+        while start <= today:
+            end = min(start + timedelta(days=6), today)
+            count = sum(c for d, c in per_day.items() if start <= d <= end)
+            activity.append({"label": start.isoformat(), "end": end.isoformat(), "count": count})
+            start = end + timedelta(days=1)
+
+    # ── Current pump prices per fuel type (active prices at active stations) ──
+    active_prices = (
+        db.query(FuelPrice)
+        .options(joinedload(FuelPrice.station))
+        .join(GasStation, FuelPrice.station_id == GasStation.station_id)
+        .filter(FuelPrice.status == "active", GasStation.status == "active")
+        .all()
+    )
+    by_fuel: dict[str, list[FuelPrice]] = defaultdict(list)
+    priced_station_ids = set()
+    for p in active_prices:
+        by_fuel[p.fuel_type].append(p)
+        priced_station_ids.add(p.station_id)
+
+    fuel_summary = []
+    for fuel, rows in sorted(by_fuel.items()):
+        values = [float(r.price_per_liter) for r in rows]
+        cheapest = min(rows, key=lambda r: r.price_per_liter)
+        priciest = max(rows, key=lambda r: r.price_per_liter)
+        fuel_summary.append({
+            "fuel_type": fuel,
+            "stations": len(rows),
+            "avg": round(sum(values) / len(values), 2),
+            "min": float(cheapest.price_per_liter),
+            "max": float(priciest.price_per_liter),
+            "cheapest": _station_ref(cheapest.station),
+            "priciest": _station_ref(priciest.station),
+        })
+
+    stations_without_prices = [
+        _station_ref(s) for s in stations if s.status == "active" and s.station_id not in priced_station_ids
+    ]
+
+    brands = Counter((s.brand or "Unbranded") for s in stations)
+
+    # ── Feedback ──
+    fb_rows = db.query(Feedback.status, Feedback.category, Feedback.created_at).all()
+    fb_status = Counter(r.status or "new" for r in fb_rows)
+    fb_category = Counter(r.category for r in fb_rows)
+    fb_in_period = sum(1 for r in fb_rows if r.created_at and _aware(r.created_at) >= since_ts)
 
     return {
+        # Snapshot (kept for the admin dashboard)
         "total_stations": total_stations,
         "active_stations": active_stations,
         "inactive_stations": inactive_stations,
@@ -145,9 +239,25 @@ def get_reports(db: Session = Depends(get_db), _=Depends(require_admin)):
                 "station_name": p.station.name if p.station else "N/A",
                 "fuel_type": p.fuel_type,
                 "price_per_liter": float(p.price_per_liter),
+                "status": p.status,
                 "date_updated": str(p.date_updated),
                 "time_updated": str(p.time_updated),
             }
             for p in recent_prices
         ],
+        # Period analytics
+        "period_days": days,
+        "period_start": since_date.isoformat(),
+        "new_users": new_users,
+        "price_updates_in_period": len(period_prices),
+        "price_activity": activity,
+        "fuel_summary": fuel_summary,
+        "stations_without_prices": stations_without_prices,
+        "brands": [{"brand": b, "count": c} for b, c in brands.most_common()],
+        "feedback": {
+            "total": len(fb_rows),
+            "in_period": fb_in_period,
+            "by_status": {s: fb_status.get(s, 0) for s in FEEDBACK_STATUSES},
+            "by_category": [{"category": c, "count": n} for c, n in fb_category.most_common()],
+        },
     }

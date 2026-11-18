@@ -55,7 +55,7 @@ export default function StationDetails() {
       {/* Navbar */}
       <nav className="bg-dark-800 border-b border-white/10 px-4 md:px-6 py-3 flex items-center gap-4">
         <button onClick={() => navigate("/dashboard")} className="text-slate-400 hover:text-white transition-colors text-sm inline-flex items-center gap-1.5">
-          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back to Map
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> Back
         </button>
         <span className="text-white font-bold text-lg">Station Details</span>
       </nav>

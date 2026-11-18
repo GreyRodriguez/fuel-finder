@@ -54,6 +54,14 @@ class FeedbackOut(BaseModel):
     message: str = "Thanks! Your feedback has been received."
 
 
+FeedbackStatus = Literal["new", "reviewed", "resolved"]
+FEEDBACK_STATUSES = ("new", "reviewed", "resolved")
+
+
+class FeedbackStatusUpdate(BaseModel):
+    status: FeedbackStatus
+
+
 # ── Forecasts ─────────────────────────────────────────────────────────────────
 
 class ForecastBase(BaseModel):

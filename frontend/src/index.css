@@ -45,6 +45,7 @@ html { -webkit-tap-highlight-color: transparent; }
 ::-webkit-scrollbar-track { background: #13131f; }
 ::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 9999px; }
 
+@layer components {
 /* Glass card */
 .glass-card {
   background: #1a1a2e;
@@ -127,6 +128,8 @@ html { -webkit-tap-highlight-color: transparent; }
   color: #94a3b8;
   margin-bottom: 0.25rem;
   display: block;
+}
+
 }
 
 /* Animations */
