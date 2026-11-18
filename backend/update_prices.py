@@ -131,10 +131,10 @@ def scrape_gaswatch_adjustments() -> Dict[str, float]:
     extracted_shifts: Dict[str, float] = {}
 
     # Regex pattern: Matches Fuel Type, Sign (+ or - / −), optional currency (₱, &#8369;, etc.),
-    # decimal amount, and unit (/L or /liter).
+    # decimal amount (or range like 3.80–3.90), and unit (/L or /liter).
     # Supports: Diesel, Gasoline, Gas, Unleaded, Premium, Kerosene
     pattern = re.compile(
-        r"(Diesel|Gasoline|Gas|Unleaded|Premium|Kerosene)\s*([+\-\u2212\u2013\u2014])\s*(?:&#8369;|[\u20b1₱Pp]|PHP)?\s*([0-9]+(?:\.[0-9]+)?)\s*/\s*L",
+        r"(Diesel|Gasoline|Gas|Unleaded|Premium|Kerosene)\s*([+\-\u2212\u2013\u2014])\s*(?:&#8369;|[\u20b1₱Pp]|PHP)?\s*([0-9]+(?:\.[0-9]+)?)(?:\s*[–—\-~to]+\s*[0-9]+(?:\.[0-9]+)?)?\s*/\s*L",
         re.IGNORECASE,
     )
 
