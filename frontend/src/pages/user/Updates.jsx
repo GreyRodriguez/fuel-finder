@@ -143,33 +143,35 @@ export default function Updates() {
     >
       {/* Mobile-friendly pill filters */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 md:mb-8">
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
-          <div role="group" aria-label="Filter by fuel type" className="flex gap-1.5 w-max sm:w-auto sm:flex-wrap">
-            {FUEL_TABS.map((f) => {
-              const active = fuel === f;
-              return (
-                <button
-                  key={f}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setFuel(f)}
-                  className={`h-9 px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
-                    active
-                      ? "bg-white text-dark-900 border-white"
-                      : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
-                  }`}
-                >
-                  {f === "All" ? "All fuels" : f}
-                </button>
-              );
-            })}
-          </div>
+        <div
+          role="group"
+          aria-label="Filter by fuel type"
+          className="grid grid-cols-2 min-[360px]:grid-cols-3 sm:flex sm:flex-wrap gap-2"
+        >
+          {FUEL_TABS.map((f) => {
+            const active = fuel === f;
+            return (
+              <button
+                key={f}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setFuel(f)}
+                className={`h-9 px-2.5 sm:px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap text-center truncate transition-colors ${
+                  active
+                    ? "bg-white text-dark-900 border-white"
+                    : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
+                }`}
+              >
+                {f === "All" ? "All fuels" : f}
+              </button>
+            );
+          })}
         </div>
 
         <div
           role="group"
           aria-label="Date range"
-          className="grid grid-cols-4 sm:inline-grid gap-1 p-1 rounded-xl bg-dark-800 border border-white/10 self-start sm:self-auto"
+          className="grid grid-cols-4 sm:inline-grid w-full sm:w-auto gap-1 p-1 rounded-xl bg-dark-800 border border-white/10 flex-shrink-0"
         >
           {RANGES.map((r) => (
             <button
