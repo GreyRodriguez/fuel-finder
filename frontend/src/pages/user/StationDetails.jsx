@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Phone, MapPin, Map } from "lucide-react";
 import api from "../../services/api";
 
@@ -13,6 +13,21 @@ const fuelTypeColor = {
   P95: "#a855f7",
   "Premium Gasoline": "#a855f7"
 };
+
+/**
+ * Builds a Google Maps URLs (api=1) directions link to the station.
+ * No origin is set, so Google Maps starts navigation from the user's
+ * current location (on mobile it opens the Google Maps app if installed).
+ * https://developers.google.com/maps/documentation/urls/get-started#directions-action
+ */
+function googleMapsDirectionsUrl(station) {
+  const params = new URLSearchParams({
+    api: "1",
+    destination: `${station.latitude},${station.longitude}`,
+    travelmode: "driving",
+  });
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
 
 export default function StationDetails() {
   const { id } = useParams();
@@ -97,16 +112,14 @@ export default function StationDetails() {
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <a
-            href={`https://www.openstreetmap.org/?mlat=${station.latitude}&mlon=${station.longitude}&zoom=17`}
+            href={googleMapsDirectionsUrl(station)}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
+            aria-label={`Get directions to ${station.name} in Google Maps`}
             className="btn-primary flex-1 py-3 inline-flex items-center justify-center gap-2"
           >
             <Map className="w-4 h-4" aria-hidden="true" /> Open in Maps
           </a>
-          <Link to={`/dashboard/compare?ids=${id}`} className="btn-secondary flex-1 text-center py-3">
-            Compare Prices
-          </Link>
         </div>
       </div>
     </div>
