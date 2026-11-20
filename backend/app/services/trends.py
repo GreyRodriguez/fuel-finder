@@ -89,12 +89,28 @@ def upsert_snapshot(db: Session, fuel_type: str, wk: date, avg: float, count: in
 def record_weekly_snapshot(db: Session) -> dict[str, tuple[float, int]]:
     """Store/refresh this week's average for every fuel type. Safe to call repeatedly."""
     live = live_averages(db)
+    if not live:
+        return live
     wk = week_start()
-    try:
-        for ft, (avg, count) in live.items():
-            upsert_snapshot(db, ft, wk, avg, count)
-        db.commit()
-    except IntegrityError:  # concurrent request inserted the same row first
-        db.rollback()
+    existing = {
+        r.fuel_type: r
+        for r in db.query(FuelPriceSnapshot).filter(FuelPriceSnapshot.week_start == wk).all()
+    }
+    dirty = False
+    for ft, (avg, count) in live.items():
+        row = existing.get(ft)
+        if row:
+            if round(float(row.avg_price), 2) != round(avg, 2) or row.station_count != count:
+                row.avg_price = avg
+                row.station_count = count
+                dirty = True
+        else:
+            db.add(FuelPriceSnapshot(week_start=wk, fuel_type=ft, avg_price=avg, station_count=count))
+            dirty = True
+    if dirty:
+        try:
+            db.commit()
+        except IntegrityError:  # concurrent request inserted the same row first
+            db.rollback()
     return live
 

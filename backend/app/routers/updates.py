@@ -49,19 +49,20 @@ def get_forecasts(
 ):
     """Latest next-week outlook for each of Gasoline, Diesel and Kerosene."""
     wanted = [forecast_group(fuel_type)] if fuel_type and fuel_type != "All" else FORECAST_FUELS
-    results = []
-    for group in wanted:
-        if group not in FORECAST_FUELS:
-            continue
-        latest = (
-            db.query(MarketForecast)
-            .filter(MarketForecast.fuel_type == group)
-            .order_by(MarketForecast.effective_date.desc(), MarketForecast.forecast_id.desc())
-            .first()
-        )
-        if latest:
-            results.append(forecast_to_dict(latest))
-    return results
+    valid_groups = [g for g in wanted if g in FORECAST_FUELS]
+    if not valid_groups:
+        return []
+    rows = (
+        db.query(MarketForecast)
+        .filter(MarketForecast.fuel_type.in_(valid_groups))
+        .order_by(MarketForecast.effective_date.desc(), MarketForecast.forecast_id.desc())
+        .all()
+    )
+    latest_by_group: dict[str, MarketForecast] = {}
+    for r in rows:
+        if r.fuel_type not in latest_by_group:
+            latest_by_group[r.fuel_type] = r
+    return [forecast_to_dict(latest_by_group[g]) for g in valid_groups if g in latest_by_group]
 
 
 @router.get("/trends")
@@ -78,25 +79,29 @@ def get_trends(
 
     canon = normalize_fuel_type(fuel_type) if fuel_type and fuel_type != "All" else None
     wanted = [canon] if canon in PUMP_FUEL_TYPES else ([] if canon else PUMP_FUEL_TYPES)
+    if not wanted:
+        return []
+
+    all_snapshots = (
+        db.query(FuelPriceSnapshot)
+        .filter(FuelPriceSnapshot.fuel_type.in_(wanted))
+        .order_by(FuelPriceSnapshot.week_start.asc())
+        .all()
+    )
+    by_fuel: dict[str, list[FuelPriceSnapshot]] = {ft: [] for ft in wanted}
+    for r in all_snapshots:
+        by_fuel.setdefault(r.fuel_type, []).append(r)
 
     out = []
     for ft in wanted:
-        series_rows = (
-            db.query(FuelPriceSnapshot)
-            .filter(FuelPriceSnapshot.fuel_type == ft, FuelPriceSnapshot.week_start >= first_week)
-            .order_by(FuelPriceSnapshot.week_start.asc())
-            .all()
-        )
+        ft_rows = by_fuel.get(ft, [])
+        series_rows = [r for r in ft_rows if r.week_start >= first_week]
         series = [{"week_start": str(r.week_start), "avg_price": float(r.avg_price)} for r in series_rows]
         current = live[ft][0] if ft in live else (series[-1]["avg_price"] if series else None)
         station_count = live[ft][1] if ft in live else 0
 
-        prev_row = (
-            db.query(FuelPriceSnapshot)
-            .filter(FuelPriceSnapshot.fuel_type == ft, FuelPriceSnapshot.week_start < this_week)
-            .order_by(FuelPriceSnapshot.week_start.desc())
-            .first()
-        )
+        prev_rows = [r for r in ft_rows if r.week_start < this_week]
+        prev_row = prev_rows[-1] if prev_rows else None
         previous = float(prev_row.avg_price) if prev_row else None
         change = round(current - previous, 2) if current is not None and previous is not None else None
         direction = None if change is None else "up" if change > 0 else "down" if change < 0 else "flat"

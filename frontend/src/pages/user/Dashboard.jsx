@@ -10,7 +10,19 @@ import AppHeader from "../../components/AppHeader";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useMediaQuery, { MOBILE_QUERY } from "../../hooks/useMediaQuery";
 import api from "../../services/api";
-import { peso } from "../../utils/format";
+import { peso, haversineKm, distanceToStation } from "../../utils/format";
+
+const COMPARE_STORAGE_KEY = "ff_compare_ids";
+
+function readStoredCompareIds() {
+  try {
+    const raw = JSON.parse(sessionStorage.getItem(COMPARE_STORAGE_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw.map(Number).filter(Number.isFinite).slice(0, 4);
+  } catch {
+    return [];
+  }
+}
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -40,7 +52,7 @@ const SHEET_TOP_GAP = 12; // px of map left visible above a fully-open sheet
 
 /** CSS height for a snap state. "peek" = just the sheet header (handle + search). */
 const snapToCss = (state, headerEl) => {
-  if (state === "peek") return `${headerEl?.offsetHeight ?? 164}px`;
+  if (state === "peek") return `${headerEl?.offsetHeight ?? 176}px`;
   if (state === "half") return "50%";
   return `calc(100% - ${SHEET_TOP_GAP}px)`;
 };
@@ -49,49 +61,39 @@ const createStationIcon = (isSelected) =>
   L.divIcon({
     className: "",
     html: `<div style="
-      width:34px;height:34px;background:${isSelected ? "#f97316" : "#1a1a2e"};
-      border:2.5px solid ${isSelected ? "#fed7aa" : "#f97316"};
+      width:32px;height:32px;background:${isSelected ? "#f97316" : "#111520"};
+      border:2.5px solid ${isSelected ? "#fff7ed" : "#f97316"};
       border-radius:50% 50% 50% 0;transform:rotate(-45deg);
-      box-shadow:0 4px 12px rgba(249,115,22,0.4);
+      box-shadow:0 6px 16px rgba(0,0,0,0.45);
       display:flex;align-items:center;justify-content:center;
     "></div>`,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
   });
 
 function fuelColor(type) {
   if (type === "Gasoline" || type === "Unleaded 91" || type === "U91") {
-    return { text: "text-primary", dot: "bg-primary" };
+    return { text: "text-orange-400", dot: "bg-orange-400" };
   }
   if (type === "Diesel" || type === "DIESEL") {
-    return { text: "text-accent", dot: "bg-accent" };
+    return { text: "text-cyan-400", dot: "bg-cyan-400" };
   }
-  return { text: "text-purple-400", dot: "bg-purple-400" };
+  return { text: "text-violet-300", dot: "bg-violet-400" };
 }
 
 function PriceTag({ label, price, type }) {
   const c = fuelColor(type);
   return (
-    <div className="flex justify-between items-center py-0.5">
-      <span className="text-xs text-slate-400 inline-flex items-center gap-1.5 min-w-0 truncate">
+    <div className="flex justify-between items-center py-1 gap-2">
+      <span className="text-xs text-[#94A3B8] inline-flex items-center gap-2 min-w-0 truncate">
         <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} aria-hidden="true" />
         <span className="truncate">{label}</span>
       </span>
-      <span className={`text-xs sm:text-sm font-bold tabular-nums ${c.text}`}>{peso(price)}/L</span>
+      <span className={`text-sm font-semibold tabular-nums flex-shrink-0 ${c.text}`}>
+        {peso(price)}<span className="text-[11px] font-normal text-slate-500">/L</span>
+      </span>
     </div>
   );
-}
-
-/** Great-circle distance between two lat/lng points, in kilometers. */
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
 }
 
 export default function Dashboard() {
@@ -104,10 +106,18 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("nearest");
   const [selected, setSelected] = useState(null);
-  const [compareList, setCompareList] = useState([]);
+  const [compareList, setCompareList] = useState(readStoredCompareIds);
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const [sheet, setSheet] = useState("half");
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(compareList));
+    } catch {
+      // ignore storage errors
+    }
+  }, [compareList]);
 
   const wrapRef = useRef(null);        // holds the --sheet-h CSS variable
   const sheetHeaderRef = useRef(null); // measured for the "peek" height
@@ -245,7 +255,16 @@ export default function Dashboard() {
     setSearching(true);
     setLoadError("");
     try {
-      const res = await api.get(`/api/stations/search?q=${encodeURIComponent(search.trim())}`);
+      const coords =
+        Number.isFinite(userLocation?.lat) && Number.isFinite(userLocation?.lng)
+          ? userLocation
+          : lastFetchRef.current;
+      const params = { q: search.trim() };
+      if (coords && Number.isFinite(coords.lat) && Number.isFinite(coords.lng)) {
+        params.lat = coords.lat;
+        params.lng = coords.lng;
+      }
+      const res = await api.get("/api/stations/search", { params });
       setSearchResults(res.data);
     } catch {
       setLoadError("Search failed. Please try again.");
@@ -278,7 +297,14 @@ export default function Dashboard() {
     return best;
   }, [userLocation, stations]);
 
-  const displayed = searchResults ?? stations;
+  const displayed = useMemo(() => {
+    const list = searchResults ?? stations;
+    if (!hasUserPosition) return list;
+    return list.map((s) => {
+      const d = distanceToStation(userLocation, s);
+      return d != null && d !== s.distance_km ? { ...s, distance_km: d } : s;
+    });
+  }, [searchResults, stations, hasUserPosition, userLocation]);
 
   const sorted = [...displayed].sort((a, b) => {
     if (filter === "nearest") return (a.distance_km ?? 999) - (b.distance_km ?? 999);
@@ -323,16 +349,22 @@ export default function Dashboard() {
     ? "Loading stations…"
     : `${sorted.length} station${sorted.length !== 1 ? "s" : ""} ${searchResults ? "found" : "nearby"}`;
 
+  const routeLocationState = useMemo(
+    () => (hasUserPosition ? { userLocation: { lat: userLocation.lat, lng: userLocation.lng } } : undefined),
+    [hasUserPosition, userLocation],
+  );
+
   return (
-    <div className="h-dvh overflow-hidden bg-dark-900 flex flex-col">
+    <div className="ff-user h-dvh overflow-hidden bg-[#090B10] flex flex-col">
       <AppHeader
         actions={
           compareList.length > 0 && (
             <button
               id="compare-btn"
-              onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`)}
+              type="button"
+              onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`, { state: routeLocationState })}
               aria-label={`Compare (${compareList.length})`}
-              className="btn-primary text-xs sm:text-sm h-9 px-3 sm:px-3.5 whitespace-nowrap gap-1.5"
+              className="inline-flex items-center justify-center gap-1.5 min-h-11 px-3.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 cursor-pointer active:scale-[0.98]"
             >
               <GitCompare className="w-4 h-4 min-[400px]:hidden md:hidden" aria-hidden="true" />
               <span className="hidden min-[400px]:inline md:inline">Compare </span>({compareList.length})
@@ -345,12 +377,12 @@ export default function Dashboard() {
         {/* Station list — desktop: left sidebar · mobile: draggable bottom sheet over the map */}
         <aside
           aria-label="Stations"
-          className="ff-sheet absolute inset-x-0 bottom-0 z-20 rounded-t-3xl border-t shadow-[0_-12px_40px_rgba(0,0,0,0.55)]
-                     md:relative md:inset-auto md:z-auto md:w-96 md:h-full md:rounded-none md:border-t-0 md:border-r md:shadow-none
-                     flex-shrink-0 bg-dark-800/95 backdrop-blur-lg border-white/10 flex flex-col overflow-hidden min-h-0"
+          className="ff-sheet absolute inset-x-0 bottom-0 z-20 rounded-t-3xl border-t shadow-[0_-16px_48px_rgba(0,0,0,0.65)]
+                     md:relative md:inset-auto md:z-auto md:w-[400px] md:h-full md:rounded-none md:border-t-0 md:border-r md:shadow-none
+                     flex-shrink-0 bg-[#0D1018]/95 backdrop-blur-xl border-white/[0.08] flex flex-col overflow-hidden min-h-0"
         >
           {/* Sheet header: drag handle (mobile) + Search & Filters */}
-          <div ref={sheetHeaderRef} className="flex-shrink-0 border-b border-white/10 bg-dark-800/95 z-10">
+          <div ref={sheetHeaderRef} className="flex-shrink-0 border-b border-white/[0.06] bg-[#0D1018]/95 z-10">
             <div
               id="sheet-handle"
               role="button"
@@ -362,21 +394,21 @@ export default function Dashboard() {
               onPointerUp={onDragEnd}
               onPointerCancel={onDragEnd}
               onKeyDown={onHandleKey}
-              className="md:hidden touch-none select-none cursor-grab active:cursor-grabbing pt-2.5 pb-1 px-4 flex flex-col items-center gap-1"
+              className="md:hidden touch-none select-none cursor-grab active:cursor-grabbing pt-3 pb-1.5 px-4 flex flex-col items-center gap-1.5"
             >
-              <span className="block w-10 h-1 rounded-full bg-white/25" aria-hidden="true" />
-              <span className="text-[11px] font-medium text-slate-400">{countLabel}</span>
+              <span className="block w-10 h-1 rounded-full bg-white/20" aria-hidden="true" />
+              <span className="text-xs font-medium text-[#94A3B8]">{countLabel}</span>
             </div>
 
-            <div className="px-3.5 pb-3 pt-1.5 md:p-4 space-y-2.5">
+            <div className="px-3.5 pb-3.5 pt-1.5 md:p-4 space-y-2.5">
               <form onSubmit={handleSearch} className="flex gap-2">
                 <div className="relative flex-1 min-w-0">
-                  <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
+                  <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
                   <input
                     id="station-search"
                     type="search"
                     enterKeyHint="search"
-                    className="input-field h-10 pl-9 pr-9 text-sm [&::-webkit-search-cancel-button]:hidden"
+                    className="input-field min-h-11 pl-10 pr-10 text-sm [&::-webkit-search-cancel-button]:hidden"
                     placeholder="Search stations or brands…"
                     value={search}
                     onFocus={() => { if (isMobile && sheet !== "full") applySnap("full"); }}
@@ -387,9 +419,9 @@ export default function Dashboard() {
                       type="button"
                       onClick={clearSearch}
                       aria-label="Clear search"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white"
+                      className="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-lg text-[#94A3B8] hover:text-[#F8FAFC]"
                     >
-                      <X className="w-3.5 h-3.5" aria-hidden="true" />
+                      <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   )}
                 </div>
@@ -397,13 +429,13 @@ export default function Dashboard() {
                   type="submit"
                   disabled={searching}
                   aria-label="Search"
-                  className="btn-primary h-10 px-3.5 text-sm flex-shrink-0 disabled:opacity-60"
+                  className="inline-flex items-center justify-center min-h-11 w-11 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 flex-shrink-0 transition-all duration-200 cursor-pointer disabled:opacity-60"
                 >
-                  <Search className="w-4 h-4" strokeWidth={2.2} aria-hidden="true" />
+                  <Search className="w-4 h-4" strokeWidth={2.4} aria-hidden="true" />
                 </button>
               </form>
 
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-dark-900/75 border border-white/10">
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#090B10] border border-white/[0.07]">
                 {[
                   { id: "nearest", label: "Nearest", icon: LocateFixed },
                   { id: "cheapest", label: "Cheapest", icon: TrendingDown },
@@ -413,10 +445,10 @@ export default function Dashboard() {
                     type="button"
                     id={`filter-${f.id}`}
                     onClick={() => setFilter(f.id)}
-                    className={`h-8 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                    className={`min-h-11 sm:min-h-10 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                       filter === f.id
-                        ? "bg-primary text-white shadow-sm shadow-primary/25"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-orange-500 text-zinc-950"
+                        : "text-[#94A3B8] hover:text-[#F8FAFC]"
                     }`}
                   >
                     <f.icon className="w-3.5 h-3.5" aria-hidden="true" />
@@ -428,7 +460,7 @@ export default function Dashboard() {
           </div>
 
           {/* Station List */}
-          <div className="flex-1 overflow-y-auto p-3.5 md:p-4 space-y-2.5 min-h-0 overscroll-contain">
+          <div className="flex-1 overflow-y-auto p-3.5 md:p-4 space-y-2.5 min-h-0 overscroll-contain pb-safe">
             {loadError ? (
               <ErrorBlock
                 message={loadError}
@@ -440,13 +472,13 @@ export default function Dashboard() {
               />
             ) : loading ? (
               <div className="space-y-2.5">
-                <LoadingBlock count={4} className="h-28" label="Loading stations…" />
+                <LoadingBlock count={4} className="h-32" label="Loading stations…" />
               </div>
             ) : sorted.length === 0 ? (
               <div className="space-y-3">
                 <EmptyBlock message={searchResults ? `No stations matched "${search}".` : "No stations found nearby."} />
                 {searchResults && (
-                  <button type="button" onClick={clearSearch} className="btn-secondary text-xs h-9 mx-auto flex">
+                  <button type="button" onClick={clearSearch} className="btn-secondary text-sm min-h-11 px-4 mx-auto flex">
                     Clear search
                   </button>
                 )}
@@ -459,27 +491,29 @@ export default function Dashboard() {
                   <div
                     key={s.station_id}
                     id={`station-card-${s.station_id}`}
-                    className={`glass-card p-3.5 cursor-pointer transition-all hover:border-primary/45 ${
-                      isSelected ? "border-primary/70 bg-dark-700/90 shadow-lg shadow-primary/10" : ""
+                    className={`rounded-2xl p-4 cursor-pointer transition-all duration-200 border ${
+                      isSelected
+                        ? "bg-[#151B2A] border-orange-500/55"
+                        : "bg-[#111520] border-white/[0.06] hover:border-white/[0.12] hover:bg-[#141926]"
                     }`}
                     onClick={() => handleCardClick(s)}
                   >
-                    <div className="flex justify-between items-start gap-2 mb-2">
+                    <div className="flex justify-between items-start gap-2.5 mb-2.5">
                       <div className="min-w-0">
-                        <p className="font-semibold text-white text-sm leading-snug truncate">{s.name}</p>
-                        <p className="text-xs text-slate-400 truncate mt-0.5">
+                        <p className="font-semibold text-[#F8FAFC] text-sm leading-snug break-words">{s.name}</p>
+                        <p className="text-xs text-[#94A3B8] truncate mt-0.5">
                           {[s.brand, s.barangay].filter(Boolean).join(" · ") || "Taguig City"}
                         </p>
                       </div>
                       {s.distance_km != null && (
-                        <span className="flex-shrink-0 text-[11px] text-accent font-semibold bg-accent/10 border border-accent/20 px-2 py-0.5 rounded-full tabular-nums">
+                        <span className="flex-shrink-0 text-xs text-cyan-400 font-medium bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full tabular-nums">
                           {s.distance_km} km
                         </span>
                       )}
                     </div>
 
                     {s.fuel_prices?.length > 0 ? (
-                      <div className="rounded-xl bg-dark-900/55 border border-white/5 px-3 py-2 space-y-0.5">
+                      <div className="rounded-xl bg-[#090B10]/70 border border-white/[0.05] px-3 py-1.5 divide-y divide-white/[0.04]">
                         {s.fuel_prices.map((p) => (
                           <PriceTag key={p.price_id} label={p.fuel_type} price={p.price_per_liter} type={p.fuel_type} />
                         ))}
@@ -488,21 +522,22 @@ export default function Dashboard() {
                       <p className="text-xs text-slate-500 italic">No prices listed yet</p>
                     )}
 
-                    <div className="mt-2.5 flex items-center gap-2">
+                    <div className="mt-3 flex items-center gap-2">
                       <Link
                         to={`/dashboard/station/${s.station_id}`}
-                        className="flex-1 text-center text-xs btn-secondary h-8 px-3 gap-1"
+                        state={routeLocationState}
+                        className="flex-1 min-h-11 text-center text-xs sm:text-sm font-medium rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-[#F8FAFC] px-3 inline-flex items-center justify-center gap-1.5 transition-colors duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Details <ArrowRight className="w-3 h-3" aria-hidden="true" />
+                        Details <ArrowRight className="w-3.5 h-3.5 text-[#94A3B8]" aria-hidden="true" />
                       </Link>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleCompare(s.station_id); }}
-                        className={`text-xs h-8 px-3 rounded-xl border font-medium transition-all inline-flex items-center justify-center gap-1 ${
+                        className={`min-h-11 text-xs sm:text-sm px-3.5 rounded-xl border font-medium transition-all duration-200 inline-flex items-center justify-center gap-1.5 cursor-pointer ${
                           inCompare
-                            ? "bg-primary/20 border-primary/40 text-primary"
-                            : "bg-dark-600/80 border-white/10 text-slate-300 hover:text-white"
+                            ? "bg-orange-500/15 border-orange-500/40 text-orange-300"
+                            : "bg-white/[0.03] border-white/[0.08] text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/[0.06]"
                         }`}
                       >
                         {inCompare
@@ -540,7 +575,13 @@ export default function Dashboard() {
                     pathOptions={{ color: "#3b82f6", weight: 1, fillColor: "#3b82f6", fillOpacity: 0.12 }}
                   />
                 )}
-                <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon} zIndexOffset={1000}>
+                <Marker
+                  position={[userLocation.lat, userLocation.lng]}
+                  icon={userIcon}
+                  title="Your location"
+                  alt="Your location"
+                  zIndexOffset={1000}
+                >
                   <Popup>You are here</Popup>
                 </Marker>
               </>
@@ -551,26 +592,29 @@ export default function Dashboard() {
                 ref={(m) => { if (m) markerRefs.current[s.station_id] = m; else delete markerRefs.current[s.station_id]; }}
                 position={[parseFloat(s.latitude), parseFloat(s.longitude)]}
                 icon={createStationIcon(selected === s.station_id)}
+                title={s.name}
+                alt={s.name}
                 eventHandlers={{ click: () => setSelected(s.station_id) }}
               >
                 <Popup>
-                  <div className="min-w-[200px]">
+                  <div className="min-w-[205px]">
                     {nearest?.station.station_id === s.station_id && (
-                      <span className="inline-block rounded-full bg-primary/20 text-primary-light border border-primary/30 text-[11px] font-semibold px-2 py-0.5 mb-1.5">
+                      <span className="inline-block rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/30 text-[11px] font-semibold px-2.5 py-0.5 mb-1.5">
                         Closest to you
                       </span>
                     )}
-                    <p className="font-bold text-white text-sm mb-0.5">{s.name}</p>
-                    <p className="text-xs text-slate-400 mb-2">{s.address}</p>
+                    <p className="font-bold text-[#F8FAFC] text-sm mb-0.5">{s.name}</p>
+                    <p className="text-xs text-[#94A3B8] mb-2.5">{s.address}</p>
                     {s.fuel_prices?.map((p) => (
                       <div key={p.price_id} className="flex justify-between text-xs mb-1">
                         <span className="text-slate-300">{p.fuel_type}</span>
-                        <span className="font-bold text-primary tabular-nums">{peso(p.price_per_liter)}</span>
+                        <span className="font-bold text-orange-400 tabular-nums">{peso(p.price_per_liter)}</span>
                       </div>
                     ))}
                     <Link
                       to={`/dashboard/station/${s.station_id}`}
-                      className="mt-2.5 flex items-center justify-center gap-1 text-xs font-semibold bg-primary text-white rounded-lg py-1.5"
+                      state={routeLocationState}
+                      className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold bg-orange-500 hover:bg-orange-400 !text-zinc-950 rounded-lg py-2 px-3 transition-colors"
                     >
                       View Details <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </Link>
@@ -588,17 +632,17 @@ export default function Dashboard() {
               disabled={!hasUserPosition}
               aria-label="My location"
               title={hasUserPosition ? "My location" : "Waiting for your location…"}
-              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-11 h-11 rounded-full bg-dark-800/95 backdrop-blur-md text-accent shadow-xl
-                         border border-white/15 flex items-center justify-center cursor-pointer touch-manipulation
-                         hover:bg-dark-700 active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ff-locate-btn absolute right-4 bottom-8 z-[1000] w-11 h-11 rounded-full bg-[#111520]/95 backdrop-blur-md text-cyan-400 shadow-xl
+                         border border-white/[0.12] flex items-center justify-center cursor-pointer touch-manipulation
+                         hover:bg-[#192030] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <LocateFixed className="w-5 h-5" strokeWidth={2.2} aria-hidden="true" />
             </button>
           )}
 
           {stations.length > 0 && (!hasUserPosition || nearest) && (
-            <div className="absolute top-3 left-14 right-3 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-fit mx-auto z-[1000] pointer-events-none max-w-[calc(100%-4.5rem)] sm:max-w-md bg-dark-900/90 backdrop-blur-md text-white border border-white/15 text-xs sm:text-sm font-medium rounded-full shadow-xl px-3.5 py-1.5 flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-primary flex-shrink-0" aria-hidden="true" />
+            <div className="absolute top-3 left-14 right-3 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-fit mx-auto z-[1000] pointer-events-none max-w-[calc(100%-4.5rem)] sm:max-w-md bg-[#090B10]/85 backdrop-blur-md text-[#F8FAFC] border border-white/[0.1] text-xs sm:text-sm font-medium rounded-full shadow-xl px-3.5 py-2 flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">
                 {nearest
                   ? `Nearest: ${nearest.station.name} (${nearest.distanceKm.toFixed(2)} km)`

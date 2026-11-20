@@ -182,4 +182,90 @@ html { -webkit-tap-highlight-color: transparent; }
 
 @media (prefers-reduced-motion: reduce) {
   .ff-sheet, .ff-sheet-wrap .leaflet-bottom, .ff-sheet-wrap .ff-locate-btn { transition: none !important; }
+  .ff-fade-up, .ff-delay-1, .ff-delay-2, .ff-delay-3 { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+
+/* ── Scoped 2026 User-Facing Theme (.ff-user) ─────────────────────────────
+   Strictly scoped to Landing and User Dashboard views so Admin UI stays 100% untouched. */
+.ff-user {
+  background-color: #090b10;
+  color: #f8fafc;
+}
+
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@keyframes ff-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ff-fade-up {
+  animation: ff-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ff-delay-1 { animation-delay: 80ms; }
+.ff-delay-2 { animation-delay: 160ms; }
+.ff-delay-3 { animation-delay: 240ms; }
+
+/* Scoped overrides for shared primitives rendered inside user views */
+.ff-user .glass-card {
+  background: #111520;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1rem;
+}
+
+.ff-user .btn-primary {
+  background: #f97316;
+  color: #09090b;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  min-height: 2.75rem;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.ff-user .btn-primary:hover {
+  background: #fb923c;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.18);
+}
+
+.ff-user .btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.75rem;
+  min-height: 2.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.ff-user .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.ff-user .input-field {
+  background: #0d1018;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0.75rem;
+  color: #f8fafc;
+  min-height: 2.75rem;
+}
+.ff-user .input-field:focus {
+  border-color: rgba(249, 115, 22, 0.7);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.35);
+}
+
+.ff-user .leaflet-popup-content-wrapper {
+  background: #111520 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  border-radius: 14px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55) !important;
+}
+.ff-user .leaflet-popup-tip {
+  background: #111520 !important;
 }
