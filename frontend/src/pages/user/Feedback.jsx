@@ -146,7 +146,7 @@ export default function Feedback() {
     const found = validate(form);
     setErrors(found);
     if (Object.keys(found).length) {
-      const first = ["name", "email", "message", "station_id", "fuel_type", "reported_price"].find((k) => found[k]);
+      const first = ["name", "email", "station_id", "fuel_type", "reported_price", "message"].find((k) => found[k]);
       document.getElementById(`fb-${first}`)?.focus();
       return;
     }

@@ -1,8 +1,9 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Phone, MapPin, Navigation, Flag } from "lucide-react";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useApiData from "../../hooks/useApiData";
-import { formatDate, peso } from "../../utils/format";
+import { formatDate, peso, distanceToStation } from "../../utils/format";
 
 const FUEL_META = {
   "Unleaded 91": { accent: "#fb923c", dot: "bg-orange-400", badge: "bg-orange-500/10 text-orange-300 border-orange-500/25" },
@@ -32,8 +33,26 @@ function googleMapsDirectionsUrl(station) {
 
 export default function StationDetails() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  const [coords, setCoords] = useState(() => {
+    const raw = location.state?.userLocation;
+    const lat = Number(raw?.lat);
+    const lng = Number(raw?.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+  });
+
+  useEffect(() => {
+    if (coords || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, maximumAge: 60000, timeout: 8000 },
+    );
+  }, [coords]);
+
   const { data: station, loading, error, reload } = useApiData(`/api/stations/${id}`);
+  const displayDistance = station ? (distanceToStation(coords, station) ?? station.distance_km) : null;
 
   return (
     <div className="ff-user min-h-dvh bg-[#090B10] text-[#F8FAFC] flex flex-col overflow-x-hidden pb-safe">
@@ -115,10 +134,10 @@ export default function StationDetails() {
                   </p>
                 )}
 
-                {station.distance_km != null && (
+                {displayDistance != null && (
                   <p className="text-cyan-400 text-xs font-medium flex items-center gap-2.5 pt-0.5">
                     <Navigation className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                    <span>{station.distance_km} km away</span>
+                    <span>{displayDistance} km away</span>
                   </p>
                 )}
               </div>

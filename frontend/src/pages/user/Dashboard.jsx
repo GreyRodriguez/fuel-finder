@@ -10,7 +10,19 @@ import AppHeader from "../../components/AppHeader";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useMediaQuery, { MOBILE_QUERY } from "../../hooks/useMediaQuery";
 import api from "../../services/api";
-import { peso } from "../../utils/format";
+import { peso, haversineKm, distanceToStation } from "../../utils/format";
+
+const COMPARE_STORAGE_KEY = "ff_compare_ids";
+
+function readStoredCompareIds() {
+  try {
+    const raw = JSON.parse(sessionStorage.getItem(COMPARE_STORAGE_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw.map(Number).filter(Number.isFinite).slice(0, 4);
+  } catch {
+    return [];
+  }
+}
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -84,18 +96,6 @@ function PriceTag({ label, price, type }) {
   );
 }
 
-/** Great-circle distance between two lat/lng points, in kilometers. */
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
-
 export default function Dashboard() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery(MOBILE_QUERY);
@@ -106,10 +106,18 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("nearest");
   const [selected, setSelected] = useState(null);
-  const [compareList, setCompareList] = useState([]);
+  const [compareList, setCompareList] = useState(readStoredCompareIds);
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const [sheet, setSheet] = useState("half");
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(compareList));
+    } catch {
+      // ignore storage errors
+    }
+  }, [compareList]);
 
   const wrapRef = useRef(null);        // holds the --sheet-h CSS variable
   const sheetHeaderRef = useRef(null); // measured for the "peek" height
@@ -247,7 +255,16 @@ export default function Dashboard() {
     setSearching(true);
     setLoadError("");
     try {
-      const res = await api.get(`/api/stations/search?q=${encodeURIComponent(search.trim())}`);
+      const coords =
+        Number.isFinite(userLocation?.lat) && Number.isFinite(userLocation?.lng)
+          ? userLocation
+          : lastFetchRef.current;
+      const params = { q: search.trim() };
+      if (coords && Number.isFinite(coords.lat) && Number.isFinite(coords.lng)) {
+        params.lat = coords.lat;
+        params.lng = coords.lng;
+      }
+      const res = await api.get("/api/stations/search", { params });
       setSearchResults(res.data);
     } catch {
       setLoadError("Search failed. Please try again.");
@@ -280,7 +297,14 @@ export default function Dashboard() {
     return best;
   }, [userLocation, stations]);
 
-  const displayed = searchResults ?? stations;
+  const displayed = useMemo(() => {
+    const list = searchResults ?? stations;
+    if (!hasUserPosition) return list;
+    return list.map((s) => {
+      const d = distanceToStation(userLocation, s);
+      return d != null && d !== s.distance_km ? { ...s, distance_km: d } : s;
+    });
+  }, [searchResults, stations, hasUserPosition, userLocation]);
 
   const sorted = [...displayed].sort((a, b) => {
     if (filter === "nearest") return (a.distance_km ?? 999) - (b.distance_km ?? 999);
@@ -325,6 +349,11 @@ export default function Dashboard() {
     ? "Loading stations…"
     : `${sorted.length} station${sorted.length !== 1 ? "s" : ""} ${searchResults ? "found" : "nearby"}`;
 
+  const routeLocationState = useMemo(
+    () => (hasUserPosition ? { userLocation: { lat: userLocation.lat, lng: userLocation.lng } } : undefined),
+    [hasUserPosition, userLocation],
+  );
+
   return (
     <div className="ff-user h-dvh overflow-hidden bg-[#090B10] flex flex-col">
       <AppHeader
@@ -333,7 +362,7 @@ export default function Dashboard() {
             <button
               id="compare-btn"
               type="button"
-              onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`)}
+              onClick={() => navigate(`/dashboard/compare?ids=${compareList.join(",")}`, { state: routeLocationState })}
               aria-label={`Compare (${compareList.length})`}
               className="inline-flex items-center justify-center gap-1.5 min-h-11 px-3.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 cursor-pointer active:scale-[0.98]"
             >
@@ -496,6 +525,7 @@ export default function Dashboard() {
                     <div className="mt-3 flex items-center gap-2">
                       <Link
                         to={`/dashboard/station/${s.station_id}`}
+                        state={routeLocationState}
                         className="flex-1 min-h-11 text-center text-xs sm:text-sm font-medium rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-[#F8FAFC] px-3 inline-flex items-center justify-center gap-1.5 transition-colors duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -545,7 +575,13 @@ export default function Dashboard() {
                     pathOptions={{ color: "#3b82f6", weight: 1, fillColor: "#3b82f6", fillOpacity: 0.12 }}
                   />
                 )}
-                <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon} zIndexOffset={1000}>
+                <Marker
+                  position={[userLocation.lat, userLocation.lng]}
+                  icon={userIcon}
+                  title="Your location"
+                  alt="Your location"
+                  zIndexOffset={1000}
+                >
                   <Popup>You are here</Popup>
                 </Marker>
               </>
@@ -556,6 +592,8 @@ export default function Dashboard() {
                 ref={(m) => { if (m) markerRefs.current[s.station_id] = m; else delete markerRefs.current[s.station_id]; }}
                 position={[parseFloat(s.latitude), parseFloat(s.longitude)]}
                 icon={createStationIcon(selected === s.station_id)}
+                title={s.name}
+                alt={s.name}
                 eventHandlers={{ click: () => setSelected(s.station_id) }}
               >
                 <Popup>
@@ -575,6 +613,7 @@ export default function Dashboard() {
                     ))}
                     <Link
                       to={`/dashboard/station/${s.station_id}`}
+                      state={routeLocationState}
                       className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold bg-orange-500 hover:bg-orange-400 !text-zinc-950 rounded-lg py-2 px-3 transition-colors"
                     >
                       View Details <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />

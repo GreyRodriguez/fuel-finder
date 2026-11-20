@@ -1,6 +1,6 @@
 import math
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, selectinload
 from typing import Optional
 from app.db.session import get_db
 from app.models.station import GasStation
@@ -18,6 +18,12 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     dlon = math.radians(lon2 - lon1)
     a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def _distance_for(station: GasStation, lat: Optional[float], lng: Optional[float]) -> Optional[float]:
+    if lat is None or lng is None:
+        return None
+    return haversine(lat, lng, float(station.latitude), float(station.longitude))
 
 
 def station_to_dict(station: GasStation, distance_km: Optional[float] = None) -> dict:
@@ -57,23 +63,25 @@ def get_stations(
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    query = db.query(GasStation).filter(
-        GasStation.city == "Taguig City",
-        GasStation.status == "active",
+    stations = (
+        db.query(GasStation)
+        .options(selectinload(GasStation.fuel_prices))
+        .filter(
+            GasStation.city == "Taguig City",
+            GasStation.status == "active",
+        )
+        .all()
     )
-    stations = query.all()
 
     results = []
     for s in stations:
-        dist = None
-        if lat is not None and lng is not None:
-            dist = haversine(lat, lng, float(s.latitude), float(s.longitude))
-            if dist > radius:
-                continue
+        dist = _distance_for(s, lat, lng)
+        if dist is not None and dist > radius:
+            continue
         results.append(station_to_dict(s, dist))
 
     if lat is not None and lng is not None:
-        results.sort(key=lambda x: x["distance_km"] or 9999)
+        results.sort(key=lambda x: x["distance_km"] if x["distance_km"] is not None else 9999)
 
     return results
 
@@ -81,36 +89,68 @@ def get_stations(
 @router.get("/search")
 def search_stations(
     q: str = Query(..., min_length=1),
+    lat: Optional[float] = Query(None),
+    lng: Optional[float] = Query(None),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    stations = db.query(GasStation).filter(
-        GasStation.status == "active",
-        GasStation.city == "Taguig City",
-        (GasStation.name.ilike(f"%{q}%") | GasStation.address.ilike(f"%{q}%") | GasStation.brand.ilike(f"%{q}%")),
-    ).all()
-    return [station_to_dict(s) for s in stations]
+    stations = (
+        db.query(GasStation)
+        .options(selectinload(GasStation.fuel_prices))
+        .filter(
+            GasStation.status == "active",
+            GasStation.city == "Taguig City",
+            (
+                GasStation.name.ilike(f"%{q}%")
+                | GasStation.address.ilike(f"%{q}%")
+                | GasStation.brand.ilike(f"%{q}%")
+                | GasStation.barangay.ilike(f"%{q}%")
+            ),
+        )
+        .all()
+    )
+    results = [station_to_dict(s, _distance_for(s, lat, lng)) for s in stations]
+    if lat is not None and lng is not None:
+        results.sort(key=lambda x: x["distance_km"] if x["distance_km"] is not None else 9999)
+    return results
 
 
 @router.get("/compare")
 def compare_stations(
     ids: str = Query(..., description="Comma-separated station IDs"),
+    lat: Optional[float] = Query(None),
+    lng: Optional[float] = Query(None),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
     id_list = [int(i) for i in ids.split(",") if i.strip().isdigit()]
-    stations = db.query(GasStation).filter(GasStation.station_id.in_(id_list)).all()
-    return [station_to_dict(s) for s in stations]
+    if not id_list:
+        return []
+    stations = (
+        db.query(GasStation)
+        .options(selectinload(GasStation.fuel_prices))
+        .filter(GasStation.station_id.in_(id_list))
+        .all()
+    )
+    by_id = {s.station_id: s for s in stations}
+    ordered = [by_id[i] for i in id_list if i in by_id]
+    return [station_to_dict(s, _distance_for(s, lat, lng)) for s in ordered]
 
 
 @router.get("/{station_id}")
 def get_station(
     station_id: int,
+    lat: Optional[float] = Query(None),
+    lng: Optional[float] = Query(None),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
-    station = db.query(GasStation).filter(GasStation.station_id == station_id).first()
+    station = (
+        db.query(GasStation)
+        .options(selectinload(GasStation.fuel_prices))
+        .filter(GasStation.station_id == station_id)
+        .first()
+    )
     if not station:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Station not found")
-    return station_to_dict(station)
+    return station_to_dict(station, _distance_for(station, lat, lng))

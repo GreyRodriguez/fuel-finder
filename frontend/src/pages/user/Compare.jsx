@@ -1,8 +1,18 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Award, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { ArrowLeft, Award, ArrowRight, X } from "lucide-react";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useApiData from "../../hooks/useApiData";
-import { FUEL_OPTIONS, formatDate, peso } from "../../utils/format";
+import { FUEL_OPTIONS, formatDate, peso, distanceToStation } from "../../utils/format";
+
+const COMPARE_STORAGE_KEY = "ff_compare_ids";
+
+function parseCoords(raw) {
+  if (!raw) return null;
+  const lat = Number(raw.lat);
+  const lng = Number(raw.lng);
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+}
 
 function getPrice(station, fuelType) {
   const p = station.fuel_prices?.find(
@@ -16,15 +26,64 @@ function getPrice(station, fuelType) {
 }
 
 export default function Compare() {
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const ids = params.get("ids") || "";
 
+  const [initialCoords] = useState(
+    () =>
+      parseCoords(location.state?.userLocation) ??
+      parseCoords({ lat: params.get("lat"), lng: params.get("lng") }),
+  );
+  const [coords, setCoords] = useState(initialCoords);
+
+  useEffect(() => {
+    if (coords || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, maximumAge: 60000, timeout: 8000 },
+    );
+  }, [coords]);
+
+  const queryParams = useMemo(() => {
+    if (!ids) return undefined;
+    const base = { ids };
+    if (initialCoords) {
+      base.lat = initialCoords.lat;
+      base.lng = initialCoords.lng;
+    }
+    return base;
+  }, [ids, initialCoords]);
+
   const { data, loading, error, reload } = useApiData(
     "/api/stations/compare",
-    ids ? { ids } : undefined,
+    queryParams,
   );
-  const stations = ids ? (data ?? []) : [];
+  const stations = useMemo(() => {
+    if (!ids || !Array.isArray(data)) return [];
+    return data.map((s) => {
+      const dist = distanceToStation(coords, s) ?? s.distance_km;
+      return dist !== s.distance_km ? { ...s, distance_km: dist } : s;
+    });
+  }, [ids, data, coords]);
+
+  const removeStation = (stationId) => {
+    const nextIds = ids
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v && Number(v) !== stationId);
+    try {
+      sessionStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(nextIds.map(Number).filter(Number.isFinite)));
+    } catch {
+      // ignore storage errors
+    }
+    const next = new URLSearchParams(params);
+    if (nextIds.length) next.set("ids", nextIds.join(","));
+    else next.delete("ids");
+    setParams(next, { replace: true });
+  };
 
   const bestFor = (fuelType) => {
     const entries = stations
@@ -144,11 +203,21 @@ export default function Compare() {
                         {[s.brand, s.barangay].filter(Boolean).join(" · ") || "Taguig City"}
                       </p>
                     </div>
-                    {s.distance_km != null && (
-                      <span className="flex-shrink-0 text-xs text-cyan-400 font-medium bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full tabular-nums">
-                        {s.distance_km} km
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {s.distance_km != null && (
+                        <span className="text-xs text-cyan-400 font-medium bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 rounded-full tabular-nums">
+                          {s.distance_km} km
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeStation(s.station_id)}
+                        aria-label={`Remove ${s.name} from comparison`}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/[0.06] transition-colors cursor-pointer"
+                      >
+                        <X className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="rounded-xl bg-[#090B10]/70 border border-white/[0.05] divide-y divide-white/[0.05] overflow-hidden">
@@ -182,6 +251,7 @@ export default function Compare() {
                     <span className="text-xs text-slate-500">Updated {lastUpdatedOf(s)}</span>
                     <Link
                       to={`/dashboard/station/${s.station_id}`}
+                      state={coords ? { userLocation: coords } : undefined}
                       className="min-h-11 px-3 -mr-2 text-sm font-semibold text-orange-400 hover:text-orange-300 inline-flex items-center gap-1.5 transition-colors"
                     >
                       View station <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -240,12 +310,23 @@ export default function Compare() {
                       })}
                       <td className="px-4 py-4 text-center text-xs text-slate-500">{lastUpdatedOf(s)}</td>
                       <td className="px-5 py-4 text-right">
-                        <Link
-                          to={`/dashboard/station/${s.station_id}`}
-                          className="btn-secondary text-xs min-h-11 px-3.5"
-                        >
-                          View
-                        </Link>
+                        <div className="inline-flex items-center justify-end gap-2">
+                          <Link
+                            to={`/dashboard/station/${s.station_id}`}
+                            state={coords ? { userLocation: coords } : undefined}
+                            className="btn-secondary text-xs min-h-11 px-3.5"
+                          >
+                            View
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => removeStation(s.station_id)}
+                            aria-label={`Remove ${s.name} from comparison`}
+                            className="min-h-11 w-10 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] text-[#94A3B8] hover:text-[#F8FAFC] inline-flex items-center justify-center transition-colors cursor-pointer"
+                          >
+                            <X className="w-4 h-4" aria-hidden="true" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

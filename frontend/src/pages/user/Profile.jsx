@@ -220,6 +220,16 @@ export default function Profile() {
             <section className="rounded-2xl bg-[#111520] border border-white/[0.07] p-5 sm:p-6">
               <h3 className="text-[#F8FAFC] font-bold tracking-tight text-base sm:text-lg mb-4">Change Password</h3>
               <form onSubmit={changePassword} className="space-y-4">
+                <input
+                  type="text"
+                  name="username"
+                  autoComplete="username"
+                  value={profile?.email || ""}
+                  readOnly
+                  hidden
+                  aria-hidden="true"
+                  tabIndex={-1}
+                />
                 <PasswordInput
                   id="pw-current"
                   label="Current Password"
