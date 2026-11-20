@@ -17,14 +17,12 @@ const RANGES = [
 
 function SectionHeading({ id, icon: Icon, title, hint }) {
   return (
-    <div className="mb-3 md:mb-4">
-      <h2 id={id} className="text-base sm:text-lg md:text-xl font-bold text-white flex items-center gap-2">
-        <span className="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
-          <Icon className="w-4 h-4" aria-hidden="true" />
-        </span>
+    <div className="mb-4 md:mb-5">
+      <h2 id={id} className="text-lg sm:text-xl font-bold tracking-tight text-[#F8FAFC] flex items-center gap-2">
+        <Icon className="w-4 h-4 text-orange-400 flex-shrink-0" aria-hidden="true" />
         {title}
       </h2>
-      {hint && <p className="text-xs md:text-sm text-slate-500 mt-1">{hint}</p>}
+      {hint && <p className="text-sm text-[#94A3B8] mt-1">{hint}</p>}
     </div>
   );
 }
@@ -34,21 +32,26 @@ function ForecastCard({ f }) {
   const headline =
     f.direction === "flat" ? "No change" : f.direction === "up" ? "Expected hike" : "Expected rollback";
   return (
-    <article className="glass-card p-4 md:p-5" aria-label={`${f.fuel_type} forecast`}>
+    <article
+      className="rounded-2xl bg-[#111520] border border-white/[0.07] hover:border-white/[0.12] transition-all duration-200 p-5"
+      aria-label={`${f.fuel_type} forecast`}
+    >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-white font-semibold">{f.fuel_type}</h3>
-        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${style.bg} ${style.border} ${style.text}`}>
+        <h3 className="text-[#F8FAFC] font-semibold text-base">{f.fuel_type}</h3>
+        <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${style.bg} ${style.border} ${style.text}`}>
           {headline}
         </span>
       </div>
-      <p className={`mt-3 text-2xl sm:text-3xl font-black tabular-nums ${style.text}`}>
+      <p className={`mt-3.5 text-3xl font-extrabold tracking-tight tabular-nums ${style.text}`}>
         <span aria-hidden="true">{style.arrow} </span>
         {f.direction === "flat" ? "₱0.00" : peso(Math.abs(f.change_per_liter))}
-        <span className="text-sm font-semibold text-slate-400">/L</span>
+        <span className="text-sm font-medium text-[#94A3B8]">/L</span>
       </p>
-      <p className="text-xs text-slate-400 mt-2">Week of {formatDate(f.effective_date)}</p>
-      <p className="text-xs text-slate-500 mt-0.5">Source: {f.source}</p>
-      {f.notes && <p className="text-xs text-slate-400 mt-2 leading-relaxed">{f.notes}</p>}
+      <div className="mt-3 pt-3 border-t border-white/[0.06] space-y-0.5 text-xs">
+        <p className="text-[#94A3B8]">Week of {formatDate(f.effective_date)}</p>
+        <p className="text-slate-500">Source: {f.source}</p>
+        {f.notes && <p className="text-[#94A3B8] pt-1.5 leading-relaxed">{f.notes}</p>}
+      </div>
     </article>
   );
 }
@@ -62,27 +65,30 @@ function MetricCard({ m }) {
   else changeText = `${peso(Math.abs(m.change))} vs last week`;
 
   return (
-    <article className="glass-card p-4 md:p-5" aria-label={`${m.fuel_type} price trend`}>
+    <article
+      className="rounded-2xl bg-[#111520] border border-white/[0.07] hover:border-white/[0.12] transition-all duration-200 p-5"
+      aria-label={`${m.fuel_type} price trend`}
+    >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-white font-semibold">{m.fuel_type}</h3>
-        <span className="text-xs text-slate-500">{m.station_count} stations</span>
+        <h3 className="text-[#F8FAFC] font-semibold text-base">{m.fuel_type}</h3>
+        <span className="text-xs text-slate-500 tabular-nums">{m.station_count} stations</span>
       </div>
-      <p className="mt-2 text-2xl sm:text-3xl font-black text-white tabular-nums">
+      <p className="mt-2.5 text-3xl font-extrabold tracking-tight text-[#F8FAFC] tabular-nums">
         {peso(m.current_avg)}
-        <span className="text-sm font-semibold text-slate-400">/L</span>
+        <span className="text-sm font-medium text-[#94A3B8]">/L</span>
       </p>
-      <p className="text-xs text-slate-500">Current average</p>
-      <p className={`mt-2 text-xs sm:text-sm font-semibold ${style.text}`}>
+      <p className="text-xs text-slate-500 mt-0.5">Current Taguig average</p>
+      <p className={`mt-2.5 text-sm font-semibold ${style.text}`}>
         {m.change != null && <span aria-hidden="true">{style.arrow} </span>}
         <span className="sr-only">
           {m.direction === "down" ? "Down " : m.direction === "up" ? "Up " : ""}
         </span>
         {changeText}
       </p>
-      <div className="mt-3">
+      <div className="mt-4">
         <Sparkline data={m.series} stroke={style.stroke} label={`${m.fuel_type} weekly average`} />
         {weeks >= 2 && (
-          <div className="flex justify-between text-[11px] text-slate-500 mt-1">
+          <div className="flex justify-between text-[11px] text-slate-500 mt-1.5">
             <span>{formatDate(m.series[0].week_start, { month: "short", day: "numeric" })}</span>
             <span>{weeks} weeks</span>
             <span>{formatDate(m.series[weeks - 1].week_start, { month: "short", day: "numeric" })}</span>
@@ -95,25 +101,27 @@ function MetricCard({ m }) {
 
 function AdvisoryItem({ a }) {
   return (
-    <li className="glass-card p-4 md:p-5">
+    <li className="py-5 first:pt-0 last:pb-0">
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs">
-        <time dateTime={a.published_date} className="text-slate-400">{formatDate(a.published_date)}</time>
-        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold">
+        <time dateTime={a.published_date} className="text-[#94A3B8]">{formatDate(a.published_date)}</time>
+        <span className="px-2.5 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 font-semibold">
           {a.source}
         </span>
         {a.fuel_type !== "All" && (
-          <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20">{a.fuel_type}</span>
+          <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            {a.fuel_type}
+          </span>
         )}
       </div>
-      <h3 className="text-white font-semibold mt-2 text-sm sm:text-base leading-snug">{a.title}</h3>
-      <p className="text-xs sm:text-sm text-slate-400 mt-1.5 whitespace-pre-line leading-relaxed">{a.summary}</p>
+      <h3 className="text-[#F8FAFC] font-semibold mt-2 text-base leading-snug">{a.title}</h3>
+      <p className="text-sm text-[#94A3B8] mt-1.5 whitespace-pre-line leading-relaxed">{a.summary}</p>
       {a.source_url && (
         <a
           href={a.source_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline py-1
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded"
+          className="mt-2 inline-flex items-center gap-1.5 min-h-11 text-sm font-semibold text-orange-400 hover:text-orange-300
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 rounded-lg transition-colors"
         >
           Read full advisory <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           <span className="sr-only">(opens in a new tab)</span>
@@ -133,20 +141,20 @@ export default function Updates() {
   const trends = useApiData("/api/updates/trends", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? 12 });
   const advisories = useApiData("/api/updates/advisories", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? undefined });
 
-  const grid = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4";
+  const grid = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
   const filterLabel = fuel === "All" ? "" : ` for ${fuel}`;
 
   return (
     <UserLayout
       title="Updates & Price Trends"
-      subtitle="Next-week outlook, weekly price movement and official energy advisories."
+      subtitle="Next-week outlook, weekly Taguig price movement, and official DOE energy advisories."
     >
-      {/* Mobile-friendly pill filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 md:mb-8">
+      {/* Mobile-friendly pill filters — ≥44px tap targets, zero horizontal overflow */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-7 md:mb-10">
         <div
           role="group"
           aria-label="Filter by fuel type"
-          className="grid grid-cols-2 min-[360px]:grid-cols-3 sm:flex sm:flex-wrap gap-2"
+          className="grid grid-cols-2 min-[380px]:grid-cols-3 md:flex md:flex-wrap gap-2"
         >
           {FUEL_TABS.map((f) => {
             const active = fuel === f;
@@ -156,10 +164,10 @@ export default function Updates() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFuel(f)}
-                className={`h-9 px-2.5 sm:px-3.5 rounded-full border text-xs sm:text-sm font-medium whitespace-nowrap text-center truncate transition-colors ${
+                className={`min-h-11 px-3.5 rounded-full border text-sm font-medium whitespace-nowrap text-center truncate transition-all duration-200 cursor-pointer ${
                   active
-                    ? "bg-white text-dark-900 border-white"
-                    : "bg-dark-800 text-slate-300 border-white/10 hover:text-white hover:border-white/25"
+                    ? "bg-[#F8FAFC] text-[#090B10] border-[#F8FAFC] font-semibold"
+                    : "bg-[#111520] text-[#94A3B8] border-white/[0.08] hover:text-[#F8FAFC] hover:border-white/[0.16]"
                 }`}
               >
                 {f === "All" ? "All fuels" : f}
@@ -171,7 +179,7 @@ export default function Updates() {
         <div
           role="group"
           aria-label="Date range"
-          className="grid grid-cols-4 sm:inline-grid w-full sm:w-auto gap-1 p-1 rounded-xl bg-dark-800 border border-white/10 flex-shrink-0"
+          className="grid grid-cols-4 md:inline-grid w-full md:w-auto gap-1 p-1 rounded-xl bg-[#111520] border border-white/[0.07] flex-shrink-0"
         >
           {RANGES.map((r) => (
             <button
@@ -180,8 +188,10 @@ export default function Updates() {
               aria-pressed={range === r.value}
               aria-label={r.fullLabel}
               onClick={() => setRange(r.value)}
-              className={`h-8 px-3 rounded-lg text-xs font-semibold transition-colors ${
-                range === r.value ? "bg-dark-600 text-white" : "text-slate-400 hover:text-white"
+              className={`min-h-10 px-3.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                range === r.value
+                  ? "bg-white/[0.1] text-[#F8FAFC]"
+                  : "text-[#94A3B8] hover:text-[#F8FAFC]"
               }`}
             >
               {r.label}
@@ -191,8 +201,13 @@ export default function Updates() {
       </div>
 
       {/* Market forecast */}
-      <section aria-labelledby="forecast-h" className="mb-7 md:mb-10">
-        <SectionHeading id="forecast-h" icon={TrendingUp} title="Next-week market forecast" hint="Expected pump price movement for next week (₱ per liter)." />
+      <section aria-labelledby="forecast-h" className="mb-10 md:mb-12">
+        <SectionHeading
+          id="forecast-h"
+          icon={TrendingUp}
+          title="Next-week market forecast"
+          hint="Expected pump price movement for next week (₱ per liter)."
+        />
         <div className={grid}>
           {forecasts.loading && <LoadingBlock count={3} className="h-44" label="Loading forecasts…" />}
           {forecasts.error && <ErrorBlock message={forecasts.error} onRetry={forecasts.reload} />}
@@ -204,8 +219,13 @@ export default function Updates() {
       </section>
 
       {/* Fuel price change metrics */}
-      <section aria-labelledby="trends-h" className="mb-7 md:mb-10">
-        <SectionHeading id="trends-h" icon={TrendingUp} title="Fuel price changes" hint="Average pump price across Taguig stations, compared with last week." />
+      <section aria-labelledby="trends-h" className="mb-10 md:mb-12">
+        <SectionHeading
+          id="trends-h"
+          icon={TrendingUp}
+          title="Fuel price changes"
+          hint="Average pump price across Taguig stations, compared with last week."
+        />
         <div className={grid}>
           {trends.loading && <LoadingBlock count={3} className="h-64" label="Loading price trends…" />}
           {trends.error && <ErrorBlock message={trends.error} onRetry={trends.reload} />}
@@ -216,7 +236,7 @@ export default function Updates() {
         </div>
       </section>
 
-      {/* Advisories */}
+      {/* Advisories — clean editorial divided feed instead of stacked boxes */}
       <section aria-labelledby="advisories-h">
         <SectionHeading id="advisories-h" icon={Megaphone} title="Official energy advisories" hint="Newest first." />
         {advisories.loading && (
@@ -227,9 +247,11 @@ export default function Updates() {
           <div className="grid"><EmptyBlock message={`No advisories${filterLabel} in this period.`} /></div>
         )}
         {!advisories.loading && advisories.data?.length > 0 && (
-          <ul className="space-y-3">
-            {advisories.data.map((a) => <AdvisoryItem key={a.advisory_id} a={a} />)}
-          </ul>
+          <div className="rounded-2xl bg-[#111520] border border-white/[0.07] px-5 sm:px-7 py-5 sm:py-6">
+            <ul className="divide-y divide-white/[0.06]">
+              {advisories.data.map((a) => <AdvisoryItem key={a.advisory_id} a={a} />)}
+            </ul>
+          </div>
         )}
       </section>
     </UserLayout>
