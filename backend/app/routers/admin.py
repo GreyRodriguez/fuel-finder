@@ -166,14 +166,21 @@ def _aware(dt: datetime) -> datetime:
 
 @router.get("/reports")
 def get_reports(
-    days: int = Query(30, ge=1, le=365, description="Reporting period in days"),
+    days: int = Query(30, ge=1, le=365, description="Default reporting period in days when since is omitted"),
+    since: date | None = Query(None, description="Optional start date (YYYY-MM-DD) for filtering metrics"),
     db: Session = Depends(get_db),
     _=Depends(require_admin),
 ):
     """Snapshot counts (used by the dashboard) plus period analytics for the Reports page."""
     today = date.today()
-    since_date = today - timedelta(days=days - 1)
-    since_ts = datetime.now(timezone.utc) - timedelta(days=days)
+    if since is not None:
+        since_date = since
+        since_ts = datetime(since.year, since.month, since.day, tzinfo=timezone.utc)
+        period_days = max(0, (today - since_date).days + 1)
+    else:
+        since_date = today - timedelta(days=days - 1)
+        since_ts = datetime.now(timezone.utc) - timedelta(days=days)
+        period_days = days
 
     stations = db.query(GasStation).all()
     total_stations = len(stations)
@@ -183,9 +190,11 @@ def get_reports(
     total_users = db.query(User).filter(User.role == "user").count()
     new_users = db.query(User).filter(User.role == "user", User.created_at >= since_ts).count()
 
+    recent_prices_q = db.query(FuelPrice).options(joinedload(FuelPrice.station))
+    if since is not None:
+        recent_prices_q = recent_prices_q.filter(FuelPrice.date_updated >= since_date)
     recent_prices = (
-        db.query(FuelPrice)
-        .options(joinedload(FuelPrice.station))
+        recent_prices_q
         .order_by(FuelPrice.date_updated.desc(), FuelPrice.time_updated.desc(), FuelPrice.price_id.desc())
         .limit(10)
         .all()
@@ -196,26 +205,30 @@ def get_reports(
     per_day = Counter(d for (d,) in period_prices)
     # Keep the chart readable: daily buckets up to 31 days, weekly buckets beyond that.
     activity = []
-    if days <= 31:
-        for i in range(days):
-            d = since_date + timedelta(days=i)
-            activity.append({"label": d.isoformat(), "count": per_day.get(d, 0)})
-    else:
-        start = since_date
-        while start <= today:
-            end = min(start + timedelta(days=6), today)
-            count = sum(c for d, c in per_day.items() if start <= d <= end)
-            activity.append({"label": start.isoformat(), "end": end.isoformat(), "count": count})
-            start = end + timedelta(days=1)
+    if since_date <= today:
+        if period_days <= 31:
+            for i in range(period_days):
+                d = since_date + timedelta(days=i)
+                activity.append({"label": d.isoformat(), "count": per_day.get(d, 0)})
+        else:
+            start = since_date
+            while start <= today:
+                end = min(start + timedelta(days=6), today)
+                count = sum(c for d, c in per_day.items() if start <= d <= end)
+                activity.append({"label": start.isoformat(), "end": end.isoformat(), "count": count})
+                start = end + timedelta(days=1)
 
     # ── Current pump prices per fuel type (active prices at active stations) ──
-    active_prices = (
+    active_prices_q = (
         db.query(FuelPrice)
         .options(joinedload(FuelPrice.station))
         .join(GasStation, FuelPrice.station_id == GasStation.station_id)
         .filter(FuelPrice.status == "active", GasStation.status == "active")
-        .all()
     )
+    if since is not None:
+        active_prices_q = active_prices_q.filter(FuelPrice.date_updated >= since_date)
+    active_prices = active_prices_q.all()
+
     by_fuel: dict[str, list[FuelPrice]] = defaultdict(list)
     priced_station_ids = set()
     for p in active_prices:
@@ -244,10 +257,11 @@ def get_reports(
     brands = Counter((s.brand or "Unbranded") for s in stations)
 
     # ── Feedback ──
-    fb_rows = db.query(Feedback.status, Feedback.category, Feedback.created_at).all()
-    fb_status = Counter(r.status or "new" for r in fb_rows)
-    fb_category = Counter(r.category for r in fb_rows)
-    fb_in_period = sum(1 for r in fb_rows if r.created_at and _aware(r.created_at) >= since_ts)
+    all_fb_rows = db.query(Feedback.status, Feedback.category, Feedback.created_at).all()
+    period_fb_rows = [r for r in all_fb_rows if r.created_at and _aware(r.created_at) >= since_ts]
+    fb_scope = period_fb_rows if since is not None else all_fb_rows
+    fb_status = Counter(r.status or "new" for r in fb_scope)
+    fb_category = Counter(r.category for r in fb_scope)
 
     return {
         # Snapshot (kept for the admin dashboard)
@@ -268,8 +282,9 @@ def get_reports(
             for p in recent_prices
         ],
         # Period analytics
-        "period_days": days,
+        "period_days": period_days,
         "period_start": since_date.isoformat(),
+        "filtered_since": since.isoformat() if since is not None else None,
         "new_users": new_users,
         "price_updates_in_period": len(period_prices),
         "price_activity": activity,
@@ -277,8 +292,8 @@ def get_reports(
         "stations_without_prices": stations_without_prices,
         "brands": [{"brand": b, "count": c} for b, c in brands.most_common()],
         "feedback": {
-            "total": len(fb_rows),
-            "in_period": fb_in_period,
+            "total": len(fb_scope),
+            "in_period": len(period_fb_rows),
             "by_status": {s: fb_status.get(s, 0) for s in FEEDBACK_STATUSES},
             "by_category": [{"category": c, "count": n} for c, n in fb_category.most_common()],
         },

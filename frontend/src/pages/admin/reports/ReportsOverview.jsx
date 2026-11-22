@@ -3,14 +3,9 @@ import { Link } from "react-router-dom";
 import { Activity, UserPlus, MessageSquare, AlertTriangle, ArrowRight, TrendingDown, TrendingUp } from "lucide-react";
 import useApiData from "../../../hooks/useApiData";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../../components/DataStates";
+import TileDatePicker from "../../../components/TileDatePicker";
 import { formatDate, peso } from "../../../utils/format";
 import { CATEGORY_STYLE, STATUS_STYLE, STATUS_LABEL } from "./feedbackStyles";
-
-const PERIODS = [
-  { days: 7, label: "7 days" },
-  { days: 30, label: "30 days" },
-  { days: 90, label: "90 days" },
-];
 
 function Card({ title, hint, action, children, className = "" }) {
   return (
@@ -91,25 +86,21 @@ function ActivityChart({ data }) {
 }
 
 export default function ReportsOverview({ onOpenFeedback }) {
-  const [days, setDays] = useState(30);
-  const { data: r, loading, error, reload } = useApiData("/api/admin/reports", { days });
+  const [selectedDate, setSelectedDate] = useState(null);
+  const { data: r, loading, error, reload } = useApiData(
+    "/api/admin/reports",
+    selectedDate ? { since: selectedDate } : undefined,
+  );
 
-  const periodPicker = (
-    <div role="group" aria-label="Reporting period" className="grid grid-cols-3 sm:inline-grid gap-1 p-1 rounded-xl bg-dark-800 border border-white/10">
-      {PERIODS.map((p) => (
-        <button
-          key={p.days}
-          type="button"
-          aria-pressed={days === p.days}
-          onClick={() => setDays(p.days)}
-          className={`min-h-[40px] px-3 sm:px-4 rounded-lg text-sm font-medium transition-colors ${
-            days === p.days ? "bg-dark-600 text-white" : "text-slate-400 hover:text-white"
-          }`}
-        >
-          {p.label}
-        </button>
-      ))}
-    </div>
+  const datePicker = (
+    <TileDatePicker
+      value={selectedDate}
+      onChange={setSelectedDate}
+      placeholder="Select Date"
+      resetLabel="Default (30d)"
+      align="right"
+      ariaLabel="Filter report start date"
+    />
   );
 
   if (error) return <ErrorBlock message={error} onRetry={reload} />;
@@ -126,32 +117,47 @@ export default function ReportsOverview({ onOpenFeedback }) {
   const catMax = Math.max(0, ...fb.by_category.map((c) => c.count));
   const brandMax = Math.max(0, ...r.brands.map((b) => b.count));
   const missing = r.stations_without_prices;
+  const isCustomDate = Boolean(selectedDate);
+  const periodLabel = isCustomDate ? `since ${formatDate(selectedDate)}` : `in the last ${r.period_days} days`;
 
   return (
     <div className={`space-y-4 md:space-y-6 transition-opacity ${loading ? "opacity-60" : ""}`} aria-busy={loading}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <p className="text-sm text-slate-400">
-          Showing <span className="text-white font-medium">{formatDate(r.period_start)}</span> – today
+          {isCustomDate ? (
+            <>
+              Filtering from <span className="text-white font-medium">{formatDate(selectedDate)}</span> – today
+            </>
+          ) : (
+            <>
+              Showing <span className="text-white font-medium">{formatDate(r.period_start)}</span> – today
+            </>
+          )}
         </p>
-        {periodPicker}
+        {datePicker}
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <Kpi icon={Activity} label="Price updates" value={r.price_updates_in_period} sub={`in the last ${r.period_days} days`} tone="text-primary" />
+        <Kpi icon={Activity} label="Price updates" value={r.price_updates_in_period} sub={periodLabel} tone="text-primary" />
         <Kpi icon={UserPlus} label="New users" value={r.new_users} sub={`${r.total_users} users in total`} tone="text-accent" />
         <Kpi icon={MessageSquare} label="Feedback received" value={fb.in_period}
           sub={fb.by_status.new ? `${fb.by_status.new} waiting for review` : "All caught up"}
           tone={fb.by_status.new ? "text-warning" : "text-success"} />
         <Kpi icon={AlertTriangle} label="Stations without prices" value={missing.length}
-          sub={`of ${r.active_stations} active stations`} tone={missing.length ? "text-danger" : "text-success"} />
+          sub={isCustomDate ? `of ${r.active_stations} active (since ${formatDate(selectedDate)})` : `of ${r.active_stations} active stations`}
+          tone={missing.length ? "text-danger" : "text-success"} />
       </div>
 
       {/* Fuel prices + feedback breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <Card title="Current pump prices" hint="Active prices at active stations" className="lg:col-span-2">
+        <Card
+          title="Current pump prices"
+          hint={isCustomDate ? `Active prices updated since ${formatDate(selectedDate)}` : "Active prices at active stations"}
+          className="lg:col-span-2"
+        >
           {r.fuel_summary.length === 0 ? (
-            <EmptyBlock message="No active prices yet." />
+            <EmptyBlock message={isCustomDate ? `No active prices updated since ${formatDate(selectedDate)}.` : "No active prices yet."} />
           ) : (
             <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
               {r.fuel_summary.map((f) => (
@@ -188,7 +194,7 @@ export default function ReportsOverview({ onOpenFeedback }) {
 
         <Card
           title="User feedback"
-          hint={`${fb.total} total`}
+          hint={isCustomDate ? `${fb.total} since ${formatDate(selectedDate)}` : `${fb.total} total`}
           action={
             <button type="button" onClick={() => onOpenFeedback()} className="text-sm text-primary hover:text-primary-light inline-flex items-center gap-1 min-h-[44px] -my-3 flex-shrink-0">
               Open <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -210,7 +216,9 @@ export default function ReportsOverview({ onOpenFeedback }) {
             ))}
           </div>
           {fb.by_category.length === 0 ? (
-            <p className="text-sm text-slate-500">No feedback yet. It will show up here as soon as users send some.</p>
+            <p className="text-sm text-slate-500">
+              {isCustomDate ? `No feedback received since ${formatDate(selectedDate)}.` : "No feedback yet. It will show up here as soon as users send some."}
+            </p>
           ) : (
             <ul className="space-y-3" aria-label="Feedback by category">
               {fb.by_category.map((c) => (
@@ -223,8 +231,12 @@ export default function ReportsOverview({ onOpenFeedback }) {
 
       {/* Activity + brands */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <Card title="Price update activity" hint={`${r.price_updates_in_period} updates in the last ${r.period_days} days`} className="lg:col-span-2">
-          <ActivityChart data={r.price_activity} />
+        <Card title="Price update activity" hint={`${r.price_updates_in_period} updates ${periodLabel}`} className="lg:col-span-2">
+          {r.price_activity.length === 0 ? (
+            <EmptyBlock message={`No price activity from ${formatDate(selectedDate)}.`} />
+          ) : (
+            <ActivityChart data={r.price_activity} />
+          )}
         </Card>
         <Card title="Stations by brand" hint={`${r.total_stations} stations · ${r.inactive_stations} inactive`}>
           {r.brands.length === 0 ? (
@@ -241,7 +253,7 @@ export default function ReportsOverview({ onOpenFeedback }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <Card
           title="Missing prices"
-          hint="Active stations with no current price"
+          hint={isCustomDate ? `Active stations with no update since ${formatDate(selectedDate)}` : "Active stations with no current price"}
           action={missing.length > 0 && (
             <Link to="/admin/prices" className="text-sm text-primary hover:text-primary-light inline-flex items-center gap-1 min-h-[44px] -my-3 flex-shrink-0">
               Add <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -262,7 +274,7 @@ export default function ReportsOverview({ onOpenFeedback }) {
           )}
         </Card>
 
-        <Card title="Price update log" hint="Last 10 updates" className="lg:col-span-2">
+        <Card title="Price update log" hint={isCustomDate ? `Latest updates since ${formatDate(selectedDate)}` : "Last 10 updates"} className="lg:col-span-2">
           {r.recent_price_updates.length === 0 ? (
             <p className="text-sm text-slate-500">No updates yet.</p>
           ) : (

@@ -2,18 +2,12 @@ import { useState } from "react";
 import { ExternalLink, TrendingUp, Megaphone } from "lucide-react";
 import UserLayout from "../../components/UserLayout";
 import Sparkline from "../../components/Sparkline";
+import TileDatePicker from "../../components/TileDatePicker";
 import { LoadingBlock, ErrorBlock, EmptyBlock } from "../../components/DataStates";
 import useApiData from "../../hooks/useApiData";
 import { FUEL_OPTIONS, peso, formatDate, DIRECTION_STYLE } from "../../utils/format";
 
 const FUEL_TABS = ["All", ...FUEL_OPTIONS, "Kerosene"];
-
-const RANGES = [
-  { value: "4", label: "4w", fullLabel: "Last 4 weeks", weeks: 4 },
-  { value: "8", label: "8w", fullLabel: "Last 8 weeks", weeks: 8 },
-  { value: "12", label: "12w", fullLabel: "Last 12 weeks", weeks: 12 },
-  { value: "all", label: "All", fullLabel: "All time", weeks: null },
-];
 
 function SectionHeading({ id, icon: Icon, title, hint }) {
   return (
@@ -133,23 +127,24 @@ function AdvisoryItem({ a }) {
 
 export default function Updates() {
   const [fuel, setFuel] = useState("All");
-  const [range, setRange] = useState("8");
-  const rangeDef = RANGES.find((r) => r.value === range);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const fuelParam = fuel === "All" ? undefined : fuel;
-  const forecasts = useApiData("/api/updates/forecasts", { fuel_type: fuelParam });
-  const trends = useApiData("/api/updates/trends", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? 12 });
-  const advisories = useApiData("/api/updates/advisories", { fuel_type: fuelParam, weeks: rangeDef.weeks ?? undefined });
+  const sinceParam = selectedDate || undefined;
+  const forecasts = useApiData("/api/updates/forecasts", { fuel_type: fuelParam, since: sinceParam });
+  const trends = useApiData("/api/updates/trends", { fuel_type: fuelParam, since: sinceParam });
+  const advisories = useApiData("/api/updates/advisories", { fuel_type: fuelParam, since: sinceParam });
 
   const grid = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
   const filterLabel = fuel === "All" ? "" : ` for ${fuel}`;
+  const dateSuffix = selectedDate ? ` since ${formatDate(selectedDate)}` : "";
 
   return (
     <UserLayout
       title="Updates & Price Trends"
       subtitle="Next-week outlook, weekly Taguig price movement, and official DOE energy advisories."
     >
-      {/* Mobile-friendly pill filters — ≥44px tap targets, zero horizontal overflow */}
+      {/* Mobile-friendly pill filters + drill-down date picker */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-7 md:mb-10">
         <div
           role="group"
@@ -176,27 +171,20 @@ export default function Updates() {
           })}
         </div>
 
-        <div
-          role="group"
-          aria-label="Date range"
-          className="grid grid-cols-4 md:inline-grid w-full md:w-auto gap-1 p-1 rounded-xl bg-[#111520] border border-white/[0.07] flex-shrink-0"
-        >
-          {RANGES.map((r) => (
-            <button
-              key={r.value}
-              type="button"
-              aria-pressed={range === r.value}
-              aria-label={r.fullLabel}
-              onClick={() => setRange(r.value)}
-              className={`min-h-10 px-3.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                range === r.value
-                  ? "bg-white/[0.1] text-[#F8FAFC]"
-                  : "text-[#94A3B8] hover:text-[#F8FAFC]"
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between md:justify-end gap-2.5 flex-shrink-0">
+          {selectedDate && (
+            <span className="text-xs text-[#94A3B8] hidden sm:inline">
+              From <span className="text-[#F8FAFC] font-medium">{formatDate(selectedDate)}</span>
+            </span>
+          )}
+          <TileDatePicker
+            value={selectedDate}
+            onChange={setSelectedDate}
+            placeholder="All Dates"
+            resetLabel="All Dates"
+            align="right"
+            ariaLabel="Filter updates and trends by start date"
+          />
         </div>
       </div>
 
@@ -206,13 +194,17 @@ export default function Updates() {
           id="forecast-h"
           icon={TrendingUp}
           title="Next-week market forecast"
-          hint="Expected pump price movement for next week (₱ per liter)."
+          hint={
+            selectedDate
+              ? `Expected pump price movement effective from ${formatDate(selectedDate)} (₱ per liter).`
+              : "Expected pump price movement for next week (₱ per liter)."
+          }
         />
         <div className={grid}>
           {forecasts.loading && <LoadingBlock count={3} className="h-44" label="Loading forecasts…" />}
           {forecasts.error && <ErrorBlock message={forecasts.error} onRetry={forecasts.reload} />}
           {!forecasts.loading && !forecasts.error && forecasts.data?.length === 0 && (
-            <EmptyBlock message={`No forecast has been published${filterLabel} yet.`} />
+            <EmptyBlock message={`No forecast has been published${filterLabel}${dateSuffix}.`} />
           )}
           {!forecasts.loading && forecasts.data?.map((f) => <ForecastCard key={f.forecast_id} f={f} />)}
         </div>
@@ -224,13 +216,17 @@ export default function Updates() {
           id="trends-h"
           icon={TrendingUp}
           title="Fuel price changes"
-          hint="Average pump price across Taguig stations, compared with last week."
+          hint={
+            selectedDate
+              ? `Weekly Taguig pump price averages starting from ${formatDate(selectedDate)}.`
+              : "Average pump price across Taguig stations, compared with last week."
+          }
         />
         <div className={grid}>
           {trends.loading && <LoadingBlock count={3} className="h-64" label="Loading price trends…" />}
           {trends.error && <ErrorBlock message={trends.error} onRetry={trends.reload} />}
           {!trends.loading && !trends.error && trends.data?.length === 0 && (
-            <EmptyBlock message={`No pump-price trend is tracked${filterLabel}.`} />
+            <EmptyBlock message={`No pump-price trend is tracked${filterLabel}${dateSuffix}.`} />
           )}
           {!trends.loading && trends.data?.map((m) => <MetricCard key={m.fuel_type} m={m} />)}
         </div>
@@ -238,13 +234,18 @@ export default function Updates() {
 
       {/* Advisories — clean editorial divided feed instead of stacked boxes */}
       <section aria-labelledby="advisories-h">
-        <SectionHeading id="advisories-h" icon={Megaphone} title="Official energy advisories" hint="Newest first." />
+        <SectionHeading
+          id="advisories-h"
+          icon={Megaphone}
+          title="Official energy advisories"
+          hint={selectedDate ? `Published since ${formatDate(selectedDate)}, newest first.` : "Newest first."}
+        />
         {advisories.loading && (
           <div className="grid gap-3"><LoadingBlock count={3} className="h-32" label="Loading advisories…" /></div>
         )}
         {advisories.error && <div className="grid"><ErrorBlock message={advisories.error} onRetry={advisories.reload} /></div>}
         {!advisories.loading && !advisories.error && advisories.data?.length === 0 && (
-          <div className="grid"><EmptyBlock message={`No advisories${filterLabel} in this period.`} /></div>
+          <div className="grid"><EmptyBlock message={`No advisories${filterLabel}${dateSuffix || " in this period"}.`} /></div>
         )}
         {!advisories.loading && advisories.data?.length > 0 && (
           <div className="rounded-2xl bg-[#111520] border border-white/[0.07] px-5 sm:px-7 py-5 sm:py-6">
