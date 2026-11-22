@@ -44,6 +44,7 @@ def advisory_to_dict(a: EnergyAdvisory) -> dict:
 @router.get("/forecasts")
 def get_forecasts(
     fuel_type: Optional[str] = Query(None, description="Unleaded 91 | Premium 95 | Diesel | Kerosene | Gasoline"),
+    since: Optional[date] = Query(None, description="Only forecasts effective on or after this date (YYYY-MM-DD)"),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
 ):
@@ -52,12 +53,10 @@ def get_forecasts(
     valid_groups = [g for g in wanted if g in FORECAST_FUELS]
     if not valid_groups:
         return []
-    rows = (
-        db.query(MarketForecast)
-        .filter(MarketForecast.fuel_type.in_(valid_groups))
-        .order_by(MarketForecast.effective_date.desc(), MarketForecast.forecast_id.desc())
-        .all()
-    )
+    q = db.query(MarketForecast).filter(MarketForecast.fuel_type.in_(valid_groups))
+    if since is not None:
+        q = q.filter(MarketForecast.effective_date >= since)
+    rows = q.order_by(MarketForecast.effective_date.desc(), MarketForecast.forecast_id.desc()).all()
     latest_by_group: dict[str, MarketForecast] = {}
     for r in rows:
         if r.fuel_type not in latest_by_group:
@@ -67,7 +66,8 @@ def get_forecasts(
 
 @router.get("/trends")
 def get_trends(
-    weeks: int = Query(8, ge=2, le=12),
+    weeks: Optional[int] = Query(None, ge=2, le=52),
+    since: Optional[date] = Query(None, description="Only include weekly snapshots from this date's week onward"),
     fuel_type: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
@@ -75,7 +75,12 @@ def get_trends(
     """Current average, change vs last week and a weekly series for Unleaded 91, Premium 95 and Diesel."""
     live = record_weekly_snapshot(db)  # keeps the current week's point fresh and builds history over time
     this_week = week_start()
-    first_week = this_week - timedelta(days=7 * (weeks - 1))
+    if since is not None:
+        first_week = week_start(since)
+    elif weeks is not None:
+        first_week = this_week - timedelta(days=7 * (weeks - 1))
+    else:
+        first_week = None
 
     canon = normalize_fuel_type(fuel_type) if fuel_type and fuel_type != "All" else None
     wanted = [canon] if canon in PUMP_FUEL_TYPES else ([] if canon else PUMP_FUEL_TYPES)
@@ -95,7 +100,9 @@ def get_trends(
     out = []
     for ft in wanted:
         ft_rows = by_fuel.get(ft, [])
-        series_rows = [r for r in ft_rows if r.week_start >= first_week]
+        series_rows = [r for r in ft_rows if first_week is None or r.week_start >= first_week]
+        if since is not None and not series_rows:
+            continue
         series = [{"week_start": str(r.week_start), "avg_price": float(r.avg_price)} for r in series_rows]
         current = live[ft][0] if ft in live else (series[-1]["avg_price"] if series else None)
         station_count = live[ft][1] if ft in live else 0
@@ -123,6 +130,7 @@ def get_trends(
 def get_advisories(
     fuel_type: Optional[str] = Query(None),
     weeks: Optional[int] = Query(None, ge=1, le=520, description="Only advisories from the last N weeks"),
+    since: Optional[date] = Query(None, description="Only advisories published on or after this date (YYYY-MM-DD)"),
     limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
     _=Depends(get_current_user),
@@ -132,7 +140,9 @@ def get_advisories(
     if fuel_type and fuel_type != "All":
         canon = normalize_fuel_type(fuel_type) or fuel_type
         q = q.filter(EnergyAdvisory.fuel_type.in_(["All", canon]))
-    if weeks:
+    if since is not None:
+        q = q.filter(EnergyAdvisory.published_date >= since)
+    elif weeks:
         q = q.filter(EnergyAdvisory.published_date >= date.today() - timedelta(weeks=weeks))
     rows = q.order_by(EnergyAdvisory.published_date.desc(), EnergyAdvisory.advisory_id.desc()).limit(limit).all()
     return [advisory_to_dict(a) for a in rows]
