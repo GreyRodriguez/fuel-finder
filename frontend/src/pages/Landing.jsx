@@ -137,7 +137,7 @@ export default function Landing() {
                   id="nav-open-app"
                   className="inline-flex items-center justify-center min-h-11 px-4 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 text-sm font-semibold transition-all duration-200 active:scale-[0.98]"
                 >
-                  Open App
+                  Get Started
                 </Link>
               </>
             ) : (
@@ -154,7 +154,7 @@ export default function Landing() {
                   id="nav-register"
                   className="inline-flex items-center justify-center min-h-11 px-4 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 text-sm font-semibold transition-all duration-200 active:scale-[0.98]"
                 >
-                  Open App
+                  Get Started
                 </Link>
               </>
             )}
